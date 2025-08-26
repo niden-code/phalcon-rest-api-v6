@@ -115,15 +115,15 @@ jobs:
         run: |
           cp config/.env.ci .env
 
-      - name: "Run Unit Tests"
-        if: always()
-        run: |
-          composer test-unit
-
       - name: "Run Migrations"
         if: always()
         run: |
           composer migrate
+
+      - name: "Run Unit Tests"
+        if: always()
+        run: |
+          composer test-unit
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
