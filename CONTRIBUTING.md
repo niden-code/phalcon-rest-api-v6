@@ -42,7 +42,7 @@ Please report bugs when you've exhausted all of the above options.
 
 ## Requesting Features
 
-If you have a change or new feature in mind, please fill a NFR the GitHub.
+If you have a change or new feature in mind, please fill out an NFR on GitHub.
 
 
 Thanks!
