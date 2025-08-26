@@ -2,3 +2,4 @@
 .bash_history
 vendor
 composer.lock
+.env
