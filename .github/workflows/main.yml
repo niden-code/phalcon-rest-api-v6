@@ -141,4 +141,4 @@ jobs:
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.language=php
             -Dsonar.tests=tests/
-            -Dsonar.php.coverage.reportPaths=tests/_output/coverage.xml
+            -Dsonar.php.coverage.reportPaths=tests/_output/cov.xml
