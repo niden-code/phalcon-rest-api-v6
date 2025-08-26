@@ -94,17 +94,16 @@ jobs:
           MYSQL_PASSWORD: secret
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: "Setup PHP"
         uses: shivammathur/setup-php@2.35.4
         with:
           php-version: ${{ matrix.php }}
           extensions: ${{ env.EXTENSIONS }}
-          coverage: pcov
+          tools: pecl
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: "Validate composer"
-        run: composer validate --no-check-all --no-check-publish
 
       - name: "Install development dependencies with Composer"
         uses: "ramsey/composer-install@v3"
