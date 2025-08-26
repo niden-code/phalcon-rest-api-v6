@@ -82,6 +82,17 @@ jobs:
           - '8.3'
           - '8.4'
 
+    services:
+      mariadb:
+        image: mariadb:10.6
+        ports:
+          - "3306:3306"
+        env:
+          MYSQL_ROOT_PASSWORD: secret
+          MYSQL_USER: phalcon
+          MYSQL_DATABASE: phalcon
+          MYSQL_PASSWORD: secret
+
     steps:
       - name: "Setup PHP"
         uses: shivammathur/setup-php@2.35.4
@@ -109,6 +120,11 @@ jobs:
         if: always()
         run: |
           composer test-unit
+
+      - name: "Run Migrations"
+        if: always()
+        run: |
+          composer migrate
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
