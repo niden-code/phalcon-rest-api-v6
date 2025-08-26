@@ -70,4 +70,4 @@ alias mv='mv -i'
 alias untar='tar xvf'
 
 # Zephir related
-alias untar='tar xvf'
+PATH=$PATH;./vendor/bin/
