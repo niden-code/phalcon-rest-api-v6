@@ -85,28 +85,6 @@ class Container extends Di
     }
 
     /**
-     * @return string
-     * @throws InvalidConfigurationArguments
-     */
-    protected function getLoggerLogFile(): string
-    {
-        /** @var string $logPath */
-        $logPath = EnvManager::get('USER_LOG_PATH', 'storage/logs');
-
-        return EnvManager::appPath($logPath)
-            . '/service-user-' . $this->getLoggerLogName() . '.log';
-    }
-
-    /**
-     * @return string
-     * @throws InvalidConfigurationArguments
-     */
-    protected function getLoggerLogName(): string
-    {
-        return EnvManager::getString('USER_LOG_FILENAME', 'core');
-    }
-
-    /**
      * @return Service
      * @throws InvalidConfigurationArguments
      */
@@ -194,10 +172,15 @@ class Container extends Di
     {
         return new Service(
             function () {
+                $fileName = EnvManager::getString('USER_LOG_FILENAME', 'rest');
+                $logPath  = EnvManager::getString('USER_LOG_PATH', 'storage/logs');
+                $logFile  = EnvManager::appPath($logPath)
+                    . '/' . $fileName . '.log';
+
                 return new Logger(
-                    $this->getLoggerLogName(),
+                    $fileName,
                     [
-                        'main' => new Stream($this->getLoggerLogFile()),
+                        'main' => new Stream($logFile),
                     ]
                 );
             },
