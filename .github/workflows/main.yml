@@ -15,3 +15,12 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: src/
+          args: >
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.sources=src/
+            -Dsonar.tests=tests/
+            -Dsonar.test.exclusions=tests/**
+            -Dsonar.verbose=true
