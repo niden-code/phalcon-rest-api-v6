@@ -156,9 +156,9 @@ class EnvManager
 
     /**
      * @param string $key
-     * @param string $defaultValue
+     * @param int    $defaultValue
      *
-     * @return string
+     * @return int
      * @throws InvalidConfigurationArguments
      */
     public static function getInt(
