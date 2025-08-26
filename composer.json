@@ -57,6 +57,7 @@
         "analyze": "phpstan analyse -c phpstan.neon --memory-limit=512M",
         "cs": "vendor/bin/phpcs --standard=phpcs.xml",
         "cs-fix": "vendor/bin/phpcbf --standard=phpcs.xml",
+        "migrate": "vendor/bin/phinx migrate",
         "test-unit": "vendor/bin/phpunit -c phpunit.xml.dist --display-all-issues"
     }
 }
