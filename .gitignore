@@ -1,3 +1,4 @@
 .composer
 .bash_history
 vendor
+composer.lock
