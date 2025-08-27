@@ -24,7 +24,7 @@ final class DotenvTest extends AbstractUnitTestCase
 {
     private string $envFile;
 
-    public function testLoadReturnsEnvArray()
+    public function testLoadReturnsEnvArray(): void
     {
         $dotenv   = new Dotenv();
         $options  = ['filePath' => $this->envFile];

@@ -27,7 +27,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
      * @return void
      * @throws InvalidConfigurationArguments
      */
-    public function testAppEnvReturnsDefault()
+    public function testAppEnvReturnsDefault(): void
     {
         $expected = 'development';
         $actual   = EnvManager::appEnv();
@@ -38,7 +38,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
      * @return void
      * @throws InvalidConfigurationArguments
      */
-    public function testAppEnvReturnsValue()
+    public function testAppEnvReturnsValue(): void
     {
         $_ENV     = ['APP_ENV' => 'production'];
         $expected = 'production';
@@ -50,7 +50,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
      * @return void
      * @throws InvalidConfigurationArguments
      */
-    public function testAppLogLevelReturnsDefault()
+    public function testAppLogLevelReturnsDefault(): void
     {
         $expected = 1;
         $actual   = EnvManager::appLogLevel();
@@ -61,7 +61,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
      * @return void
      * @throws InvalidConfigurationArguments
      */
-    public function testAppLogLevelReturnsValue()
+    public function testAppLogLevelReturnsValue(): void
     {
         $_ENV     = ['APP_LOG_LEVEL' => 5];
         $expected = 5;
@@ -72,7 +72,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
     /**
      * @return void
      */
-    public function testAppPathReturnsRoot()
+    public function testAppPathReturnsRoot(): void
     {
         $expected = dirname(__DIR__, 6);
         $actual   = EnvManager::appPath();
@@ -82,7 +82,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
     /**
      * @return void
      */
-    public function testAppPathReturnsWithSubPath()
+    public function testAppPathReturnsWithSubPath(): void
     {
         $expected = dirname(__DIR__, 6) . DIRECTORY_SEPARATOR . 'path';
         $actual   = EnvManager::appPath('path');
@@ -92,7 +92,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
     /**
      * @return void
      */
-    public function testAppTimeReturnsInt()
+    public function testAppTimeReturnsInt(): void
     {
         $actual = EnvManager::appTime();
         $this->assertIsInt($actual);
@@ -102,7 +102,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
      * @return void
      * @throws InvalidConfigurationArguments
      */
-    public function testAppTimezoneReturnsDefault()
+    public function testAppTimezoneReturnsDefault(): void
     {
         $expected = 'UTC';
         $actual   = EnvManager::appTimezone();
@@ -113,7 +113,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
      * @return void
      * @throws InvalidConfigurationArguments
      */
-    public function testAppTimezoneReturnsValue()
+    public function testAppTimezoneReturnsValue(): void
     {
         $_ENV     = ['APP_TIMEZONE' => 'America/New_York'];
         $expected = 'America/New_York';
@@ -125,7 +125,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
      * @return void
      * @throws InvalidConfigurationArguments
      */
-    public function testAppVersionReturnsDefault()
+    public function testAppVersionReturnsDefault(): void
     {
         $expected = '1.0.0';
         $actual   = EnvManager::appVersion();
@@ -136,7 +136,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
      * @return void
      * @throws InvalidConfigurationArguments
      */
-    public function testAppVersionReturnsValue()
+    public function testAppVersionReturnsValue(): void
     {
         $_ENV     = ['APP_VERSION' => '2.3.4'];
         $expected = '2.3.4';
@@ -148,7 +148,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
      * @return void
      * @throws InvalidConfigurationArguments
      */
-    public function testGetCacheOptionsReturnsDefaults()
+    public function testGetCacheOptionsReturnsDefaults(): void
     {
         $inCi = getenv('CIRCLECI');
         $host = 'true' === $inCi ? '127.0.0.1' : 'localhost';
@@ -170,7 +170,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
      * @return void
      * @throws InvalidConfigurationArguments
      */
-    public function testGetCacheOptionsReturnsValues()
+    public function testGetCacheOptionsReturnsValues(): void
     {
         $_ENV = [
             'CACHE_PREFIX'   => 'prefix',
@@ -195,7 +195,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
      * @return void
      * @throws InvalidConfigurationArguments
      */
-    public function testGetFromDotEnvLoad()
+    public function testGetFromDotEnvLoad(): void
     {
         $_ENV = [
             'APP_ENV_ADAPTER'   => 'dotenv',
@@ -230,7 +230,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
      * @return void
      * @throws InvalidConfigurationArguments
      */
-    public function testGetReturnsDefault()
+    public function testGetReturnsDefault(): void
     {
         $expected = 'default';
         $actual   = EnvManager::get('NON_EXISTENT', 'default');
@@ -241,7 +241,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
      * @return void
      * @throws InvalidConfigurationArguments
      */
-    public function testGetReturnsValue()
+    public function testGetReturnsValue(): void
     {
         $_ENV     = ['SAMPLE_ENV' => 'sample_value'];
         $expected = 'sample_value';
