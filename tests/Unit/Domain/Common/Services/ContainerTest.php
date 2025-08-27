@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Common\Services\Environment;
+namespace Phalcon\Api\Tests\Unit\Domain\Common\Services;
 
 use Phalcon\Api\Domain\Services\Container;
 use Phalcon\Api\Tests\Fixtures\Domain\AbstractUnitTestCase;
