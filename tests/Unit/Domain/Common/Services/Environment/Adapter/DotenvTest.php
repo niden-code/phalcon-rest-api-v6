@@ -52,7 +52,7 @@ final class DotenvTest extends AbstractUnitTestCase
     {
         $this->expectException(InvalidConfigurationArguments::class);
         $this->expectExceptionMessage(
-            'The .env file does not exist at the specified path: '
+            'The .env directory or file path was not specified.'
         );
 
         $dotenv  = new Dotenv();
@@ -64,7 +64,7 @@ final class DotenvTest extends AbstractUnitTestCase
     {
         $this->expectException(InvalidConfigurationArguments::class);
         $this->expectExceptionMessage(
-            'The .env file does not exist at the specified path: /nonexistent/path/.env'
+            'The .env directory does not exist at the specified path: /nonexistent/path'
         );
 
         $dotenv  = new Dotenv();
