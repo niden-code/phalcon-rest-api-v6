@@ -27,7 +27,7 @@ use Phalcon\Http\Message\Request;
 use Phalcon\Http\Message\Response;
 use Phalcon\Logger\Adapter\Stream;
 use Phalcon\Logger\Logger;
-use Phalcon\Mvc\Router\Route;
+use Phalcon\Mvc\Router;
 use Phalcon\Storage\SerializerFactory;
 
 use function array_merge;
@@ -221,7 +221,13 @@ class Container extends Di
     {
         return new Service(
             [
-                'className' => Route::class,
+                'className' => Router::class,
+                'arguments' => [
+                    [
+                        'type'  => 'parameter',
+                        'value' => false,
+                    ]
+                ]
             ],
             true
         );
