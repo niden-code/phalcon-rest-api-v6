@@ -112,8 +112,8 @@ abstract class AbstractDatabaseTestCase extends AbstractUnitTestCase
             "mysql:host=%s;dbname=%s;charset=%s;port=%s",
             $options['host'],
             $options['dbname'],
-            $options['port'],
-            $options['charset']
+            $options['charset'],
+            $options['port']
         );
     }
 
