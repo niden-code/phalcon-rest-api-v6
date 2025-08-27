@@ -38,14 +38,21 @@ class Dotenv implements AdapterInterface
     public function load(array $options): array
     {
         $filePath = $options['filePath'] ?? null;
-        if (true === empty($filePath) || true !== file_exists($filePath)) {
+        if (true === empty($filePath)) {
             throw new InvalidConfigurationArguments(
-                '"The .env file does not exist at the specified path: '
-                . $filePath
+                'The .env directory or file path was not specified.'
             );
         }
 
-        $dotenv = ParentDotenv::createImmutable($filePath);
+        // If $filePath is a file, use its directory; if it's a directory, use as is
+        $envDir = is_dir($filePath) ? $filePath : dirname($filePath);
+        if (!is_dir($envDir)) {
+            throw new InvalidConfigurationArguments(
+                'The .env directory does not exist at the specified path: ' . $envDir
+            );
+        }
+
+        $dotenv = ParentDotenv::createImmutable($envDir);
         $dotenv->load();
 
         /** @var TSettings $env */
