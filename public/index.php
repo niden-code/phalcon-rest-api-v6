@@ -12,15 +12,47 @@
 declare(strict_types=1);
 
 use Phalcon\Api\Domain\Services\Container;
-use Phalcon\Api\Domain\Services\Environment\EnvManager;
+use Phalcon\Mvc\Micro;
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-$container = new Container();
+$container   = new Container();
+$application = new Micro($container);
 
-///** @var array<array-key, string> $providers */
-//$providers = require_once EnvManager::appPath('/config/providers.php');
+/**
+ * Routes
+ */
+$routes = [
+    [
+        'method'  => 'get',
+        'pattern' => '/',
+        'handler' => Container::HELLO_ACTION_GET,
+    ]
+];
 
-//$application = new Api($container, $providers);
-//
-//$application->setup()->run();
+foreach ($routes as $route) {
+    $method  = $route['method'];
+    $pattern = $route['pattern'];
+    $handler = $route['handler'];
+
+    $application->$method(
+        $pattern,
+        function () use ($container, $handler) {
+            $action = $container->get($handler);
+
+            echo $action->execute();
+        }
+    );
+}
+
+$application->notFound(
+    function () {
+        echo '404 - Not Found';
+    }
+);
+
+
+/** @var string $uri */
+$uri = $_SERVER['REQUEST_URI'] ?? '';
+
+$application->handle($uri);
