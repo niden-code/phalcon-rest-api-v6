@@ -13,8 +13,11 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Services;
 
+use Phalcon\Api\Action\Hello\GetAction;
+use Phalcon\Api\Domain\Hello\HelloService;
 use Phalcon\Api\Domain\Services\Environment\EnvManager;
 use Phalcon\Api\Domain\Services\Exceptions\InvalidConfigurationArguments;
+use Phalcon\Api\Responder\Hello\HelloTextResponder;
 use Phalcon\Cache\AdapterFactory;
 use Phalcon\Cache\Cache;
 use Phalcon\DataMapper\Pdo\Connection;
@@ -23,8 +26,8 @@ use Phalcon\Di\Service;
 use Phalcon\Encryption\Security;
 use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Filter\FilterFactory;
-use Phalcon\Http\Message\Request;
-use Phalcon\Http\Message\Response;
+use Phalcon\Http\Request;
+use Phalcon\Http\Response;
 use Phalcon\Logger\Adapter\Stream;
 use Phalcon\Logger\Logger;
 use Phalcon\Mvc\Router;
@@ -59,6 +62,13 @@ class Container extends Di
     public const TIME = 'time';
 
     /**
+     * Hello
+     */
+    public const HELLO_ACTION_GET     = 'hello.action.get';
+    public const HELLO_RESPONDER_TEXT = 'hello.responder.text';
+    public const HELLO_SERVICE        = 'hello.service';
+
+    /**
      * @throws InvalidConfigurationArguments
      */
     public function __construct()
@@ -73,10 +83,14 @@ class Container extends Di
                 self::CONNECTION     => $this->getServiceConnection(),
                 self::EVENTS_MANAGER => $this->getServiceEventsManger(),
                 self::FILTER         => $this->getServiceFilter(),
-                self::REQUEST        => $this->getServiceRequest(),
-                self::RESPONSE       => $this->getServiceResponse(),
+                self::REQUEST        => $this->getSimple(Request::class, true),
+                self::RESPONSE       => $this->getSimple(Response::class, true),
                 self::ROUTER         => $this->getServiceRouter(),
-                self::SECURITY       => $this->getServiceSecurity(),
+                self::SECURITY       => $this->getSimple(Security::class, true),
+
+                self::HELLO_ACTION_GET     => $this->getServiceHelloActionGet(),
+                self::HELLO_SERVICE        => $this->getSimple(HelloService::class),
+                self::HELLO_RESPONDER_TEXT => $this->getSimple(HelloTextResponder::class),
             ],
             $services
         );
@@ -168,12 +182,34 @@ class Container extends Di
     /**
      * @return Service
      */
+    private function getServiceHelloActionGet(): Service
+    {
+        return new Service(
+            [
+                'className' => GetAction::class,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => self::HELLO_SERVICE,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::HELLO_RESPONDER_TEXT,
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * @return Service
+     */
     private function getServiceLogger(): Service
     {
         return new Service(
             function () {
-                $fileName = EnvManager::getString('USER_LOG_FILENAME', 'rest');
-                $logPath  = EnvManager::getString('USER_LOG_PATH', 'storage/logs');
+                $fileName = EnvManager::getString('LOG_FILENAME', 'rest');
+                $logPath  = EnvManager::getString('LOG_PATH', 'storage/logs');
                 $logFile  = EnvManager::appPath($logPath)
                     . '/' . $fileName . '.log';
 
@@ -191,32 +227,6 @@ class Container extends Di
     /**
      * @return Service
      */
-    private function getServiceRequest(): Service
-    {
-        return new Service(
-            [
-                'className' => Request::class,
-            ],
-            true
-        );
-    }
-
-    /**
-     * @return Service
-     */
-    private function getServiceResponse(): Service
-    {
-        return new Service(
-            [
-                'className' => Response::class,
-            ],
-            true
-        );
-    }
-
-    /**
-     * @return Service
-     */
     private function getServiceRouter(): Service
     {
         return new Service(
@@ -226,23 +236,21 @@ class Container extends Di
                     [
                         'type'  => 'parameter',
                         'value' => false,
-                    ]
-                ]
+                    ],
+                ],
             ],
             true
         );
     }
 
     /**
+     * @param class-string $className
+     * @param bool         $isShared
+     *
      * @return Service
      */
-    private function getServiceSecurity(): Service
+    private function getSimple(string $className, bool $isShared = false): Service
     {
-        return new Service(
-            [
-                'className' => Security::class,
-            ],
-            true
-        );
+        return new Service($className, $isShared);
     }
 }
