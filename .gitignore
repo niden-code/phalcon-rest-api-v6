@@ -5,3 +5,4 @@ composer.lock
 vendor/
 .bash_history
 tests/_output
+.env
