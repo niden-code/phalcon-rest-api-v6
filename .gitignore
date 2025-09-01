@@ -1,6 +1,7 @@
 .cache
 .config
 .local
+.composer
 composer.lock
 vendor/
 .bash_history
