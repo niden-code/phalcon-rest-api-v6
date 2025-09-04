@@ -5,7 +5,7 @@ services:
       dockerfile: ./resources/docker/Dockerfile
       args:
         PHP_VERSION: 8.2
-    hostname: rest-api-app-8.2
+    hostname: rest-api-app-82
     container_name: "${PROJECT_NAME}-api-8.2"
     tty: true
     working_dir: /app
@@ -17,6 +17,7 @@ services:
     networks:
       - app-network
     environment:
+      - PHP_IDE_CONFIG=serverName=rest-api-app-82
       - APP_ENV=development
       - APP_ENV_ADAPTER=dotenv
     healthcheck:
@@ -31,7 +32,7 @@ services:
       dockerfile: ./resources/docker/Dockerfile
       args:
         PHP_VERSION: 8.3
-    hostname: rest-api-app-8.3
+    hostname: rest-api-app-83
     container_name: "${PROJECT_NAME}-api-8.3"
     tty: true
     working_dir: /app
@@ -43,6 +44,7 @@ services:
     networks:
       - app-network
     environment:
+      - PHP_IDE_CONFIG=serverName=rest-api-app-83
       - APP_ENV=development
       - APP_ENV_ADAPTER=dotenv
     healthcheck:
@@ -57,7 +59,7 @@ services:
       dockerfile: ./resources/docker/Dockerfile
       args:
         PHP_VERSION: 8.4
-    hostname: rest-api-app-8.4
+    hostname: rest-api-app-84
     container_name: "${PROJECT_NAME}-api-8.4"
     tty: true
     working_dir: /app
@@ -69,6 +71,7 @@ services:
     networks:
       - app-network
     environment:
+      - PHP_IDE_CONFIG=serverName=rest-api-app-83
       - APP_ENV=development
       - APP_ENV_ADAPTER=dotenv
     healthcheck:
