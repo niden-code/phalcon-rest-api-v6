@@ -69,8 +69,7 @@ alias mv='mv -i'
 # untar
 alias untar='tar xvf'
 
-# Zephir related
-PATH=$PATH;./vendor/bin/
+PATH=$PATH:./vendor/bin/
 
 PHP_VERSION=`php -r 'echo PHP_VERSION;'`
 PS1='${debian_chroot:+($debian_chroot)}\u [$PHP_VERSION]@\w\$ '
