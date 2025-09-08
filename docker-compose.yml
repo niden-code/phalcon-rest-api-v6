@@ -94,7 +94,7 @@ services:
 
   app-cache:
     container_name: "${PROJECT_NAME}-cache"
-    image: redis:7-alpine
+    image: redis:8-alpine
     networks:
       - app-network
 
