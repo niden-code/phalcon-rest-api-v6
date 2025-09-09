@@ -32,6 +32,16 @@
     "phpunit/phpunit": "^11.5",
     "squizlabs/php_codesniffer": "^3.13"
   },
+  "autoload": {
+    "psr-4": {
+      "Phalcon\\Api\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Phalcon\\Api\\Tests\\": "tests/"
+    }
+  },
   "config": {
     "preferred-install": "dist",
     "sort-packages": true,
