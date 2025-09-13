@@ -16,6 +16,8 @@ namespace Phalcon\Api\Domain\Services;
 use Phalcon\Api\Action\Hello\GetAction;
 use Phalcon\Api\Domain\Hello\HelloService;
 use Phalcon\Api\Responder\Hello\HelloTextResponder;
+use Phalcon\Api\Responder\HelloJsonResponder;
+use Phalcon\Api\Responder\JsonResponder;
 use Phalcon\Di\Di;
 use Phalcon\Di\Service;
 use Phalcon\Filter\FilterFactory;
@@ -43,9 +45,8 @@ class Container extends Di
     /**
      * Hello
      */
-    public const HELLO_ACTION         = 'hello.action';
     public const HELLO_SERVICE        = 'hello.service';
-    public const HELLO_RESPONDER_TEXT = 'hello.responder.text';
+    public const HELLO_RESPONDER_JSON = 'hello.responder.json';
 
     public function __construct()
     {
@@ -55,9 +56,8 @@ class Container extends Di
             self::RESPONSE => $this->getServiceSimple(Response::class, true),
             self::ROUTER   => $this->getServiceRouter(),
 
-            self::HELLO_ACTION         => $this->getServiceHelloAction(),
             self::HELLO_SERVICE        => $this->getServiceSimple(HelloService::class),
-            self::HELLO_RESPONDER_TEXT => $this->getServiceHelloResponderText(),
+            self::HELLO_RESPONDER_JSON => $this->getServiceResponderJson(),
         ];
 
         parent::__construct();
@@ -94,30 +94,11 @@ class Container extends Di
         );
     }
 
-    private function getServiceHelloAction(): Service
+    private function getServiceResponderJson(): Service
     {
         return new Service(
             [
-                'className' => GetAction::class,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::HELLO_SERVICE,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::HELLO_RESPONDER_TEXT,
-                    ]
-                ]
-            ]
-        );
-    }
-
-    private function getServiceHelloResponderText(): Service
-    {
-        return new Service(
-            [
-                'className' => HelloTextResponder::class,
+                'className' => JsonResponder::class,
                 'arguments' => [
                     [
                         'type' => 'service',

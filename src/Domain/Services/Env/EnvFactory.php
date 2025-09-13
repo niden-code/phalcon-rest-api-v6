@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * This file is part of the Phalcon API.
+ *
+ * (c) Phalcon Team <team@phalcon.io>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+namespace Phalcon\Api\Domain\Services\Env;
+
+use Phalcon\Api\Domain\Exceptions\InvalidConfigurationArgumentException;
+use Phalcon\Api\Domain\Services\Env\Adapters\AdapterInterface;
+use Phalcon\Api\Domain\Services\Env\Adapters\DotEnv;
+
+class EnvFactory
+{
+    protected array $instances = [];
+
+    public function newInstance(string $name, mixed ...$parameters): AdapterInterface
+    {
+        $adapters = $this->getAdapters();
+        if (true !== isset($this->instances[$name])) {
+            if (true !== isset($adapters[$name])) {
+                throw new InvalidConfigurationArgumentException(
+                    'Service ' . $name . ' is not registered'
+                );
+            }
+
+            $definition = $adapters[$name];
+            /** @var AdapterInterface $instance */
+            $instance = new $definition(...$parameters);
+            $this->instances[$name] = $instance;
+        }
+
+        return $this->instances[$name];
+    }
+
+    protected function getAdapters(): array
+    {
+        return [
+            'dotenv' => DotEnv::class,
+        ];
+    }
+}

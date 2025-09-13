@@ -13,12 +13,21 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Hello;
 
+use PayloadInterop\DomainStatus;
+use Phalcon\Api\Domain\Interfaces\DomainInterface;
+use Phalcon\Domain\Payload;
+
 use function date;
 
-final class HelloService
+final class HelloService implements DomainInterface
 {
-    public function __invoke(): string
+    public function __invoke(): Payload
     {
-        return "Hello World!!! - " . date("Y-m-d H:i:s");
+        return new Payload(
+            DomainStatus::SUCCESS,
+            [
+                'results' => "Hello World!!! - " . date("Y-m-d H:i:s")
+            ]
+        );
     }
 }
