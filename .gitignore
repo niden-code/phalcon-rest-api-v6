@@ -1,2 +1,9 @@
-/cache/
-/config/development/
+.cache
+.config
+.local
+.composer
+composer.lock
+vendor/
+.bash_history
+tests/_output
+.env
