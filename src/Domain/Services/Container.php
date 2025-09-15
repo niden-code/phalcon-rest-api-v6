@@ -13,10 +13,7 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Services;
 
-use Phalcon\Api\Action\Hello\GetAction;
 use Phalcon\Api\Domain\Hello\HelloService;
-use Phalcon\Api\Responder\Hello\HelloTextResponder;
-use Phalcon\Api\Responder\HelloJsonResponder;
 use Phalcon\Api\Responder\JsonResponder;
 use Phalcon\Di\Di;
 use Phalcon\Di\Service;
