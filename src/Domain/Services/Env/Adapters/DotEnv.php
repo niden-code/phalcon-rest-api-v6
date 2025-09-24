@@ -16,13 +16,18 @@ namespace Phalcon\Api\Domain\Services\Env\Adapters;
 use Dotenv\Dotenv as ParentDotEnv;
 use Exception;
 use Phalcon\Api\Domain\Exceptions\InvalidConfigurationArgumentException;
+use Phalcon\Api\Domain\Services\Env\EnvManagerTypes;
 
+/**
+ * @phpstan-import-type TDotEnvOptions from EnvManagerTypes
+ * @phpstan-import-type TSettings from EnvManagerTypes
+ */
 class DotEnv implements AdapterInterface
 {
     /**
-     * @param array $options
+     * @param TDotEnvOptions $options
      *
-     * @return array
+     * @return TSettings
      * @throws Exception
      */
     public function load(array $options): array
@@ -39,6 +44,9 @@ class DotEnv implements AdapterInterface
         $dotenv = ParentDotEnv::createImmutable($filePath);
         $dotenv->load();
 
-        return $_ENV;
+        /** @var TSettings $env */
+        $env = $_ENV;
+
+        return $env;
     }
 }

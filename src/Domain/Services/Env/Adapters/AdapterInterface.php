@@ -13,7 +13,18 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Services\Env\Adapters;
 
+use Phalcon\Api\Domain\Services\Env\EnvManagerTypes;
+
+/**
+ * @phpstan-import-type TDotEnvOptions from EnvManagerTypes
+ * @phpstan-import-type TSettings from EnvManagerTypes
+ */
 interface AdapterInterface
 {
+    /**
+     * @param TDotEnvOptions $options
+     *
+     * @return TSettings
+     */
     public function load(array $options): array;
 }
