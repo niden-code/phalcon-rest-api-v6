@@ -7,3 +7,4 @@ vendor/
 .bash_history
 tests/_output
 .env
+storage/logs/
