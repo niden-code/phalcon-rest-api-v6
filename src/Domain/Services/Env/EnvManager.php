@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Services\Env;
 
+use Phalcon\Api\Domain\Constants\Dates;
+
 use function array_merge;
 use function getenv;
 
@@ -29,6 +31,32 @@ class EnvManager
     private static array $settings = [];
 
     /**
+     * @return string
+     */
+    public static function appEnv(): string
+    {
+        self::load();
+
+        /** @var string $appEnv */
+        $appEnv = self::get('APP_ENV', 'development');
+
+        return (string)$appEnv;
+    }
+
+    /**
+     * @return int
+     */
+    public static function appLogLevel(): int
+    {
+        self::load();
+
+        /** @var int|string $logLevel */
+        $logLevel = self::get('APP_LOG_LEVEL', 1);
+
+        return (int)$logLevel;
+    }
+
+    /**
      * @param string $path
      *
      * @return string
@@ -36,8 +64,20 @@ class EnvManager
     public static function appPath(string $path = ''): string
     {
         return dirname(__DIR__, 4)
-            . ($path ? DIRECTORY_SEPARATOR . $path : $path)
-        ;
+            . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+    }
+
+    /**
+     * @return string
+     */
+    public static function appTimezone(): string
+    {
+        self::load();
+
+        /** @var string $logLevel */
+        $timezone = self::get('APP_TIMEZONE', Dates::DATE_TIME_ZONE);
+
+        return (string)$timezone;
     }
 
     /**
@@ -56,6 +96,23 @@ class EnvManager
     }
 
     /**
+     * @return array<string, string>
+     */
+    private static function getOptions(): array
+    {
+        $envs = array_merge(getenv(), $_ENV);
+        /** @var string $adapter */
+        $adapter = $envs['APP_ENV_ADAPTER'] ?? 'dotenv';
+        /** @var string $filePath */
+        $filePath = $envs['APP_ENV_FILE_PATH'] ?? self::appPath();
+
+        return [
+            'adapter'  => $adapter,
+            'filePath' => $filePath,
+        ];
+    }
+
+    /**
      * @return void
      */
     private static function load(): void
@@ -67,16 +124,16 @@ class EnvManager
             $options    = self::getOptions();
             $adapter    = $options['adapter'];
 
-            $envs    = array_merge(getenv(), $_ENV);
+            $envs = array_merge(getenv(), $_ENV);
             /** @var TSettings $options */
             $options = $envFactory->newInstance($adapter)->load($options);
             /** @var TSettings $envs */
-            $envs    = array_merge($envs, $options);
+            $envs = array_merge($envs, $options);
 
             self::$settings = array_map(
                 function ($value) {
                     return match ($value) {
-                        'true' => true,
+                        'true'  => true,
                         'false' => false,
                         default => $value,
                     };
@@ -84,22 +141,5 @@ class EnvManager
                 $envs
             );
         }
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private static function getOptions(): array
-    {
-        $envs     = array_merge(getenv(), $_ENV);
-        /** @var string $adapter */
-        $adapter  = $envs['APP_ENV_ADAPTER'] ?? 'dotenv';
-        /** @var string $filePath */
-        $filePath = $envs['APP_ENV_FILE_PATH'] ?? '';
-
-        return [
-            'adapter'  => $adapter,
-            'filePath' => $filePath,
-        ];
     }
 }
