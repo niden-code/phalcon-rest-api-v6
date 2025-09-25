@@ -16,7 +16,6 @@ namespace Phalcon\Api\Domain\Services\Http;
 use Exception;
 use Phalcon\Api\Domain\Constants\Dates;
 use Phalcon\Http\Response as PhalconResponse;
-
 use Phalcon\Http\Response\Exception as ResponseException;
 
 use function json_encode;

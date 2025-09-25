@@ -22,12 +22,12 @@ use BackedEnum;
  */
 interface RoutesInterface extends BackedEnum
 {
-    public const DELETE = 'delete';
+    public const DELETE       = 'delete';
     public const EVENT_BEFORE = 'before';
     public const EVENT_FINISH = 'finish';
-    public const GET    = 'get';
-    public const POST   = 'post';
-    public const PUT    = 'put';
+    public const GET          = 'get';
+    public const POST         = 'post';
+    public const PUT          = 'put';
 
 
     /**
