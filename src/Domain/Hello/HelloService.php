@@ -26,7 +26,7 @@ final class HelloService implements DomainInterface
         return new Payload(
             DomainStatus::SUCCESS,
             [
-                'results' => "Hello World!!! - " . date("Y-m-d H:i:s")
+                'results' => "Hello World!!! - " . date("Y-m-d H:i:s"),
             ]
         );
     }

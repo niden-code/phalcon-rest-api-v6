@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Exceptions;
 
-class InvalidConfigurationArgumentException extends \InvalidArgumentException
+use InvalidArgumentException;
+
+class InvalidConfigurationArgumentException extends InvalidArgumentException
 {
 }

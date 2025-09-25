@@ -13,25 +13,14 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Services\Env;
 
-use Phalcon\Api\Domain\Exceptions\InvalidConfigurationArgumentException;
-use Phalcon\Api\Domain\Services\Env\Adapters\DotEnv;
-use Phalcon\Api\Domain\Services\Env\EnvFactory;
 use Phalcon\Api\Domain\Services\Env\EnvManager;
 use Phalcon\Api\Tests\Unit\AbstractUnitTestCase;
-use Phalcon\Container\Lazy\Env;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 use ReflectionClass;
 
 #[BackupGlobals(true)]
 final class EnvManagerTest extends AbstractUnitTestCase
 {
-    protected function setUp(): void
-    {
-        $ref = new ReflectionClass(EnvManager::class);
-        $ref->setStaticPropertyValue('isLoaded', false);
-        $ref->setStaticPropertyValue('settings', []);
-    }
-
     public function testAppPathReturnsRoot(): void
     {
         $expected = dirname(__DIR__, 5);
@@ -44,7 +33,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
         $_ENV = [
             'APP_ENV_ADAPTER'   => 'dotenv',
             'APP_ENV_FILE_PATH' => EnvManager::appPath()
-                . '/tests/Fixtures/Domain/Services/Env/'
+                . '/tests/Fixtures/Domain/Services/Env/',
         ];
 
         $values = [
@@ -73,5 +62,12 @@ final class EnvManagerTest extends AbstractUnitTestCase
         $expected = $values['SAMPLE_FALSE'];
         $actual   = EnvManager::get('SAMPLE_FALSE');
         $this->assertSame($expected, $actual);
+    }
+
+    protected function setUp(): void
+    {
+        $ref = new ReflectionClass(EnvManager::class);
+        $ref->setStaticPropertyValue('isLoaded', false);
+        $ref->setStaticPropertyValue('settings', []);
     }
 }

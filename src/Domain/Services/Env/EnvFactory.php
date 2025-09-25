@@ -36,7 +36,7 @@ class EnvFactory
 
             $definition = $adapters[$name];
             /** @var AdapterInterface $instance */
-            $instance = new $definition(...$parameters);
+            $instance               = new $definition(...$parameters);
             $this->instances[$name] = $instance;
         }
 
