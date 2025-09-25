@@ -13,15 +13,28 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Middleware;
 
-use Phalcon\Api\Domain\Interfaces\ActionInterface;
-use Phalcon\Api\Domain\Interfaces\DomainInterface;
-use Phalcon\Api\Domain\Interfaces\ResponderInterface;
-use Phalcon\Http\ResponseInterface;
+use Phalcon\Api\Domain\Services\Container;
+use Phalcon\Api\Domain\Services\Http\Response;
+use Phalcon\Events\Exception as EventsException;
+use Phalcon\Http\Response\Exception;
+use Phalcon\Mvc\Micro;
 
-final readonly class ResponseSender
+final class ResponseSenderMiddleware extends AbstractMiddleware
 {
-    public function __invoke(ResponseInterface $response): ResponseInterface
+    /**
+     * @param Micro $application
+     *
+     * @return true
+     * @throws EventsException
+     * @throws Exception
+     */
+    public function call(Micro $application): bool
     {
-        return $response->send();
+        /** @var Response $response */
+        $response = $application->getSharedService(Container::RESPONSE);
+
+        $response->send();
+
+        return true;
     }
 }
