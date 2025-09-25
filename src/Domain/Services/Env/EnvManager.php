@@ -74,7 +74,7 @@ class EnvManager
     {
         self::load();
 
-        /** @var string $logLevel */
+        /** @var string $timezone */
         $timezone = self::get('APP_TIMEZONE', Dates::DATE_TIME_ZONE);
 
         return (string)$timezone;
