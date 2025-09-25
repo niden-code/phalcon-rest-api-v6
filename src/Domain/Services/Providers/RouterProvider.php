@@ -22,6 +22,7 @@ use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Mvc\Micro;
+use Phalcon\Mvc\Micro\Collection;
 
 /**
  * @phpstan-import-type TMiddleware from RoutesInterface
@@ -58,6 +59,7 @@ class RouterProvider implements ServiceProviderInterface
         /** @var TMiddleware $middleware */
         $middleware = RoutesEnum::middleware();
         foreach ($middleware as $service => $method) {
+            /** @var Micro\MiddlewareInterface $instance */
             $instance = $application->getService($service);
             $eventsManager->attach('micro', $instance);
             $application->$method($instance);
@@ -76,11 +78,10 @@ class RouterProvider implements ServiceProviderInterface
         /** @var ResponderInterface $responder */
         $responder = $application->getService(Container::RESPONDER_JSON);
 
-        /** @var array<RoutesInterface> $routes */
         $routes = RoutesEnum::cases();
         foreach ($routes as $route) {
             $serviceName = $route->service();
-            $collection  = new Micro\Collection();
+            $collection  = new Collection();
             /** @var DomainInterface $service */
             $service = $application->getService($serviceName);
             $action  = new ActionHandler($service, $responder);
