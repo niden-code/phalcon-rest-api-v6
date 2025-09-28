@@ -21,9 +21,15 @@ use Phalcon\Http\Response\Exception as ResponseException;
 use function json_encode;
 use function sha1;
 
+/**
+ * @phpstan-import-type TData from ResponseTypes
+ * @phpstan-import-type TErrors from ResponseTypes
+ * @phpstan-import-type TResponsePayload from ResponseTypes
+ */
 class Response extends PhalconResponse
 {
-    private array $payload = [];
+    /** @var TResponsePayload */
+    private array $payload;
 
     /**
      * @return $this
@@ -54,7 +60,7 @@ class Response extends PhalconResponse
     }
 
     /**
-     * @param array $data
+     * @param TData $data
      *
      * @return $this
      * @throws Exception
@@ -71,7 +77,7 @@ class Response extends PhalconResponse
     }
 
     /**
-     * @param array $errors
+     * @param TErrors $errors
      *
      * @return $this
      */

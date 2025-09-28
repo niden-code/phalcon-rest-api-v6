@@ -15,11 +15,29 @@ namespace Phalcon\Api\Domain\Middleware;
 
 use Phalcon\Api\Domain\Services\Container;
 use Phalcon\Api\Domain\Services\Http\Response;
+use Phalcon\Api\Domain\Services\Http\ResponseTypes;
+use Phalcon\Events\Exception as EventsException;
+use Phalcon\Http\Response\Exception as ResponseException;
 use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
 
+/**
+ * @phpstan-import-type TData from ResponseTypes
+ * @phpstan-import-type TErrors from ResponseTypes
+ */
 abstract class AbstractMiddleware implements MiddlewareInterface
 {
+    /**
+     * @param Micro   $application
+     * @param int     $code
+     * @param string  $message
+     * @param TData   $data
+     * @param TErrors $errors
+     *
+     * @return void
+     * @throws EventsException
+     * @throws ResponseException
+     */
     protected function halt(
         Micro $application,
         int $code,

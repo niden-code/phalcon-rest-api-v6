@@ -11,9 +11,8 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Responder;
+namespace Phalcon\Api\Domain\ADR\Responder;
 
-use Phalcon\Api\Domain\Interfaces\ResponderInterface;
 use Phalcon\Api\Domain\Services\Http\Response;
 use Phalcon\Domain\Payload;
 

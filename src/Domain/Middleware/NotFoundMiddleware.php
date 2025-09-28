@@ -21,6 +21,14 @@ use Phalcon\Mvc\Micro;
 
 final class NotFoundMiddleware extends AbstractMiddleware
 {
+    /**
+     * @param Event $event
+     * @param Micro $application
+     *
+     * @return bool
+     * @throws EventsException
+     * @throws Exception
+     */
     public function beforeNotFound(Event $event, Micro $application): bool
     {
         $this->halt(
@@ -28,7 +36,7 @@ final class NotFoundMiddleware extends AbstractMiddleware
             HttpCodesEnum::NotFound->value,
             'error',
             [],
-            HttpCodesEnum::AppResourceNotFound->error()
+            [HttpCodesEnum::AppResourceNotFound->error()]
         );
 
         return false;
@@ -38,8 +46,6 @@ final class NotFoundMiddleware extends AbstractMiddleware
      * @param Micro $application
      *
      * @return true
-     * @throws EventsException
-     * @throws Exception
      */
     public function call(Micro $application): bool
     {

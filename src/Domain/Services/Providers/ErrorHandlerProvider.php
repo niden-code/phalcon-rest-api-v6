@@ -31,6 +31,7 @@ class ErrorHandlerProvider implements ServiceProviderInterface
 {
     public function register(DiInterface $container): void
     {
+        /** @var Logger $logger */
         $logger = $container->getShared(Container::LOGGER);
 
         date_default_timezone_set(EnvManager::appTimezone());

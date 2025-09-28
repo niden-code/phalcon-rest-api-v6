@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Services\Providers;
 
-use Phalcon\Api\Domain\Interfaces\DomainInterface;
-use Phalcon\Api\Domain\Interfaces\ResponderInterface;
+use Phalcon\Api\Domain\ADR\Action\ActionHandler;
+use Phalcon\Api\Domain\ADR\Domain\DomainInterface;
+use Phalcon\Api\Domain\ADR\Responder\ResponderInterface;
 use Phalcon\Api\Domain\Interfaces\RoutesInterface;
-use Phalcon\Api\Domain\Services\ActionHandler;
 use Phalcon\Api\Domain\Services\Container;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;

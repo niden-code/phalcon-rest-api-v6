@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Services;
 
+use Phalcon\Api\Domain\ADR\Responder\JsonResponder;
 use Phalcon\Api\Domain\Health\HealthService;
 use Phalcon\Api\Domain\Hello\HelloService;
 use Phalcon\Api\Domain\Middleware\HealthMiddleware;
@@ -20,7 +21,6 @@ use Phalcon\Api\Domain\Middleware\NotFoundMiddleware;
 use Phalcon\Api\Domain\Middleware\ResponseSenderMiddleware;
 use Phalcon\Api\Domain\Services\Env\EnvManager;
 use Phalcon\Api\Domain\Services\Http\Response;
-use Phalcon\Api\Responder\JsonResponder;
 use Phalcon\Di\Di;
 use Phalcon\Di\Service;
 use Phalcon\Events\Manager as EventsManager;

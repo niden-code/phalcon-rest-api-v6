@@ -14,7 +14,8 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Hello;
 
 use PayloadInterop\DomainStatus;
-use Phalcon\Api\Domain\Interfaces\DomainInterface;
+use Phalcon\Api\Domain\ADR\Domain\DomainInterface;
+use Phalcon\Api\Domain\Constants\Dates;
 use Phalcon\Domain\Payload;
 
 use function date;
@@ -26,7 +27,7 @@ final class HelloService implements DomainInterface
         return new Payload(
             DomainStatus::SUCCESS,
             [
-                'results' => "Hello World!!! - " . date("Y-m-d H:i:s"),
+                'results' => "Hello World!!! - " . date(Dates::DATE_TIME_FORMAT),
             ]
         );
     }

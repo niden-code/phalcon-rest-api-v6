@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Interfaces;
+namespace Phalcon\Api\Domain\ADR\Action;
 
 interface ActionInterface
 {

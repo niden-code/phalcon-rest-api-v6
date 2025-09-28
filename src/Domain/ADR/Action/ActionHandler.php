@@ -11,11 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Services;
+namespace Phalcon\Api\Domain\ADR\Action;
 
-use Phalcon\Api\Domain\Interfaces\ActionInterface;
-use Phalcon\Api\Domain\Interfaces\DomainInterface;
-use Phalcon\Api\Domain\Interfaces\ResponderInterface;
+use Phalcon\Api\Domain\ADR\Domain\DomainInterface;
+use Phalcon\Api\Domain\ADR\Responder\ResponderInterface;
 
 final readonly class ActionHandler implements ActionInterface
 {
