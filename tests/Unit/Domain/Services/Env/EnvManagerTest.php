@@ -21,10 +21,58 @@ use ReflectionClass;
 #[BackupGlobals(true)]
 final class EnvManagerTest extends AbstractUnitTestCase
 {
+    public function testAppEnvReturnsDefault(): void
+    {
+        $expected = 'development';
+        $actual   = EnvManager::appEnv();
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAppEnvReturnsValue(): void
+    {
+        $_ENV = ['APP_ENV' => 'production'];
+
+        $expected = 'production';
+        $actual   = EnvManager::appEnv();
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAppLogLevelReturnsDefault(): void
+    {
+        $expected = 1;
+        $actual   = EnvManager::appLogLevel();
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAppLogLevelReturnsValue(): void
+    {
+        $_ENV = ['APP_LOG_LEVEL' => 5];
+
+        $expected = 5;
+        $actual   = EnvManager::appLogLevel();
+        $this->assertSame($expected, $actual);
+    }
+
     public function testAppPathReturnsRoot(): void
     {
         $expected = dirname(__DIR__, 5);
         $actual   = EnvManager::appPath();
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAppTimezoneReturnsDefault(): void
+    {
+        $expected = 'UTC';
+        $actual   = EnvManager::appTimezone();
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAppTimezoneReturnsValue(): void
+    {
+        $_ENV = ['APP_TIMEZONE' => 'America/Los_Angeles'];
+
+        $expected = 'America/Los_Angeles';
+        $actual   = EnvManager::appTimezone();
         $this->assertSame($expected, $actual);
     }
 
