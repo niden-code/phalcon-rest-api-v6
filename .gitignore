@@ -1,9 +1,10 @@
+.bash_history
 .cache
 .config
-.local
-.composer
+.composer/
 composer.lock
-vendor/
-.bash_history
-tests/_output
 .env
+.local
+storage/logs/
+tests/_output
+vendor/

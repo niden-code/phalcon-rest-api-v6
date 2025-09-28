@@ -15,7 +15,6 @@ namespace Phalcon\Api\Tests\Unit\Domain\Services\Env\Adapters;
 
 use Phalcon\Api\Domain\Exceptions\InvalidConfigurationArgumentException;
 use Phalcon\Api\Domain\Services\Env\Adapters\DotEnv;
-use Phalcon\Api\Domain\Services\Env\EnvFactory;
 use Phalcon\Api\Domain\Services\Env\EnvManager;
 use Phalcon\Api\Tests\Unit\AbstractUnitTestCase;
 
@@ -23,16 +22,39 @@ final class DotEnvTest extends AbstractUnitTestCase
 {
     private string $envFile;
 
-    protected function setUp(): void
+    public function testLoadExceptionForEmptyFilePath(): void
     {
-        $this->envFile = EnvManager::appPath()
-            . '/tests/Fixtures/Domain/Services/Env/'
-        ;
+        $this->expectException(InvalidConfigurationArgumentException::class);
+        $this->expectExceptionMessage(
+            'The .env file does not exist at the specified path'
+        );
+
+        $dotEnv  = new DotEnv();
+        $options = [
+            'filePath' => '',
+        ];
+
+        $dotEnv->load($options);
+    }
+
+    public function testLoadExceptionForMissingFile(): void
+    {
+        $this->expectException(InvalidConfigurationArgumentException::class);
+        $this->expectExceptionMessage(
+            'The .env file does not exist at the specified path'
+        );
+
+        $dotEnv  = new DotEnv();
+        $options = [
+            'filePath' => '/does/not/exist/',
+        ];
+
+        $dotEnv->load($options);
     }
 
     public function testLoadSuccess(): void
     {
-        $dotEnv = new DotEnv();
+        $dotEnv  = new DotEnv();
         $options = [
             'filePath' => $this->envFile,
         ];
@@ -43,7 +65,7 @@ final class DotEnvTest extends AbstractUnitTestCase
             'SAMPLE_TRUE'   => 'true',
             'SAMPLE_FALSE'  => 'false',
         ];
-        $actual = $dotEnv->load($options);
+        $actual   = $dotEnv->load($options);
 
         $this->assertArrayHasKey('SAMPLE_STRING', $actual);
         $this->assertArrayHasKey('SAMPLE_INT', $actual);
@@ -60,33 +82,9 @@ final class DotEnvTest extends AbstractUnitTestCase
         $this->assertSame($expected, $actualArray);
     }
 
-    public function testLoadExceptionForEmptyFilePath(): void
+    protected function setUp(): void
     {
-        $this->expectException(InvalidConfigurationArgumentException::class);
-        $this->expectExceptionMessage(
-            'The .env file does not exist at the specified path'
-        );
-
-        $dotEnv = new DotEnv();
-        $options = [
-            'filePath' => '',
-        ];
-
-        $dotEnv->load($options);
-    }
-
-    public function testLoadExceptionForMissingFile(): void
-    {
-        $this->expectException(InvalidConfigurationArgumentException::class);
-        $this->expectExceptionMessage(
-            'The .env file does not exist at the specified path'
-        );
-
-        $dotEnv = new DotEnv();
-        $options = [
-            'filePath' => '/does/not/exist/',
-        ];
-
-        $dotEnv->load($options);
+        $this->envFile = EnvManager::appPath()
+            . '/tests/Fixtures/Domain/Services/Env/';
     }
 }

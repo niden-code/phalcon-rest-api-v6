@@ -19,6 +19,9 @@ use Phalcon\Api\Domain\Services\Env\Adapters\DotEnv;
 
 class EnvFactory
 {
+    /**
+     * @var array<string, AdapterInterface>
+     */
     protected array $instances = [];
 
     public function newInstance(string $name, mixed ...$parameters): AdapterInterface
@@ -33,13 +36,16 @@ class EnvFactory
 
             $definition = $adapters[$name];
             /** @var AdapterInterface $instance */
-            $instance = new $definition(...$parameters);
+            $instance               = new $definition(...$parameters);
             $this->instances[$name] = $instance;
         }
 
         return $this->instances[$name];
     }
 
+    /**
+     * @return array<string, class-string>
+     */
     protected function getAdapters(): array
     {
         return [

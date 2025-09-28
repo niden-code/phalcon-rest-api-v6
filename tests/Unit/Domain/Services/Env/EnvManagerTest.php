@@ -13,23 +13,44 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Services\Env;
 
-use Phalcon\Api\Domain\Exceptions\InvalidConfigurationArgumentException;
-use Phalcon\Api\Domain\Services\Env\Adapters\DotEnv;
-use Phalcon\Api\Domain\Services\Env\EnvFactory;
 use Phalcon\Api\Domain\Services\Env\EnvManager;
 use Phalcon\Api\Tests\Unit\AbstractUnitTestCase;
-use Phalcon\Container\Lazy\Env;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 use ReflectionClass;
 
 #[BackupGlobals(true)]
 final class EnvManagerTest extends AbstractUnitTestCase
 {
-    protected function setUp(): void
+    public function testAppEnvReturnsDefault(): void
     {
-        $ref = new ReflectionClass(EnvManager::class);
-        $ref->setStaticPropertyValue('isLoaded', false);
-        $ref->setStaticPropertyValue('settings', []);
+        $expected = 'development';
+        $actual   = EnvManager::appEnv();
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAppEnvReturnsValue(): void
+    {
+        $_ENV = ['APP_ENV' => 'production'];
+
+        $expected = 'production';
+        $actual   = EnvManager::appEnv();
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAppLogLevelReturnsDefault(): void
+    {
+        $expected = 1;
+        $actual   = EnvManager::appLogLevel();
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAppLogLevelReturnsValue(): void
+    {
+        $_ENV = ['APP_LOG_LEVEL' => 5];
+
+        $expected = 5;
+        $actual   = EnvManager::appLogLevel();
+        $this->assertSame($expected, $actual);
     }
 
     public function testAppPathReturnsRoot(): void
@@ -39,12 +60,28 @@ final class EnvManagerTest extends AbstractUnitTestCase
         $this->assertSame($expected, $actual);
     }
 
+    public function testAppTimezoneReturnsDefault(): void
+    {
+        $expected = 'UTC';
+        $actual   = EnvManager::appTimezone();
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAppTimezoneReturnsValue(): void
+    {
+        $_ENV = ['APP_TIMEZONE' => 'America/Los_Angeles'];
+
+        $expected = 'America/Los_Angeles';
+        $actual   = EnvManager::appTimezone();
+        $this->assertSame($expected, $actual);
+    }
+
     public function testGetFromDotEnvLoad(): void
     {
         $_ENV = [
             'APP_ENV_ADAPTER'   => 'dotenv',
             'APP_ENV_FILE_PATH' => EnvManager::appPath()
-                . '/tests/Fixtures/Domain/Services/Env/'
+                . '/tests/Fixtures/Domain/Services/Env/',
         ];
 
         $values = [
@@ -73,5 +110,12 @@ final class EnvManagerTest extends AbstractUnitTestCase
         $expected = $values['SAMPLE_FALSE'];
         $actual   = EnvManager::get('SAMPLE_FALSE');
         $this->assertSame($expected, $actual);
+    }
+
+    protected function setUp(): void
+    {
+        $ref = new ReflectionClass(EnvManager::class);
+        $ref->setStaticPropertyValue('isLoaded', false);
+        $ref->setStaticPropertyValue('settings', []);
     }
 }

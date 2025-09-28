@@ -18,6 +18,18 @@ use PHPUnit\Framework\TestCase;
 abstract class AbstractUnitTestCase extends TestCase
 {
     /**
+     * @param string $fileName
+     * @param string $stream
+     *
+     * @return void
+     */
+    public function assertFileContentsContains(string $fileName, string $stream): void
+    {
+        $contents = file_get_contents($fileName);
+        $this->assertStringContainsString($stream, $contents);
+    }
+
+    /**
      * Return a long series of strings to be used as a password
      *
      * @return string

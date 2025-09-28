@@ -11,12 +11,11 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Interfaces;
+namespace Phalcon\Api\Domain\ADR\Domain;
 
 use Phalcon\Domain\Payload;
-use Phalcon\Http\ResponseInterface;
 
-interface ResponderInterface
+interface DomainInterface
 {
-    public function __invoke(Payload $payload): ResponseInterface;
+    public function __invoke(): Payload;
 }
