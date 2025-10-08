@@ -44,22 +44,12 @@ class Container extends Di
     public const EVENTS_MANAGER = 'eventsManager';
     /** @var string */
     public const FILTER = 'filter';
-    /** @var string */
-    public const LOGGER = 'logger';
-    /** @var string */
-    public const REQUEST = 'request';
-    /** @var string */
-    public const RESPONSE = 'response';
-    /** @var string */
-    public const ROUTER = 'router';
-    /** @var string */
-    public const TIME = 'time';
-
     /**
      * Services
      */
     public const HELLO_SERVICE    = HelloService::class;
-    public const USER_GET_SERVICE = 'service.user.get';
+    /** @var string */
+    public const LOGGER = 'logger';
     /**
      * Middleware
      */
@@ -70,10 +60,19 @@ class Container extends Di
      * Repositories
      */
     public const REPOSITORY_USER = 'repository.user';
+    /** @var string */
+    public const REQUEST = 'request';
     /**
      * Responders
      */
     public const RESPONDER_JSON = JsonResponder::class;
+    /** @var string */
+    public const RESPONSE = 'response';
+    /** @var string */
+    public const ROUTER = 'router';
+    /** @var string */
+    public const TIME = 'time';
+    public const USER_GET_SERVICE = 'service.user.get';
 
     public function __construct()
     {
@@ -101,18 +100,18 @@ class Container extends Di
         return new Service(
             function () {
                 /** @var string $dbName */
-                $dbName = EnvManager::get('DB_NAME','phalcon');
+                $dbName = EnvManager::get('DB_NAME', 'phalcon');
                 /** @var string $host */
-                $host   = EnvManager::get('DB_HOST','rest-db');
+                $host = EnvManager::get('DB_HOST', 'rest-db');
                 /** @var string $password */
-                $password = EnvManager::get('DB_PASS','secret');
-                $port = (int)EnvManager::get('DB_PORT',3306);
+                $password = EnvManager::get('DB_PASS', 'secret');
+                $port     = (int)EnvManager::get('DB_PORT', 3306);
                 /** @var string $username */
-                $username = EnvManager::get('DB_USER','root');
+                $username = EnvManager::get('DB_USER', 'root');
                 /** @var string $encoding */
-                $encoding = EnvManager::get('DB_CHARSET','utf8');
+                $encoding = EnvManager::get('DB_CHARSET', 'utf8');
                 $queries  = ['SET NAMES utf8mb4'];
-                $dsn = sprintf(
+                $dsn      = sprintf(
                     'mysql:host=%s;port=%s;dbname=%s;charset=%s',
                     $host,
                     $port,

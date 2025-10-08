@@ -26,7 +26,7 @@ use Phalcon\Api\Domain\Exceptions\InvalidConfigurationArgumentException;
  */
 final class UserTransport
 {
-    /** @var TUserTransport  */
+    /** @var TUserTransport */
     private array $store;
 
     /**

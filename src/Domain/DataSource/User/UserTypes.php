@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\DataSource\User;
 
-
 /**
  * @phpstan-type TUserRecord array{}|array{
  *     usr_id: int,

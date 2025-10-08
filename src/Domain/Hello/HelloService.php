@@ -37,7 +37,7 @@ final class HelloService implements DomainInterface
             DomainStatus::SUCCESS,
             [
                 'results' => [
-                    "Hello World!!! - " . date(Dates::DATE_TIME_FORMAT)
+                    "Hello World!!! - " . date(Dates::DATE_TIME_FORMAT),
                 ],
             ]
         );

@@ -76,30 +76,6 @@ final class UserServiceTest extends AbstractUnitTestCase
         $this->assertStringContainsString($expected, $actual);
     }
 
-    public function testServiceWrongUserId(): void
-    {
-        $container = new Container();
-        /** @var UserGetService $service */
-        $service = $container->get(Container::USER_GET_SERVICE);
-
-        $payload = $service->__invoke(
-            [
-                'userId' => 999999
-            ]
-        );
-
-        $expected = DomainStatus::NOT_FOUND;
-        $actual   = $payload->getStatus();
-        $this->assertSame($expected, $actual);
-
-        $actual = $payload->getResult();
-        $this->assertArrayHasKey('results', $actual);
-
-        $expected = 'Record(s) not found';
-        $actual   = $actual['results'][0];
-        $this->assertStringContainsString($expected, $actual);
-    }
-
     public function testServiceWithUserId(): void
     {
         $container = new Container();
@@ -115,7 +91,7 @@ final class UserServiceTest extends AbstractUnitTestCase
 
         $payload = $service->__invoke(
             [
-                'userId' => $userId
+                'userId' => $userId,
             ]
         );
 
@@ -145,5 +121,29 @@ final class UserServiceTest extends AbstractUnitTestCase
         $expected = $dbUser['usr_password'];
         $actual   = $user['password'];
         $this->assertSame($expected, $actual);
+    }
+
+    public function testServiceWrongUserId(): void
+    {
+        $container = new Container();
+        /** @var UserGetService $service */
+        $service = $container->get(Container::USER_GET_SERVICE);
+
+        $payload = $service->__invoke(
+            [
+                'userId' => 999999,
+            ]
+        );
+
+        $expected = DomainStatus::NOT_FOUND;
+        $actual   = $payload->getStatus();
+        $this->assertSame($expected, $actual);
+
+        $actual = $payload->getResult();
+        $this->assertArrayHasKey('results', $actual);
+
+        $expected = 'Record(s) not found';
+        $actual   = $actual['results'][0];
+        $this->assertStringContainsString($expected, $actual);
     }
 }

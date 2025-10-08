@@ -25,7 +25,7 @@ final class UsersMigration extends AbstractMigration
         ?string $username = null,
         ?string $password = null,
     ) {
-        $id = $id ?: 'null';
+        $id  = $id ?: 'null';
         $sql = <<<SQL
 INSERT INTO {$this->table} ( 
     usr_id, usr_status_flag, usr_username, usr_password
