@@ -13,14 +13,12 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\ADR\Responder;
 
-use Phalcon\Api\Domain\Services\Http\Response;
-use Phalcon\Domain\Payload;
-use Phalcon\Http\ResponseInterface;
-
-interface ResponderInterface
+/**
+ * @phpstan-type TResultItem array<array-key, bool|int|string>
+ * @phpstan-type TResult array{
+ *     result: array<array-key, bool|int|string|TResultItem>
+ * }
+ */
+final class ResponderTypes
 {
-    public function __invoke(
-        Response $response,
-        Payload $payload
-    ): ResponseInterface;
 }

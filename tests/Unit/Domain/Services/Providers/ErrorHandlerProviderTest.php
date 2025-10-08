@@ -16,7 +16,7 @@ namespace Phalcon\Api\Tests\Unit\Domain\Services\Providers;
 use Phalcon\Api\Domain\Services\Container;
 use Phalcon\Api\Domain\Services\Env\EnvManager;
 use Phalcon\Api\Domain\Services\Providers\ErrorHandlerProvider;
-use Phalcon\Api\Tests\Unit\AbstractUnitTestCase;
+use Phalcon\Api\Tests\AbstractUnitTestCase;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 use ReflectionClass;
 

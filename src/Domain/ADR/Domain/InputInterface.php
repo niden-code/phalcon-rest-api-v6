@@ -13,18 +13,17 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\ADR\Domain;
 
-use Phalcon\Domain\Payload;
+use Phalcon\Http\Request;
 
 /**
- * @phpstan-import-type THelloInput from InputTypes
- * @phpstan-import-type TUserInput from InputTypes
+ * @phpstan-import-type TRequestQuery from InputTypes
  */
-interface DomainInterface
+interface InputInterface
 {
     /**
-     * @param THelloInput|TUserInput $input
+     * @param Request $request
      *
-     * @return Payload
+     * @return TRequestQuery
      */
-    public function __invoke(array $input): Payload;
+    public function __invoke(Request $request): array;
 }

@@ -16,7 +16,7 @@ namespace Phalcon\Api\Tests\Unit\Domain\Middleware;
 use Phalcon\Api\Domain\Middleware\NotFoundMiddleware;
 use Phalcon\Api\Domain\Services\Container;
 use Phalcon\Api\Domain\Services\Http\HttpCodesEnum;
-use Phalcon\Api\Tests\Unit\AbstractUnitTestCase;
+use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Events\Event;
 use Phalcon\Mvc\Micro;
 use PHPUnit\Framework\Attributes\BackupGlobals;

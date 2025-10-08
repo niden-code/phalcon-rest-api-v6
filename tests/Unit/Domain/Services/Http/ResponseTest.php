@@ -15,7 +15,7 @@ namespace Phalcon\Api\Tests\Unit\Domain\Services\Http;
 
 use Phalcon\Api\Domain\Services\Container;
 use Phalcon\Api\Domain\Services\Http\Response;
-use Phalcon\Api\Tests\Unit\AbstractUnitTestCase;
+use Phalcon\Api\Tests\AbstractUnitTestCase;
 
 use function ob_get_clean;
 use function ob_start;
