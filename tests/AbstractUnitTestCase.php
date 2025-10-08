@@ -104,21 +104,20 @@ abstract class AbstractUnitTestCase extends TestCase
         string $table,
         array $criteria
     ): array {
-        $sql   = 'SELECT * FROM ' . $table . ' WHERE ';
-        $where = [];
+        $where  = [];
+        $params = [];
         foreach ($criteria as $key => $value) {
-            $val = $value;
-            if (true === is_string($value)) {
-                $val = '"' . $value . '"';
-            }
-
-            $where[] = $key . ' = ' . $val;
+            $param          = ':' . $key;
+            $where[]        = $key . ' = ' . $param;
+            $params[$param] = $value;
         }
-
-        $sql .= implode(' AND ', $where);
-
-        $result  = $this->connection?->query($sql);
-        $records = $result?->fetchAll(PDO::FETCH_ASSOC);
+        $sql = 'SELECT * FROM ' . $table;
+        if (!empty($where)) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+        $stmt = $this->connection?->prepare($sql);
+        $stmt?->execute($params);
+        $records = $stmt?->fetchAll(PDO::FETCH_ASSOC);
 
         return $records;
     }

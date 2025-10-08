@@ -25,16 +25,19 @@ final class UsersMigration extends AbstractMigration
         ?string $username = null,
         ?string $password = null,
     ) {
-        $id  = $id ?: 'null';
-        $sql = <<<SQL
-INSERT INTO {$this->table} ( 
-    usr_id, usr_status_flag, usr_username, usr_password
-) VALUES (
-    $id, $status, '$username', '$password'
-)
-SQL;
-
-        $result = $this->connection->exec($sql);
+        $sql    = "INSERT INTO {$this->table} (
+            usr_id, usr_status_flag, usr_username, usr_password
+        ) VALUES (
+            :id, :status, :username, :password
+        )";
+        $stmt   = $this->connection->prepare($sql);
+        $params = [
+            ':id'       => $id,
+            ':status'   => $status,
+            ':username' => $username,
+            ':password' => $password,
+        ];
+        $result = $stmt->execute($params);
         if (!$result) {
             Assert::fail(
                 "Failed to insert id [#$id] into table [$this->table]"
