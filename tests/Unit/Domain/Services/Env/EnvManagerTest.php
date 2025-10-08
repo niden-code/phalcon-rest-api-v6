@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Services\Env;
 
 use Phalcon\Api\Domain\Services\Env\EnvManager;
-use Phalcon\Api\Tests\Unit\AbstractUnitTestCase;
+use Phalcon\Api\Tests\AbstractUnitTestCase;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 use ReflectionClass;
 

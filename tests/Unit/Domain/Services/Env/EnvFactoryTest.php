@@ -16,7 +16,7 @@ namespace Phalcon\Api\Tests\Unit\Domain\Services\Env;
 use Phalcon\Api\Domain\Exceptions\InvalidConfigurationArgumentException;
 use Phalcon\Api\Domain\Services\Env\Adapters\DotEnv;
 use Phalcon\Api\Domain\Services\Env\EnvFactory;
-use Phalcon\Api\Tests\Unit\AbstractUnitTestCase;
+use Phalcon\Api\Tests\AbstractUnitTestCase;
 
 final class EnvFactoryTest extends AbstractUnitTestCase
 {

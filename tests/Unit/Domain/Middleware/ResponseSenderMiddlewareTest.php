@@ -16,7 +16,7 @@ namespace Phalcon\Api\Tests\Unit\Domain\Middleware;
 use Phalcon\Api\Domain\Middleware\ResponseSenderMiddleware;
 use Phalcon\Api\Domain\Services\Container;
 use Phalcon\Api\Domain\Services\Http\Response;
-use Phalcon\Api\Tests\Unit\AbstractUnitTestCase;
+use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Mvc\Micro;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 

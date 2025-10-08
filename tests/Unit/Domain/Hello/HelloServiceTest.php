@@ -17,7 +17,7 @@ use PayloadInterop\DomainStatus;
 use Phalcon\Api\Domain\Hello\HelloService;
 use Phalcon\Api\Domain\Services\Container;
 use Phalcon\Api\Domain\Services\Env\EnvManager;
-use Phalcon\Api\Tests\Unit\AbstractUnitTestCase;
+use Phalcon\Api\Tests\AbstractUnitTestCase;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 
 use function ob_get_clean;
@@ -66,7 +66,7 @@ final class HelloServiceTest extends AbstractUnitTestCase
         /** @var HelloService $service */
         $service = $container->get(Container::HELLO_SERVICE);
 
-        $payload = $service->__invoke();
+        $payload = $service->__invoke([]);
 
         $expected = DomainStatus::SUCCESS;
         $actual   = $payload->getStatus();
@@ -76,7 +76,7 @@ final class HelloServiceTest extends AbstractUnitTestCase
         $this->assertArrayHasKey('results', $actual);
 
         $expected = 'Hello World!!! - ';
-        $actual   = $actual['results'];
+        $actual   = $actual['results'][0];
         $this->assertStringContainsString($expected, $actual);
     }
 }

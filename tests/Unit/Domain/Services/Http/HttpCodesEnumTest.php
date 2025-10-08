@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Services\Http;
 
 use Phalcon\Api\Domain\Services\Http\HttpCodesEnum;
-use Phalcon\Api\Tests\Unit\AbstractUnitTestCase;
+use Phalcon\Api\Tests\AbstractUnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class HttpCodesEnumTest extends AbstractUnitTestCase
