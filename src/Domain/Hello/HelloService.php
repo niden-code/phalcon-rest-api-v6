@@ -15,19 +15,30 @@ namespace Phalcon\Api\Domain\Hello;
 
 use PayloadInterop\DomainStatus;
 use Phalcon\Api\Domain\ADR\Domain\DomainInterface;
+use Phalcon\Api\Domain\ADR\Domain\InputTypes;
 use Phalcon\Api\Domain\Constants\Dates;
 use Phalcon\Domain\Payload;
 
 use function date;
 
+/**
+ * @phpstan-import-type THelloInput from InputTypes
+ */
 final class HelloService implements DomainInterface
 {
-    public function __invoke(): Payload
+    /**
+     * @param THelloInput $input
+     *
+     * @return Payload
+     */
+    public function __invoke(array $input): Payload
     {
         return new Payload(
             DomainStatus::SUCCESS,
             [
-                'results' => "Hello World!!! - " . date(Dates::DATE_TIME_FORMAT),
+                'results' => [
+                    "Hello World!!! - " . date(Dates::DATE_TIME_FORMAT)
+                ],
             ]
         );
     }
