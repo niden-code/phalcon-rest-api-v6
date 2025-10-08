@@ -24,6 +24,7 @@ use function str_replace;
 enum RoutesEnum: string implements RoutesInterface
 {
     case helloGet = '';
+    case userGet  = 'user';
 
     /**
      * @return string
@@ -39,7 +40,8 @@ enum RoutesEnum: string implements RoutesInterface
     public function method(): string
     {
         return match ($this) {
-            self::helloGet => self::GET,
+            self::helloGet,
+            self::userGet => self::GET,
         };
     }
 
@@ -67,6 +69,7 @@ enum RoutesEnum: string implements RoutesInterface
     {
         return match ($this) {
             self::helloGet => Container::HELLO_SERVICE,
+            self::userGet  => Container::USER_GET_SERVICE,
         };
     }
 

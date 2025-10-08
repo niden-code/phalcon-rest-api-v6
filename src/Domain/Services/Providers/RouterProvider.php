@@ -18,9 +18,11 @@ use Phalcon\Api\Domain\ADR\Domain\DomainInterface;
 use Phalcon\Api\Domain\ADR\Responder\ResponderInterface;
 use Phalcon\Api\Domain\Interfaces\RoutesInterface;
 use Phalcon\Api\Domain\Services\Container;
+use Phalcon\Api\Domain\Services\Http\Response;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Events\Manager as EventsManager;
+use Phalcon\Http\Request;
 use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\Collection;
 
@@ -75,6 +77,10 @@ class RouterProvider implements ServiceProviderInterface
      */
     private function attachRoutes(Micro $application): void
     {
+        /** @var Request $request */
+        $request = $application->getService(Container::REQUEST);
+        /** @var Response $response */
+        $response = $application->getService(Container::RESPONSE);
         /** @var ResponderInterface $responder */
         $responder = $application->getService(Container::RESPONDER_JSON);
 
@@ -84,7 +90,12 @@ class RouterProvider implements ServiceProviderInterface
             $collection  = new Collection();
             /** @var DomainInterface $service */
             $service = $application->getService($serviceName);
-            $action  = new ActionHandler($service, $responder);
+            $action  = new ActionHandler(
+                $request,
+                $response,
+                $service,
+                $responder
+            );
 
             $collection
                 ->setHandler($action)

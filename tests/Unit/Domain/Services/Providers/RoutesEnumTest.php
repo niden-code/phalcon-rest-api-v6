@@ -15,7 +15,7 @@ namespace Phalcon\Api\Tests\Unit\Domain\Services\Providers;
 
 use Phalcon\Api\Domain\Services\Container;
 use Phalcon\Api\Domain\Services\Providers\RoutesEnum;
-use Phalcon\Api\Tests\Unit\AbstractUnitTestCase;
+use Phalcon\Api\Tests\AbstractUnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class RoutesEnumTest extends AbstractUnitTestCase
@@ -30,12 +30,19 @@ final class RoutesEnumTest extends AbstractUnitTestCase
                 RoutesEnum::GET,
                 Container::HELLO_SERVICE,
             ],
+            [
+                RoutesEnum::userGet,
+                'user',
+                '/user',
+                RoutesEnum::GET,
+                Container::USER_GET_SERVICE,
+            ],
         ];
     }
 
     public function testCheckCount(): void
     {
-        $expected = 1;
+        $expected = 2;
         $actual   = RoutesEnum::cases();
         $this->assertCount($expected, $actual);
     }

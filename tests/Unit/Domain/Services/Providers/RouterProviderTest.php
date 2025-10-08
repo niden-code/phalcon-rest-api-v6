@@ -15,7 +15,7 @@ namespace Phalcon\Api\Tests\Unit\Domain\Services\Providers;
 
 use Phalcon\Api\Domain\Services\Container;
 use Phalcon\Api\Domain\Services\Providers\RouterProvider;
-use Phalcon\Api\Tests\Unit\AbstractUnitTestCase;
+use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Mvc\Micro;
 
 final class RouterProviderTest extends AbstractUnitTestCase
@@ -36,6 +36,10 @@ final class RouterProviderTest extends AbstractUnitTestCase
             [
                 'method'  => 'GET',
                 'pattern' => '/',
+            ],
+            [
+                'method'  => 'GET',
+                'pattern' => '/user',
             ],
             [
                 'method'  => 'GET',
