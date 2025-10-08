@@ -13,28 +13,35 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\ADR\Responder;
 
+use Exception as BaseException;
 use Phalcon\Api\Domain\Services\Http\Response;
 use Phalcon\Domain\Payload;
 
+/**
+ * @phpstan-import-type TResult from ResponderTypes
+ */
 final class JsonResponder implements ResponderInterface
 {
-    public function __construct(
-        private Response $response
-    ) {
-    }
-
-    public function __invoke(Payload $payload): Response
-    {
+    /**
+     * @param Response $response
+     * @param Payload  $payload
+     *
+     * @return Response
+     * @throws BaseException
+     */
+    public function __invoke(
+        Response $response,
+        Payload $payload
+    ): Response {
         $result = $payload->getResult();
-        /** @var string $content */
+        /** @var TResult $content */
         $content = $result['results'];
 
-        $this
-            ->response
-            ->withPayloadData([$content])
+        $response
+            ->withPayloadData($content)
             ->render()
         ;
 
-        return $this->response;
+        return $response;
     }
 }
