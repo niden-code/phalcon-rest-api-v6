@@ -14,10 +14,8 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Components\DataSource;
 
 use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
 use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
-use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 
 final class TransportRepositoryTest extends AbstractUnitTestCase
 {
@@ -31,7 +29,7 @@ final class TransportRepositoryTest extends AbstractUnitTestCase
         $this->assertTrue($actual);
 
         $dbUser = $this->getNewUserData();
-        $user = $transport->newUser($dbUser);
+        $user   = $transport->newUser($dbUser);
 
         $fullName = trim(
             $dbUser['usr_name_last']
@@ -137,6 +135,5 @@ final class TransportRepositoryTest extends AbstractUnitTestCase
         $expected = $fullName;
         $actual   = $user->getFullName();
         $this->assertSame($expected, $actual);
-
     }
 }

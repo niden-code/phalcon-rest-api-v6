@@ -15,7 +15,6 @@ namespace Phalcon\Api\Domain\Components;
 
 use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
 use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
-use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
 use Phalcon\Api\Domain\Components\Encryption\Security;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
 use Phalcon\Api\Domain\Components\Middleware\HealthMiddleware;
@@ -46,24 +45,12 @@ class Container extends Di
     public const EVENTS_MANAGER = 'eventsManager';
     /** @var string */
     public const FILTER = 'filter';
-    /** @var string */
-    public const LOGGER = 'logger';
-    /** @var string */
-    public const REQUEST = 'request';
-    /** @var string */
-    public const RESPONSE = 'response';
-    /** @var string */
-    public const ROUTER = 'router';
-    /** @var string */
-    public const SECURITY = Security::class;
-    /** @var string */
-    public const TIME = 'time';
-
     /**
      * Services
      */
-    public const HELLO_SERVICE    = HelloService::class;
-    public const USER_GET_SERVICE = 'service.user.get';
+    public const HELLO_SERVICE = HelloService::class;
+    /** @var string */
+    public const LOGGER = 'logger';
     /**
      * Middleware
      */
@@ -74,10 +61,21 @@ class Container extends Di
      */
     public const REPOSITORY           = 'repository';
     public const REPOSITORY_TRANSPORT = TransportRepository::class;
+    /** @var string */
+    public const REQUEST = 'request';
     /**
      * Responders
      */
     public const RESPONDER_JSON = JsonResponder::class;
+    /** @var string */
+    public const RESPONSE = 'response';
+    /** @var string */
+    public const ROUTER = 'router';
+    /** @var string */
+    public const SECURITY = Security::class;
+    /** @var string */
+    public const TIME             = 'time';
+    public const USER_GET_SERVICE = 'service.user.get';
 
     public function __construct()
     {

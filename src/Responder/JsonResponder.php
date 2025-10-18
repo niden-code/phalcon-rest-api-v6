@@ -31,7 +31,7 @@ final class JsonResponder implements ResponderInterface
 {
     /**
      * @param ResponseInterface $response
-     * @param Payload  $payload
+     * @param Payload           $payload
      *
      * @return ResponseInterface
      * @throws BaseException
@@ -52,7 +52,7 @@ final class JsonResponder implements ResponderInterface
         /** @var TData $data */
         $data = $result['data'] ?? [];
         /** @var TErrors $errors */
-        $errors = $result['errors'] ?? [];
+        $errors        = $result['errors'] ?? [];
         $statusMessage = true === empty($errors) ? 'success' : 'error';
 
         $content = [
@@ -101,6 +101,4 @@ final class JsonResponder implements ResponderInterface
 
         return [$content, $eTag];
     }
-
-
 }

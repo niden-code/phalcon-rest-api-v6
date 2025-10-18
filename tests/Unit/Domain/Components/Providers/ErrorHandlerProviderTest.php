@@ -33,7 +33,7 @@ final class ErrorHandlerProviderTest extends AbstractUnitTestCase
 {
     public function testCheckRegistration(): void
     {
-        $now       = hrtime(true);
+        $now = hrtime(true);
         $this->container->set(
             Container::TIME,
             function () use ($now) {
@@ -62,7 +62,7 @@ final class ErrorHandlerProviderTest extends AbstractUnitTestCase
 
     public function testRegisterSetsHandlersAndLogs(): void
     {
-        $now       = hrtime(true);
+        $now = hrtime(true);
         $this->container->set(
             Container::TIME,
             function () use ($now) {
@@ -100,7 +100,7 @@ final class ErrorHandlerProviderTest extends AbstractUnitTestCase
         $_ENV['APP_ENV']       = 'development';
         $_ENV['APP_LOG_LEVEL'] = 2;
 
-        $now       = hrtime(true);
+        $now = hrtime(true);
         $this->container->set(
             Container::TIME,
             function () use ($now) {

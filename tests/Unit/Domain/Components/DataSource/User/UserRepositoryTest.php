@@ -15,11 +15,8 @@ namespace Phalcon\Api\Tests\Unit\Domain\Components\DataSource\User;
 
 use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
-use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
-use Phalcon\DataMapper\Pdo\Connection;
 
 final class UserRepositoryTest extends AbstractUnitTestCase
 {
@@ -52,7 +49,7 @@ final class UserRepositoryTest extends AbstractUnitTestCase
         $this->assertEmpty($repositoryUser);
 
         $migrationUser = $this->getNewUser($migration);
-        $userId = $migrationUser['usr_id'];
+        $userId        = $migrationUser['usr_id'];
 
         $repositoryUser = $repository->user()->findById($userId);
 

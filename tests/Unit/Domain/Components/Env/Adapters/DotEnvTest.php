@@ -22,6 +22,12 @@ final class DotEnvTest extends AbstractUnitTestCase
 {
     private string $envFile;
 
+    public function setUp(): void
+    {
+        $this->envFile = EnvManager::appPath()
+            . '/tests/Fixtures/Domain/Components/Env/';
+    }
+
     public function testLoadExceptionForEmptyFilePath(): void
     {
         $this->expectException(InvalidConfigurationArgumentException::class);
@@ -80,11 +86,5 @@ final class DotEnvTest extends AbstractUnitTestCase
         ];
 
         $this->assertSame($expected, $actualArray);
-    }
-
-    public function setUp(): void
-    {
-        $this->envFile = EnvManager::appPath()
-            . '/tests/Fixtures/Domain/Components/Env/';
     }
 }

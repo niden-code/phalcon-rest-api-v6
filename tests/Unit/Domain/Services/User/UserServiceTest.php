@@ -16,7 +16,6 @@ namespace Phalcon\Api\Tests\Unit\Domain\Services\User;
 use PayloadInterop\DomainStatus;
 use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
-use Phalcon\Api\Domain\Components\DataSource\User\UserTransport;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
 use Phalcon\Api\Domain\Services\User\UserGetService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
@@ -29,7 +28,7 @@ final class UserServiceTest extends AbstractUnitTestCase
     public function testDispatch(): void
     {
         /** @var TransportRepository $transport */
-        $transport  = $this->container->get(Container::REPOSITORY_TRANSPORT);
+        $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
 
         $migration = new UsersMigration($this->getConnection());
         $dbUser    = $this->getNewUser($migration);
@@ -64,7 +63,7 @@ final class UserServiceTest extends AbstractUnitTestCase
         $actual   = $errors;
         $this->assertSame($expected, $actual);
 
-        $user = $transport->newUser($dbUser);
+        $user     = $transport->newUser($dbUser);
         $expected = $user->toArray();
         $actual   = $data;
         $this->assertSame($expected, $actual);
@@ -95,8 +94,8 @@ final class UserServiceTest extends AbstractUnitTestCase
         $service = $this->container->get(Container::USER_GET_SERVICE);
 
         $migration = new UsersMigration($this->getConnection());
-        $dbUser = $this->getNewUser($migration);
-        $userId = $dbUser['usr_id'];
+        $dbUser    = $this->getNewUser($migration);
+        $userId    = $dbUser['usr_id'];
 
         $payload = $service->__invoke(
             [

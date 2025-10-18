@@ -38,7 +38,7 @@ final class UsersMigration extends AbstractMigration
         string $updatedDate,
         int $updatedUserId
     ): int {
-        $sql      = "INSERT INTO $this->table (
+        $sql = "INSERT INTO $this->table (
             usr_id,
             usr_status_flag,
             usr_email,
@@ -76,8 +76,8 @@ final class UsersMigration extends AbstractMigration
             :updatedUserId
         )";
 
-        $stmt     = $this->connection->prepare($sql);
-        $params   = [
+        $stmt   = $this->connection->prepare($sql);
+        $params = [
             ':id'            => $id,
             ':status'        => $status,
             ':email'         => $email,
@@ -96,7 +96,7 @@ final class UsersMigration extends AbstractMigration
             ':updatedDate'   => $updatedDate,
             ':updatedUserId' => $updatedUserId,
         ];
-        $result   = $stmt->execute($params);
+        $result = $stmt->execute($params);
         if (!$result) {
             Assert::fail(
                 "Failed to insert id [#$id] into table [$this->table]"

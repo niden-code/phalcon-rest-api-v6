@@ -18,12 +18,8 @@ use Phalcon\Api\Domain\ADR\DomainInterface;
 use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
 use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
-use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
 use Phalcon\Domain\Payload;
-
 use Phalcon\Filter\Filter;
-
-use function abs;
 
 /**
  * @phpstan-import-type TUserInput from InputTypes

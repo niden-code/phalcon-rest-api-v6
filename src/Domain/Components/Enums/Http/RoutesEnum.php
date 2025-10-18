@@ -22,10 +22,9 @@ use function str_replace;
  */
 enum RoutesEnum: string
 {
+    public const DELETE       = 'delete';
     public const EVENT_BEFORE = 'before';
     public const EVENT_FINISH = 'finish';
-
-    public const DELETE       = 'delete';
     public const GET          = 'get';
     public const POST         = 'post';
     public const PUT          = 'put';

@@ -22,8 +22,6 @@ use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 use Phalcon\DataMapper\Pdo\Connection;
 use PHPUnit\Framework\TestCase;
 
-use function uniqid;
-
 abstract class AbstractUnitTestCase extends TestCase
 {
     /**
@@ -35,13 +33,6 @@ abstract class AbstractUnitTestCase extends TestCase
      * @var Container
      */
     protected Container $container;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->container = new Container();
-    }
 
     /**
      * @param string $fileName
@@ -80,7 +71,6 @@ abstract class AbstractUnitTestCase extends TestCase
 
         return $this->connection;
     }
-
 
     /**
      * @param UsersMigration $migration
@@ -159,6 +149,13 @@ abstract class AbstractUnitTestCase extends TestCase
     public function getStrongPassword(): string
     {
         return substr(base64_encode(random_bytes(512)), 0, 128);
+    }
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->container = new Container();
     }
 
     /**

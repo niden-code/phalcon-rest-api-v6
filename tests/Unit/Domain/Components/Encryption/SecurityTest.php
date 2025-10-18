@@ -14,10 +14,8 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Components\Encryption;
 
 use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
 use Phalcon\Api\Domain\Components\Encryption\Security;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
-use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 
 final class SecurityTest extends AbstractUnitTestCase
 {

@@ -21,6 +21,13 @@ use ReflectionClass;
 #[BackupGlobals(true)]
 final class EnvManagerTest extends AbstractUnitTestCase
 {
+    public function setUp(): void
+    {
+        $ref = new ReflectionClass(EnvManager::class);
+        $ref->setStaticPropertyValue('isLoaded', false);
+        $ref->setStaticPropertyValue('settings', []);
+    }
+
     public function testAppEnvReturnsDefault(): void
     {
         $expected = 'development';
@@ -110,12 +117,5 @@ final class EnvManagerTest extends AbstractUnitTestCase
         $expected = $values['SAMPLE_FALSE'];
         $actual   = EnvManager::get('SAMPLE_FALSE');
         $this->assertSame($expected, $actual);
-    }
-
-    public function setUp(): void
-    {
-        $ref = new ReflectionClass(EnvManager::class);
-        $ref->setStaticPropertyValue('isLoaded', false);
-        $ref->setStaticPropertyValue('settings', []);
     }
 }

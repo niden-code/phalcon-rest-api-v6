@@ -6,6 +6,52 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddMoreFieldsToUsersTable extends AbstractMigration
 {
+    public function down(): void
+    {
+        $table = $this->table('co_users');
+        $table
+            ->removeIndexByName('i_email_x_status')
+            ->removeIndexByName('i_id_x_status')
+            ->removeIndexByName('i_token_id')
+            ->removeIndexByName('i_email')
+            ->save()
+        ;
+
+        $table
+            ->removeColumn('usr_email')
+            ->removeColumn('usr_name_prefix')
+            ->removeColumn('usr_name_first')
+            ->removeColumn('usr_name_middle')
+            ->removeColumn('usr_name_last')
+            ->removeColumn('usr_name_suffix')
+            ->removeColumn('usr_issuer')
+            ->removeColumn('usr_token_password')
+            ->removeColumn('usr_token_id')
+            ->removeColumn('usr_preferences')
+            ->removeColumn('usr_created_date')
+            ->removeColumn('usr_created_usr_id')
+            ->removeColumn('usr_updated_date')
+            ->removeColumn('usr_updated_usr_id')
+            ->save()
+        ;
+
+        $table
+            ->addColumn(
+                'usr_username',
+                'string',
+                [
+                    'limit'   => 128,
+                    'null'    => false,
+                    'default' => '',
+                    'after'   => 'usr_status_flag',
+                ]
+            )
+            ->addIndex('usr_status_flag')
+            ->addIndex('usr_username')
+            ->save()
+        ;
+    }
+
     public function up(): void
     {
         $table = $this->table('co_users');
@@ -24,8 +70,8 @@ final class AddMoreFieldsToUsersTable extends AbstractMigration
                 'string',
                 [
                     'limit' => 128,
-                    'null' => false,
-                    'after' => 'usr_status_flag'
+                    'null'  => false,
+                    'after' => 'usr_status_flag',
                 ]
             )
             ->addColumn(
@@ -77,31 +123,31 @@ final class AddMoreFieldsToUsersTable extends AbstractMigration
                 'usr_issuer',
                 'string',
                 [
-                    'limit'   => 128,
-                    'null'    => false,
+                    'limit' => 128,
+                    'null'  => false,
                 ]
             )
             ->addColumn(
                 'usr_token_password',
                 'string',
                 [
-                    'limit'   => 128,
-                    'null'    => false,
+                    'limit' => 128,
+                    'null'  => false,
                 ]
             )
             ->addColumn(
                 'usr_token_id',
                 'string',
                 [
-                    'limit'   => 128,
-                    'null'    => false,
+                    'limit' => 128,
+                    'null'  => false,
                 ]
             )
             ->addColumn(
                 'usr_preferences',
                 'text',
                 [
-                    'null'     => true
+                    'null' => true,
                 ]
             )
             ->addColumn(
@@ -116,7 +162,7 @@ final class AddMoreFieldsToUsersTable extends AbstractMigration
                 'usr_created_usr_id',
                 'biginteger',
                 [
-                    'null'     => false,
+                    'null'    => false,
                     'default' => 0,
                 ]
             )
@@ -132,7 +178,7 @@ final class AddMoreFieldsToUsersTable extends AbstractMigration
                 'usr_updated_usr_id',
                 'biginteger',
                 [
-                    'null'     => false,
+                    'null'    => false,
                     'default' => 0,
                 ]
             )
@@ -142,7 +188,7 @@ final class AddMoreFieldsToUsersTable extends AbstractMigration
                     'usr_status_flag',
                 ],
                 [
-                    'name' => 'i_email_x_status'
+                    'name' => 'i_email_x_status',
                 ]
             )
             ->addIndex(
@@ -151,16 +197,16 @@ final class AddMoreFieldsToUsersTable extends AbstractMigration
                     'usr_status_flag',
                 ],
                 [
-                    'name'   => 'i_id_x_status'
+                    'name' => 'i_id_x_status',
                 ]
             )
             ->addIndex(
                 [
-                    'usr_token_id'
+                    'usr_token_id',
                 ],
                 [
                     'unique' => true,
-                    'name'   => 'i_token_id'
+                    'name'   => 'i_token_id',
                 ]
             )
             ->addIndex(
@@ -169,53 +215,10 @@ final class AddMoreFieldsToUsersTable extends AbstractMigration
                 ],
                 [
                     'unique' => true,
-                    'name'   => 'i_email'
+                    'name'   => 'i_email',
                 ]
             )
             ->save()
         ;
-    }
-
-    public function down(): void
-    {
-        $table = $this->table('co_users');
-        $table
-            ->removeIndexByName('i_email_x_status')
-            ->removeIndexByName('i_id_x_status')
-            ->removeIndexByName('i_token_id')
-            ->removeIndexByName('i_email')
-            ->save();
-
-        $table
-            ->removeColumn('usr_email')
-            ->removeColumn('usr_name_prefix')
-            ->removeColumn('usr_name_first')
-            ->removeColumn('usr_name_middle')
-            ->removeColumn('usr_name_last')
-            ->removeColumn('usr_name_suffix')
-            ->removeColumn('usr_issuer')
-            ->removeColumn('usr_token_password')
-            ->removeColumn('usr_token_id')
-            ->removeColumn('usr_preferences')
-            ->removeColumn('usr_created_date')
-            ->removeColumn('usr_created_usr_id')
-            ->removeColumn('usr_updated_date')
-            ->removeColumn('usr_updated_usr_id')
-            ->save();
-
-        $table
-            ->addColumn(
-                'usr_username',
-                'string',
-                [
-                    'limit'   => 128,
-                    'null'    => false,
-                    'default' => '',
-                    'after'   => 'usr_status_flag',
-                ]
-            )
-            ->addIndex('usr_status_flag')
-            ->addIndex('usr_username')
-            ->save();
     }
 }

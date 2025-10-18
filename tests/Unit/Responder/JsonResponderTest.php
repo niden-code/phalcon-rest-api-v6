@@ -180,5 +180,4 @@ final class JsonResponderTest extends AbstractUnitTestCase
         $actual   = $headers['Content-Type'];
         $this->assertSame($expected, $actual);
     }
-
 }

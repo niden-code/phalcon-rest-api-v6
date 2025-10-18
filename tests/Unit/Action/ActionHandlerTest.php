@@ -32,9 +32,9 @@ final class ActionHandlerTest extends AbstractUnitTestCase
     public function testInvoke(): void
     {
         /** @var RequestInterface $request */
-        $request   = $this->container->getShared(Container::REQUEST);
+        $request = $this->container->getShared(Container::REQUEST);
         /** @var ResponseInterface $response */
-        $response  = $this->container->getShared(Container::RESPONSE);
+        $response = $this->container->getShared(Container::RESPONSE);
         /** @var ResponderInterface $responder */
         $responder = $this->container->getShared(Container::RESPONDER_JSON);
 
@@ -42,7 +42,7 @@ final class ActionHandlerTest extends AbstractUnitTestCase
             'key'  => uniqid('key-'),
             'data' => [
                 uniqid('data-'),
-            ]
+            ],
         ];
 
         $_GET = $getData;
