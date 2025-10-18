@@ -11,19 +11,19 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\ADR\Action;
+namespace Phalcon\Api\Action;
 
-use Phalcon\Api\Domain\ADR\Domain\DomainInterface;
-use Phalcon\Api\Domain\ADR\Domain\Input;
-use Phalcon\Api\Domain\ADR\Responder\ResponderInterface;
-use Phalcon\Api\Domain\Services\Http\Response;
-use Phalcon\Http\Request;
+use Phalcon\Api\Domain\ADR\DomainInterface;
+use Phalcon\Api\Domain\ADR\Input;
+use Phalcon\Api\Responder\ResponderInterface;
+use Phalcon\Http\RequestInterface;
+use Phalcon\Http\ResponseInterface;
 
 final readonly class ActionHandler implements ActionInterface
 {
     public function __construct(
-        private Request $request,
-        private Response $response,
+        private RequestInterface $request,
+        private ResponseInterface $response,
         private DomainInterface $service,
         private ResponderInterface $responder
     ) {
