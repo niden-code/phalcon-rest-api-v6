@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Phalcon\Api\Domain\Services\Container;
-use Phalcon\Api\Domain\Services\Providers\ErrorHandlerProvider;
-use Phalcon\Api\Domain\Services\Providers\RouterProvider;
+use Phalcon\Api\Domain\Components\Container;
+use Phalcon\Api\Domain\Components\Providers\ErrorHandlerProvider;
+use Phalcon\Api\Domain\Components\Providers\RouterProvider;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Mvc\Micro;
 
