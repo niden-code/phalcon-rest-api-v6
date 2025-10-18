@@ -20,30 +20,89 @@ final class UsersMigration extends AbstractMigration
     protected string $table = 'co_users';
 
     public function insert(
-        ?int $id = null,
-        int $status = 0,
-        ?string $username = null,
-        ?string $password = null,
-    ) {
-        $sql    = "INSERT INTO {$this->table} (
-            usr_id, usr_status_flag, usr_username, usr_password
+        ?int $id,
+        int $status,
+        string $email,
+        string $password,
+        string $namePrefix,
+        string $nameFirst,
+        string $nameMiddle,
+        string $nameLast,
+        string $nameSuffix,
+        string $issuer,
+        string $tokenPassword,
+        string $tokenId,
+        string $preferences,
+        string $createdDate,
+        int $createdUserId,
+        string $updatedDate,
+        int $updatedUserId
+    ): int {
+        $sql      = "INSERT INTO $this->table (
+            usr_id,
+            usr_status_flag,
+            usr_email,
+            usr_password,
+            usr_name_prefix,
+            usr_name_first,
+            usr_name_middle,
+            usr_name_last,
+            usr_name_suffix,
+            usr_issuer,
+            usr_token_password,
+            usr_token_id,
+            usr_preferences,
+            usr_created_date,
+            usr_created_usr_id,
+            usr_updated_date,
+            usr_updated_usr_id
         ) VALUES (
-            :id, :status, :username, :password
+            :id,
+            :status,
+            :email,
+            :password,
+            :namePrefix,
+            :nameFirst,
+            :nameMiddle,
+            :nameLast,
+            :nameSuffix,
+            :issuer,
+            :tokenPassword,
+            :tokenId,
+            :preferences,
+            :createdDate,
+            :createdUserId,
+            :updatedDate,
+            :updatedUserId
         )";
-        $stmt   = $this->connection->prepare($sql);
-        $params = [
-            ':id'       => $id,
-            ':status'   => $status,
-            ':username' => $username,
-            ':password' => $password,
+
+        $stmt     = $this->connection->prepare($sql);
+        $params   = [
+            ':id'            => $id,
+            ':status'        => $status,
+            ':email'         => $email,
+            ':password'      => $password,
+            ':namePrefix'    => $namePrefix,
+            ':nameFirst'     => $nameFirst,
+            ':nameMiddle'    => $nameMiddle,
+            ':nameLast'      => $nameLast,
+            ':nameSuffix'    => $nameSuffix,
+            ':issuer'        => $issuer,
+            ':tokenPassword' => $tokenPassword,
+            ':tokenId'       => $tokenId,
+            ':preferences'   => $preferences,
+            ':createdDate'   => $createdDate,
+            ':createdUserId' => $createdUserId,
+            ':updatedDate'   => $updatedDate,
+            ':updatedUserId' => $updatedUserId,
         ];
-        $result = $stmt->execute($params);
+        $result   = $stmt->execute($params);
         if (!$result) {
             Assert::fail(
                 "Failed to insert id [#$id] into table [$this->table]"
             );
         }
 
-        return $result;
+        return (int)$this->connection->lastInsertId();
     }
 }
