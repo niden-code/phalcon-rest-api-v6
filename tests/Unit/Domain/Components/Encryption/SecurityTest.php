@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * This file is part of the Phalcon API.
+ *
+ * (c) Phalcon Team <team@phalcon.io>
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+namespace Phalcon\Api\Tests\Unit\Domain\Components\Encryption;
+
+use Phalcon\Api\Domain\Components\Container;
+use Phalcon\Api\Domain\Components\Encryption\Security;
+use Phalcon\Api\Tests\AbstractUnitTestCase;
+
+final class SecurityTest extends AbstractUnitTestCase
+{
+    public function testSecurity(): void
+    {
+        /** @var Security $security */
+        $security = $this->container->get(Container::SECURITY);
+        $password = $this->getStrongPassword();
+
+        $hashed = $security->hash($password);
+
+        $actual = $security->verify($password, $hashed);
+        $this->assertTrue($actual);
+    }
+}

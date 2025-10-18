@@ -6,6 +6,11 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddUsersTable extends AbstractMigration
 {
+    public function down(): void
+    {
+        $this->table('co_users')->drop()->save();
+    }
+
     public function up(): void
     {
         $table = $this->table(
@@ -48,10 +53,5 @@ final class AddUsersTable extends AbstractMigration
             ->addIndex('usr_username')
             ->save()
         ;
-    }
-
-    public function down(): void
-    {
-        $this->table('co_users')->drop()->save();
     }
 }

@@ -32,12 +32,4 @@ abstract class AbstractMigration
     {
         return $this->connection->exec('DELETE FROM ' . $this->table);
     }
-
-    /**
-     * @return string
-     */
-    public function getTable(): string
-    {
-        return $this->table;
-    }
 }
