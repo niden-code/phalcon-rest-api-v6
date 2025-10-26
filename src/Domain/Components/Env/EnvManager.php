@@ -81,7 +81,7 @@ class EnvManager extends Collection
     public function load(): void
     {
         $envFactory = new EnvFactory();
-        $options    = self::getOptions();
+        $options    = $this->getOptions();
         $adapter    = $options['adapter'];
 
         $envs = array_merge(getenv(), $_ENV);
