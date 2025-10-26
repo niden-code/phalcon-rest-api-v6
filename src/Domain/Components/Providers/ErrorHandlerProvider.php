@@ -31,11 +31,15 @@ class ErrorHandlerProvider implements ServiceProviderInterface
 {
     public function register(DiInterface $container): void
     {
+        /** @var EnvManager $env */
+        $env = $container->getShared(Container::ENV);
         /** @var Logger $logger */
         $logger = $container->getShared(Container::LOGGER);
+        /** @var int $time */
+        $time = $container->getShared(Container::TIME);
 
-        date_default_timezone_set(EnvManager::appTimezone());
-        $errors = 'development' === EnvManager::appEnv() ? 'On' : 'Off';
+        date_default_timezone_set($env->appTimezone());
+        $errors = 'development' === $env->appEnv() ? 'On' : 'Off';
         ini_set('display_errors', $errors);
         error_reporting(E_ALL);
 
@@ -57,20 +61,31 @@ class ErrorHandlerProvider implements ServiceProviderInterface
             }
         );
 
-        register_shutdown_function([$this, 'onShutdown'], $container);
+        register_shutdown_function(
+            [$this, 'onShutdown'],
+            $logger,
+            $env,
+            $time
+        );
     }
 
-    protected function onShutdown(DiInterface $container): bool
-    {
-        /** @var Logger $logger */
-        $logger = $container->getShared(Container::LOGGER);
-        /** @var int $time */
-        $time      = $container->getShared(Container::TIME);
+    /**
+     * @param Logger     $logger
+     * @param EnvManager $env
+     * @param int        $time
+     *
+     * @return bool
+     */
+    protected function onShutdown(
+        Logger $logger,
+        EnvManager $env,
+        int $time
+    ): bool {
         $memory    = memory_get_usage() / 1000000;
         $execution = hrtime(true) - $time;
         $execution = $execution / 1000000000;
 
-        if (EnvManager::appLogLevel() >= 1) {
+        if ($env->appLogLevel() >= 1) {
             $logger
                 ->info(
                     sprintf(

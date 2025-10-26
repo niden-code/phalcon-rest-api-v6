@@ -33,8 +33,8 @@ final class RouterProviderTest extends AbstractUnitTestCase
 
         $data = [
             [
-                'method'  => 'GET',
-                'pattern' => '/',
+                'method'  => 'POST',
+                'pattern' => '/auth/login',
             ],
             [
                 'method'  => 'GET',

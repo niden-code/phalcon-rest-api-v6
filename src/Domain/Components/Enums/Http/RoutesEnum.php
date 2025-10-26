@@ -29,8 +29,8 @@ enum RoutesEnum: string
     public const POST         = 'post';
     public const PUT          = 'put';
 
-    case helloGet = '';
-    case userGet  = 'user';
+    case authLoginPost = 'auth/login';
+    case userGet       = 'user';
 
     /**
      * @return string
@@ -46,8 +46,8 @@ enum RoutesEnum: string
     public function method(): string
     {
         return match ($this) {
-            self::helloGet,
-            self::userGet => self::GET,
+            self::authLoginPost => self::POST,
+            self::userGet       => self::GET,
         };
     }
 
@@ -57,8 +57,12 @@ enum RoutesEnum: string
     public static function middleware(): array
     {
         return [
-            Container::MIDDLEWARE_NOT_FOUND => self::EVENT_BEFORE,
-            Container::MIDDLEWARE_HEALTH    => self::EVENT_BEFORE,
+            Container::MIDDLEWARE_NOT_FOUND                => self::EVENT_BEFORE,
+            Container::MIDDLEWARE_HEALTH                   => self::EVENT_BEFORE,
+            Container::MIDDLEWARE_VALIDATE_TOKEN_PRESENCE  => self::EVENT_BEFORE,
+            Container::MIDDLEWARE_VALIDATE_TOKEN_STRUCTURE => self::EVENT_BEFORE,
+            Container::MIDDLEWARE_VALIDATE_TOKEN_USER      => self::EVENT_BEFORE,
+            Container::MIDDLEWARE_VALIDATE_TOKEN_CLAIMS    => self::EVENT_BEFORE,
         ];
     }
 
@@ -73,8 +77,8 @@ enum RoutesEnum: string
     public function service(): string
     {
         return match ($this) {
-            self::helloGet => Container::HELLO_SERVICE,
-            self::userGet  => Container::USER_GET_SERVICE,
+            self::authLoginPost => Container::AUTH_LOGIN_POST_SERVICE,
+            self::userGet       => Container::USER_GET_SERVICE,
         };
     }
 

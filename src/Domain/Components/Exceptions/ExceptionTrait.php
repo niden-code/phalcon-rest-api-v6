@@ -13,9 +13,16 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\Exceptions;
 
-use InvalidArgumentException;
-
-class InvalidConfigurationArgumentException extends InvalidArgumentException
+trait ExceptionTrait
 {
-    use ExceptionTrait;
+    /**
+     * @param string $message
+     * @param int    $code
+     *
+     * @return self
+     */
+    public static function new(string $message, int $code = 0): self
+    {
+        return new self($message, $code);
+    }
 }

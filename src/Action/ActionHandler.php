@@ -15,10 +15,15 @@ namespace Phalcon\Api\Action;
 
 use Phalcon\Api\Domain\ADR\DomainInterface;
 use Phalcon\Api\Domain\ADR\Input;
+use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Responder\ResponderInterface;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Http\ResponseInterface;
 
+/**
+ * @phpstan-import-type TLoginInput from InputTypes
+ * @phpstan-import-type TUserInput from InputTypes
+ */
 final readonly class ActionHandler implements ActionInterface
 {
     public function __construct(
@@ -32,6 +37,7 @@ final readonly class ActionHandler implements ActionInterface
     public function __invoke(): void
     {
         $input = new Input();
+        /** @var TLoginInput|TUserInput $data */
         $data  = $input->__invoke($this->request);
 
         $this->responder->__invoke(

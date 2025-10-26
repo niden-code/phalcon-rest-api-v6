@@ -14,7 +14,10 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\ADR;
 
 /**
- * @phpstan-type THelloInput array{}
+ * @phpstan-type TLoginInput array{
+ *     email?: string,
+ *     password?: string
+ * }
  * @phpstan-type TUserInput array{
  *     userId?: int
  * }

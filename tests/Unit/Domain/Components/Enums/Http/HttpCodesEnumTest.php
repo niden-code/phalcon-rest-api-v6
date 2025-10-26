@@ -19,6 +19,9 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 final class HttpCodesEnumTest extends AbstractUnitTestCase
 {
+    /**
+     * @return array[]
+     */
     public static function getExamples(): array
     {
         return [
@@ -63,16 +66,101 @@ final class HttpCodesEnumTest extends AbstractUnitTestCase
                 'Unauthorized',
             ],
             [
+                HttpCodesEnum::AppCannotConnectToDatabase,
+                3404,
+                'Failure connecting to the database',
+            ],
+            [
+                HttpCodesEnum::AppCannotCreateDatabaseRecord,
+                3405,
+                'Cannot create database record: ',
+            ],
+            [
+                HttpCodesEnum::AppCannotDeleteDatabaseRecord,
+                3406,
+                'Cannot delete database record: ',
+            ],
+            [
+                HttpCodesEnum::AppCannotUpdateDatabaseRecord,
+                3407,
+                'Cannot update database record: ',
+            ],
+            [
+                HttpCodesEnum::AppIncorrectCredentials,
+                3408,
+                'Incorrect credentials',
+            ],
+            [
                 HttpCodesEnum::AppInvalidArguments,
                 3409,
                 'Invalid arguments provided',
+            ],
+            [
+                HttpCodesEnum::AppTokenInvalidAudience,
+                3410,
+                'Invalid Token [Audience]',
+            ],
+            [
+                HttpCodesEnum::AppTokenInvalidCannotDecodeContent,
+                3411,
+                'Invalid Token [Cannot decode content]',
+            ],
+            [
+                HttpCodesEnum::AppTokenInvalidIdentifier,
+                3412,
+                'Invalid Token [Identifier]',
+            ],
+            [
+                HttpCodesEnum::AppTokenInvalidIssuer,
+                3413,
+                'Invalid Token [Issuer]',
+            ],
+            [
+                HttpCodesEnum::AppTokenInvalidStructure,
+                3414,
+                'Invalid Token [Token structure]',
+            ],
+            [
+                HttpCodesEnum::AppTokenInvalidTenant,
+                3415,
+                'Invalid Token [Tenant]',
+            ],
+            [
+                HttpCodesEnum::AppTokenInvalidUser,
+                3416,
+                'Invalid Token [User]',
+            ],
+            [
+                HttpCodesEnum::AppTokenNotPresent,
+                3417,
+                'Invalid Token [Token not present]',
+            ],
+            [
+                HttpCodesEnum::AppTokenNotValid,
+                3418,
+                'Invalid Token [verification - Token not valid]',
+            ],
+            [
+                HttpCodesEnum::AppTokenSignatureNotValid,
+                3419,
+                'Invalid Token [verification - Signature not valid]',
+            ],
+            [
+                HttpCodesEnum::AppTokenUnsupportedHeaderFound,
+                3420,
+                'Invalid Token [Unsupported header]',
+            ],
+            [
+                HttpCodesEnum::AppValidationFailed,
+                3421,
+                'Validation error [%s]',
             ],
         ];
     }
 
     public function testCheckCount(): void
     {
-        $expected = 9;
+        $expected = 26;
         $actual   = HttpCodesEnum::cases();
         $this->assertCount($expected, $actual);
     }
@@ -82,7 +170,7 @@ final class HttpCodesEnumTest extends AbstractUnitTestCase
         HttpCodesEnum $element,
         int $value,
         string $text
-    ) {
+    ): void {
         $expected = $value;
         $actual   = $element->value;
         $this->assertSame($expected, $actual);

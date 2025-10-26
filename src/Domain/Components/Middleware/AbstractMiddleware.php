@@ -15,14 +15,18 @@ namespace Phalcon\Api\Domain\Components\Middleware;
 
 use PayloadInterop\DomainStatus;
 use Phalcon\Api\Domain\Components\Container;
+use Phalcon\Api\Domain\Components\Env\EnvManager;
 use Phalcon\Api\Responder\ResponderInterface;
 use Phalcon\Api\Responder\ResponderTypes;
 use Phalcon\Domain\Payload;
 use Phalcon\Events\Exception as EventsException;
+use Phalcon\Http\RequestInterface;
 use Phalcon\Http\Response\Exception as ResponseException;
 use Phalcon\Http\ResponseInterface;
 use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
+
+use function str_replace;
 
 /**
  * @phpstan-import-type TData from ResponderTypes
@@ -30,6 +34,40 @@ use Phalcon\Mvc\Micro\MiddlewareInterface;
  */
 abstract class AbstractMiddleware implements MiddlewareInterface
 {
+    /**
+     * @param RequestInterface $request
+     * @param EnvManager       $env
+     *
+     * @return string
+     */
+    public function getBearerTokenFromHeader(
+        RequestInterface $request,
+        EnvManager $env
+    ): string {
+        /**
+         * For certain local environments the Authorization header is not
+         * recognized, as such this is here to allow a custom one through the
+         * environment
+         */
+        /** @var string $header */
+        $header = $env->get('API_HEADER_AUTH', 'Authorization');
+
+        return str_replace('Bearer ', '', $request->getHeader($header));
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @param EnvManager       $env
+     *
+     * @return bool
+     */
+    public function isEmptyBearerToken(
+        RequestInterface $request,
+        EnvManager $env
+    ): bool {
+        return true === empty($this->getBearerTokenFromHeader($request, $env));
+    }
+
     /**
      * @param Micro   $application
      * @param int     $code

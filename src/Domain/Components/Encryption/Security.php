@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\Encryption;
 
+use function password_hash;
+use function password_verify;
+
 use const PASSWORD_ARGON2I;
 
 /**

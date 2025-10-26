@@ -14,6 +14,18 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
 /**
+ * @phpstan-type TLoginResponsePayload array{
+ *      authenticated: true,
+ *      user: array{
+ *          id: int,
+ *          name: string,
+ *          email: string
+ *      },
+ *      jwt: array{
+ *          token: string
+ *      }
+ * }
+ *
  * @phpstan-type TUserDbRecord array{
  *     usr_id: int,
  *     usr_status_flag: int,

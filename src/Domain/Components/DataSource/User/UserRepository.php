@@ -19,8 +19,13 @@ use Phalcon\DataMapper\Query\Select;
 
 /**
  * @phpstan-import-type TUserRecord from UserTypes
+ *
+ * The 'final' keyword was intentionally removed from this class to allow
+ * extension for testing purposes (e.g., mocking in unit tests).
+ *
+ * Please avoid extending this class in production code unless absolutely necessary.
  */
-final class UserRepository
+class UserRepository
 {
     public function __construct(
         private readonly Connection $connection,

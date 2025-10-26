@@ -99,7 +99,7 @@ final class UserTransport
             'getCreatedUserId' => $this->store['createdUserId'],
             'getUpdatedDate'   => $this->store['updatedDate'],
             'getUpdatedUserId' => $this->store['updatedUserId'],
-            default            => throw new InvalidConfigurationArgumentException(
+            default            => throw InvalidConfigurationArgumentException::new(
                 'The ' . $name . ' method is not supported. ['
                 . json_encode($arguments) . ']',
             ),

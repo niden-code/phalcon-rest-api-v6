@@ -41,7 +41,7 @@ class DotEnv implements AdapterInterface
             );
         }
 
-        $dotenv = ParentDotEnv::createImmutable($filePath);
+        $dotenv = ParentDotEnv::createMutable($filePath);
         $dotenv->load();
 
         /** @var TSettings $env */
