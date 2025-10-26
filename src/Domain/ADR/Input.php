@@ -15,6 +15,8 @@ namespace Phalcon\Api\Domain\ADR;
 
 use Phalcon\Http\RequestInterface;
 
+use function array_merge;
+
 /**
  * @phpstan-import-type TRequestQuery from InputTypes
  */
@@ -29,7 +31,9 @@ final class Input implements InputInterface
     {
         /** @var TRequestQuery $query */
         $query = $request->getQuery();
+        /** @var TRequestQuery $post */
+        $post = $request->getPost();
 
-        return $query;
+        return array_merge($query, $post);
     }
 }
