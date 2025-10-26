@@ -17,6 +17,7 @@ use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
 use Phalcon\Api\Domain\Components\Providers\ErrorHandlerProvider;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
+use Phalcon\Logger\Logger;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 use ReflectionClass;
 
@@ -42,11 +43,14 @@ final class ErrorHandlerProviderTest extends AbstractUnitTestCase
             true
         );
 
+        /** @var EnvManager $env */
+        $env = $this->container->getShared(Container::ENV);
+
         $provider = new ErrorHandlerProvider();
         $provider->register($this->container);
 
         $expected = date_default_timezone_get();
-        $actual   = EnvManager::appTimezone();
+        $actual   = $env->appTimezone();
         $this->assertSame($expected, $actual);
 
         $expected = 'On';
@@ -71,6 +75,9 @@ final class ErrorHandlerProviderTest extends AbstractUnitTestCase
             true
         );
 
+        /** @var EnvManager $env */
+        $env = $this->container->getShared(Container::ENV);
+
         $provider = new ErrorHandlerProvider();
         $provider->register($this->container);
 
@@ -81,25 +88,16 @@ final class ErrorHandlerProviderTest extends AbstractUnitTestCase
         restore_error_handler();
 
         /** @var string $logName */
-        $logName = EnvManager::get('LOG_FILENAME', 'rest-api');
+        $logName = $env->get('LOG_FILENAME', 'rest-api');
         /** @var string $logPath */
-        $logPath = EnvManager::get('LOG_PATH', 'storage/logs/');
-        $logFile = EnvManager::appPath($logPath) . '/' . $logName . '.log';
+        $logPath = $env->get('LOG_PATH', 'storage/logs/');
+        $logFile = $env->appPath($logPath) . '/' . $logName . '.log';
 
         $this->assertFileContentsContains($logFile, $message);
     }
 
     public function testRegisterShutdown(): void
     {
-        /** @var string $logName */
-        $logName = EnvManager::get('LOG_FILENAME', 'rest-api');
-        /** @var string $logPath */
-        $logPath = EnvManager::get('LOG_PATH', 'storage/logs/');
-        $logFile = EnvManager::appPath($logPath) . '/' . $logName . '.log';
-
-        $_ENV['APP_ENV']       = 'development';
-        $_ENV['APP_LOG_LEVEL'] = 2;
-
         $now = hrtime(true);
         $this->container->set(
             Container::TIME,
@@ -109,6 +107,20 @@ final class ErrorHandlerProviderTest extends AbstractUnitTestCase
             true
         );
 
+        $_ENV['APP_ENV']       = 'development';
+        $_ENV['APP_LOG_LEVEL'] = 2;
+
+        /** @var Logger $logger */
+        $logger = $this->container->getShared(Container::LOGGER);
+        /** @var EnvManager $env */
+        $env = $this->container->getShared(Container::ENV);
+
+        /** @var string $logName */
+        $logName = $env->get('LOG_FILENAME', 'rest-api');
+        /** @var string $logPath */
+        $logPath = $env->get('LOG_PATH', 'storage/logs/');
+        $logFile = $env->appPath($logPath) . '/' . $logName . '.log';
+
         $provider = new ErrorHandlerProvider();
         $provider->register($this->container);
 
@@ -116,7 +128,12 @@ final class ErrorHandlerProviderTest extends AbstractUnitTestCase
         $reflection = new ReflectionClass($provider);
         $method     = $reflection->getMethod('onShutdown');
         $method->setAccessible(true);
-        $shutdown = $method->invoke($provider, $this->container);
+        $shutdown = $method->invoke(
+            $provider,
+            $logger,
+            $env,
+            $now
+        );
 
         restore_error_handler();
 
