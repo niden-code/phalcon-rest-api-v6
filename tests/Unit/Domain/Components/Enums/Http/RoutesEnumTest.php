@@ -24,11 +24,11 @@ final class RoutesEnumTest extends AbstractUnitTestCase
     {
         return [
             [
-                RoutesEnum::helloGet,
-                '',
-                '/',
-                RoutesEnum::GET,
-                Container::HELLO_SERVICE,
+                RoutesEnum::authLoginPost,
+                'auth/login',
+                '/auth/login',
+                RoutesEnum::POST,
+                Container::AUTH_LOGIN_POST_SERVICE,
             ],
             [
                 RoutesEnum::userGet,
