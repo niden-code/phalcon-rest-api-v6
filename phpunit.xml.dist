@@ -4,7 +4,6 @@
          bootstrap="./phpunit.php"
          cacheDirectory="tests/_output/.phpunit.result.cache"
          colors="true"
-         processIsolation="true"
 >
     <testsuites>
         <testsuite name="unit tests">
