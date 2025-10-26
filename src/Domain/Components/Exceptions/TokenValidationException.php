@@ -15,7 +15,7 @@ namespace Phalcon\Api\Domain\Components\Exceptions;
 
 use InvalidArgumentException;
 
-class InvalidConfigurationArgumentException extends InvalidArgumentException
+class TokenValidationException extends InvalidArgumentException
 {
     use ExceptionTrait;
 }
