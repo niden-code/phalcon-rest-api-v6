@@ -21,14 +21,14 @@ use Phalcon\Encryption\Security\JWT\Token\Token;
  * @phpstan-import-type TLoginResponsePayload from UserTypes
  * @phpstan-import-type TUserDbRecord from UserTypes
  * @phpstan-import-type TUserRecord from UserTypes
- */
-/**
+ *
  * Note: The 'readonly' keyword was intentionally removed from this class.
  * Properties $sessionToken and $sessionUser are mutable to support session
  * management, allowing updates to the current session state. This change
  * removes immutability guarantees, but is necessary for the intended use.
  */
 final class TransportRepository
+{
     private ?Token $sessionToken = null;
 
     private ?UserTransport $sessionUser = null;
