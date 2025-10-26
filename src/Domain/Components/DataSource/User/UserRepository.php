@@ -20,7 +20,7 @@ use Phalcon\DataMapper\Query\Select;
 /**
  * @phpstan-import-type TUserRecord from UserTypes
  */
-final class UserRepository
+class UserRepository
 {
     public function __construct(
         private readonly Connection $connection,
