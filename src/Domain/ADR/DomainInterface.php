@@ -16,13 +16,13 @@ namespace Phalcon\Api\Domain\ADR;
 use Phalcon\Domain\Payload;
 
 /**
- * @phpstan-import-type THelloInput from InputTypes
+ * @phpstan-import-type TLoginInput from InputTypes
  * @phpstan-import-type TUserInput from InputTypes
  */
 interface DomainInterface
 {
     /**
-     * @param THelloInput|TUserInput $input
+     * @param TLoginInput|TUserInput $input
      *
      * @return Payload
      */
