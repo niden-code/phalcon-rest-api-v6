@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Components\Env;
 
 use Phalcon\Api\Domain\Components\Constants\Dates;
+use Phalcon\Support\Collection;
 
 use function array_merge;
 use function getenv;
@@ -21,24 +22,22 @@ use function getenv;
 /**
  * @phpstan-import-type TSettings from EnvManagerTypes
  */
-class EnvManager
+class EnvManager extends Collection
 {
-    private static bool $isLoaded = false;
+    public function __construct()
+    {
+        parent::__construct();
 
-    /**
-     * @var TSettings
-     */
-    private static array $settings = [];
+        $this->load();
+    }
 
     /**
      * @return string
      */
-    public static function appEnv(): string
+    public function appEnv(): string
     {
-        self::load();
-
         /** @var string $appEnv */
-        $appEnv = self::get('APP_ENV', 'development');
+        $appEnv = $this->get('APP_ENV', 'development');
 
         return (string)$appEnv;
     }
@@ -46,14 +45,12 @@ class EnvManager
     /**
      * @return int
      */
-    public static function appLogLevel(): int
+    public function appLogLevel(): int
     {
-        self::load();
+        /** @var int $logLevel */
+        $logLevel = $this->get('APP_LOG_LEVEL', 1, 'int');
 
-        /** @var int|string $logLevel */
-        $logLevel = self::get('APP_LOG_LEVEL', 1);
-
-        return (int)$logLevel;
+        return $logLevel;
     }
 
     /**
@@ -61,7 +58,7 @@ class EnvManager
      *
      * @return string
      */
-    public static function appPath(string $path = ''): string
+    public function appPath(string $path = ''): string
     {
         return dirname(__DIR__, 4)
             . ($path ? DIRECTORY_SEPARATOR . $path : $path);
@@ -70,76 +67,58 @@ class EnvManager
     /**
      * @return string
      */
-    public static function appTimezone(): string
+    public function appTimezone(): string
     {
-        self::load();
-
         /** @var string $timezone */
-        $timezone = self::get('APP_TIMEZONE', Dates::DATE_TIME_ZONE);
+        $timezone = $this->get('APP_TIMEZONE', Dates::DATE_TIME_ZONE);
 
         return (string)$timezone;
     }
 
     /**
-     * @param string               $key
-     * @param bool|int|string|null $defaultValue
-     *
-     * @return bool|int|string|null
+     * @return void
      */
-    public static function get(
-        string $key,
-        bool | int | string | null $defaultValue = null
-    ): bool | int | string | null {
-        self::load();
+    public function load(): void
+    {
+        $envFactory = new EnvFactory();
+        $options    = self::getOptions();
+        $adapter    = $options['adapter'];
 
-        return self::$settings[$key] ?? $defaultValue;
+        $envs = array_merge(getenv(), $_ENV);
+        /** @var TSettings $options */
+        $options = $envFactory->newInstance($adapter)->load($options);
+        /** @var TSettings $envs */
+        $envs = array_merge($envs, $options);
+
+        $settings = array_map(
+            function ($value) {
+                return match ($value) {
+                    'true'  => true,
+                    'false' => false,
+                    default => $value,
+                };
+            },
+            $envs
+        );
+
+        $this->clear();
+        $this->init($settings);
     }
 
     /**
      * @return array<string, string>
      */
-    private static function getOptions(): array
+    private function getOptions(): array
     {
         $envs = array_merge(getenv(), $_ENV);
         /** @var string $adapter */
         $adapter = $envs['APP_ENV_ADAPTER'] ?? 'dotenv';
         /** @var string $filePath */
-        $filePath = $envs['APP_ENV_FILE_PATH'] ?? self::appPath();
+        $filePath = $envs['APP_ENV_FILE_PATH'] ?? $this->appPath();
 
         return [
             'adapter'  => $adapter,
             'filePath' => $filePath,
         ];
-    }
-
-    /**
-     * @return void
-     */
-    private static function load(): void
-    {
-        if (true !== self::$isLoaded) {
-            self::$isLoaded = true;
-
-            $envFactory = new EnvFactory();
-            $options    = self::getOptions();
-            $adapter    = $options['adapter'];
-
-            $envs = array_merge(getenv(), $_ENV);
-            /** @var TSettings $options */
-            $options = $envFactory->newInstance($adapter)->load($options);
-            /** @var TSettings $envs */
-            $envs = array_merge($envs, $options);
-
-            self::$settings = array_map(
-                function ($value) {
-                    return match ($value) {
-                        'true'  => true,
-                        'false' => false,
-                        default => $value,
-                    };
-                },
-                $envs
-            );
-        }
     }
 }

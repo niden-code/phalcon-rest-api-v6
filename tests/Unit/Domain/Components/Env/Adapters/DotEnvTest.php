@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Components\Env\Adapters;
 
+use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\Env\Adapters\DotEnv;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
 use Phalcon\Api\Domain\Components\Exceptions\InvalidConfigurationArgumentException;
@@ -24,7 +25,12 @@ final class DotEnvTest extends AbstractUnitTestCase
 
     public function setUp(): void
     {
-        $this->envFile = EnvManager::appPath()
+        parent::setUp();
+
+        /** @var EnvManager $env */
+        $env = $this->container->get(Container::ENV);
+
+        $this->envFile = $env->appPath()
             . '/tests/Fixtures/Domain/Components/Env/';
     }
 
