@@ -27,17 +27,21 @@ final class UserServiceTest extends AbstractUnitTestCase
 {
     public function testDispatch(): void
     {
+        /** @var EnvManager $env */
+        $env = $this->container->getShared(Container::ENV);
         /** @var TransportRepository $transport */
         $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
 
         $migration = new UsersMigration($this->getConnection());
         $dbUser    = $this->getNewUser($migration);
         $userId    = $dbUser['usr_id'];
+        $token     = $this->getUserToken($dbUser);
 
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
         $_SERVER = [
             'REQUEST_METHOD'     => 'GET',
             'REQUEST_TIME_FLOAT' => $time,
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
             'REQUEST_URI'        => '/user',
         ];
 
@@ -46,7 +50,7 @@ final class UserServiceTest extends AbstractUnitTestCase
         ];
 
         ob_start();
-        require_once EnvManager::appPath('public/index.php');
+        require_once $env->appPath('public/index.php');
         $response = ob_get_clean();
 
         $contents = json_decode($response, true);
