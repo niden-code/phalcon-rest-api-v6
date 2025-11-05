@@ -14,25 +14,14 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Services\User;
 
 use PayloadInterop\DomainStatus;
-use Phalcon\Api\Domain\ADR\DomainInterface;
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
 use Phalcon\Domain\Payload;
-use Phalcon\Filter\Filter;
 
 /**
  * @phpstan-import-type TUserInput from InputTypes
  */
-final readonly class UserGetService implements DomainInterface
+final class UserGetService extends AbstractUserService
 {
-    public function __construct(
-        private QueryRepository $repository,
-        private TransportRepository $transport,
-        private Filter $filter
-    ) {
-    }
-
     /**
      * @param TUserInput $input
      *
@@ -40,7 +29,7 @@ final readonly class UserGetService implements DomainInterface
      */
     public function __invoke(array $input): Payload
     {
-        $userId = $this->filter->absint($input['userId'] ?? 0);
+        $userId = $this->filter->absint($input['id'] ?? 0);
 
         /**
          * Success
