@@ -103,10 +103,10 @@ final class LoginPostServiceTest extends AbstractUnitTestCase
         $this->assertSame($expected, $actual);
 
         $this->assertArrayHasKey('token', $jwt);
-//        $this->assertArrayHasKey('refreshToken', $jwt);
+        $this->assertArrayHasKey('refreshToken', $jwt);
 
         $this->assertNotEmpty($jwt['token']);
-//        $this->assertNotEmpty($jwt['refreshToken']);
+        $this->assertNotEmpty($jwt['refreshToken']);
     }
 
     public function testServiceWrongCredentials(): void

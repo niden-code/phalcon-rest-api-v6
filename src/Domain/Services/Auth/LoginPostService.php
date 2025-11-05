@@ -14,36 +14,17 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Services\Auth;
 
 use PayloadInterop\DomainStatus;
-use Phalcon\Api\Domain\ADR\DomainInterface;
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Components\Cache\Cache;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
 use Phalcon\Api\Domain\Components\DataSource\User\UserTypes;
-use Phalcon\Api\Domain\Components\Encryption\JWTToken;
-use Phalcon\Api\Domain\Components\Encryption\Security;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
-use Phalcon\Api\Domain\Components\Env\EnvManager;
 use Phalcon\Domain\Payload;
-use Phalcon\Filter\Filter;
 
 /**
  * @phpstan-import-type TUserDbRecord from UserTypes
  * @phpstan-import-type TLoginInput from InputTypes
  */
-final readonly class LoginPostService implements DomainInterface
+final class LoginPostService extends AbstractAuthService
 {
-    public function __construct(
-        private QueryRepository $repository,
-        private TransportRepository $transport,
-        private Cache $cache,
-        private EnvManager $env,
-        private JWTToken $jwtToken,
-        private Filter $filter,
-        private Security $security,
-    ) {
-    }
-
     /**
      * @param TLoginInput $input
      *
@@ -63,7 +44,9 @@ final readonly class LoginPostService implements DomainInterface
          * Check if email or password are empty
          */
         if (true === empty($email) || true === empty($password)) {
-            return $this->getUnauthorizedPayload();
+            return $this->getUnauthorizedPayload(
+                [HttpCodesEnum::AppIncorrectCredentials->error()]
+            );
         }
 
         /**
@@ -80,24 +63,30 @@ final readonly class LoginPostService implements DomainInterface
             $dbUserId < 1 ||
             true !== $this->security->verify($password, $dbPassword)
         ) {
-            return $this->getUnauthorizedPayload();
+            return $this->getUnauthorizedPayload(
+                [HttpCodesEnum::AppIncorrectCredentials->error()]
+            );
         }
 
         /**
          * Get a new token for this user
          */
-        /** @var TUserDbRecord $dbUser $token */
-        $token      = $this->jwtToken->getForUser($dbUser);
-        $domainUser = $this->transport->newUser($dbUser);
-        $results    = $this->transport->newLoginUser(
+        /** @var TUserDbRecord $dbUser */
+        $token        = $this->jwtToken->getForUser($dbUser);
+        $refreshToken = $this->jwtToken->getRefreshForUser($dbUser);
+        $domainUser   = $this->transport->newUser($dbUser);
+        $results      = $this->transport->newLoginUser(
             $domainUser,
             $token,
+            $refreshToken
         );
 
         /**
          * Store the token in cache
          */
         $this->cache->storeTokenInCache($this->env, $domainUser, $token);
+        $this->cache->storeTokenInCache($this->env, $domainUser, $refreshToken);
+
         /**
          * Send the payload back
          */
@@ -105,21 +94,6 @@ final readonly class LoginPostService implements DomainInterface
             DomainStatus::SUCCESS,
             [
                 'data' => $results,
-            ]
-        );
-    }
-
-    /**
-     * @return Payload
-     */
-    private function getUnauthorizedPayload(): Payload
-    {
-        return new Payload(
-            DomainStatus::UNAUTHORIZED,
-            [
-                'errors' => [
-                    HttpCodesEnum::AppIncorrectCredentials->error(),
-                ],
             ]
         );
     }
