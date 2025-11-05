@@ -29,7 +29,7 @@ class EnvFactory
         $adapters = $this->getAdapters();
         if (true !== isset($this->instances[$name])) {
             if (true !== isset($adapters[$name])) {
-                throw new InvalidConfigurationArgumentException(
+                throw InvalidConfigurationArgumentException::new(
                     'Service ' . $name . ' is not registered'
                 );
             }
