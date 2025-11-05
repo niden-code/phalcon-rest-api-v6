@@ -32,10 +32,13 @@ use Phalcon\Support\Helper\Json\Decode;
 
 /**
  * @phpstan-import-type TUserRecord from UserTypes
- * @phpstan-import-type TUserDbRecord from UserTypes
+ * @phpstan-import-type TUserTokenDbRecord from UserTypes
  * @phpstan-type TValidatorErrors array{}|array<int, string>
+ *
+ * Removed the final declaration so that this class can be mocked. This
+ * class should not be extended
  */
-final class JWTToken
+class JWTToken
 {
     /**
      * @var Parser|null
@@ -50,23 +53,13 @@ final class JWTToken
     /**
      * Returns the string token
      *
-     * @param TUserDbRecord $user
+     * @param TUserTokenDbRecord $user
      *
      * @return string
      */
     public function getForUser(array $user): string
     {
-        /** @var int $expiration */
-        $expiration = $this->env->get(
-            'TOKEN_EXPIRATION',
-            Cache::CACHE_TOKEN_EXPIRY,
-            'int'
-        );
-
-        $now       = new DateTimeImmutable();
-        $expiresAt = $now->modify('+' . $expiration . ' seconds');
-
-        return $this->generateTokenForUser($user, $now, $expiresAt);
+        return $this->generateTokenForUser($user);
     }
 
     /**
@@ -89,6 +82,18 @@ final class JWTToken
         }
 
         return $tokenObject;
+    }
+
+    /**
+     * Returns the string token
+     *
+     * @param TUserTokenDbRecord $user
+     *
+     * @return string
+     */
+    public function getRefreshForUser(array $user): string
+    {
+        return $this->generateTokenForUser($user, true);
     }
 
     /**
@@ -122,6 +127,8 @@ final class JWTToken
     }
 
     /**
+     * Returns an array with the validation errors for this token
+     *
      * @param Token         $tokenObject
      * @param UserTransport $user
      *
@@ -153,19 +160,31 @@ final class JWTToken
     }
 
     /**
-     * @param TUserDbRecord     $user
-     * @param DateTimeImmutable $now
-     * @param DateTimeImmutable $expiresAt
-     * @param bool              $isRefresh
+     * Returns the string token
+     *
+     * @param TUserTokenDbRecord $user
+     * @param bool               $isRefresh
      *
      * @return string
      */
     private function generateTokenForUser(
         array $user,
-        DateTimeImmutable $now,
-        DateTimeImmutable $expiresAt,
-        bool $isRefresh = true
+        bool $isRefresh = false
     ): string {
+        /** @var int $expiration */
+        $expiration = $this->env->get(
+            'TOKEN_EXPIRATION',
+            Cache::CACHE_TOKEN_EXPIRY,
+            'int'
+        );
+
+        $now       = new DateTimeImmutable();
+        $expiresAt = $now->modify('+' . $expiration . ' seconds');
+        /**
+         * This is to ensure that the token is valid the minute we issue it
+         */
+        $now = $now->modify('-1 second');
+
         $tokenBuilder = new Builder(new Hmac());
         /** @var string $issuer */
         $issuer = $user['usr_issuer'];
@@ -194,6 +213,8 @@ final class JWTToken
 
 
     /**
+     * Returns the default audience for the tokens
+     *
      * @return string
      */
     private function getTokenAudience(): string
