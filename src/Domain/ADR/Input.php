@@ -33,7 +33,9 @@ final class Input implements InputInterface
         $query = $request->getQuery();
         /** @var TRequestQuery $post */
         $post = $request->getPost();
+        /** @var TRequestQuery $put */
+        $put = $request->getPut();
 
-        return array_merge($query, $post);
+        return array_merge($query, $post, $put);
     }
 }
