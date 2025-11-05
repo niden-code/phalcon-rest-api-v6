@@ -20,17 +20,29 @@ use function str_replace;
 /**
  * @phpstan-type TMiddleware array<string, 'before'|'finish'>
  */
-enum RoutesEnum: string
+enum RoutesEnum: int
 {
-    public const DELETE       = 'delete';
+    /**
+     * Methods
+     */
+    public const DELETE = 'delete';
+    /**
+     * Events
+     */
     public const EVENT_BEFORE = 'before';
     public const EVENT_FINISH = 'finish';
-    public const GET          = 'get';
-    public const POST         = 'post';
-    public const PUT          = 'put';
+    public const GET    = 'get';
+    public const POST   = 'post';
+    public const PUT    = 'put';
 
-    case authLoginPost = 'auth/login';
-    case userGet       = 'user';
+    case authLoginPost   = 11;
+    case authLogoutPost  = 12;
+    case authRefreshPost = 13;
+
+    case userDelete = 21;
+    case userGet    = 22;
+    case userPost   = 23;
+    case userPut    = 24;
 
     /**
      * @return string
@@ -46,8 +58,13 @@ enum RoutesEnum: string
     public function method(): string
     {
         return match ($this) {
-            self::authLoginPost => self::POST,
-            self::userGet       => self::GET,
+            self::authLoginPost,
+            self::authLogoutPost,
+            self::authRefreshPost,
+            self::userPost   => self::POST,
+            self::userDelete => self::DELETE,
+            self::userGet    => self::GET,
+            self::userPut    => self::PUT,
         };
     }
 
@@ -63,6 +80,7 @@ enum RoutesEnum: string
             Container::MIDDLEWARE_VALIDATE_TOKEN_STRUCTURE => self::EVENT_BEFORE,
             Container::MIDDLEWARE_VALIDATE_TOKEN_USER      => self::EVENT_BEFORE,
             Container::MIDDLEWARE_VALIDATE_TOKEN_CLAIMS    => self::EVENT_BEFORE,
+            Container::MIDDLEWARE_VALIDATE_TOKEN_REVOKED   => self::EVENT_BEFORE,
         ];
     }
 
@@ -71,14 +89,29 @@ enum RoutesEnum: string
      */
     public function prefix(): string
     {
-        return '/' . str_replace('-', '/', $this->value);
+        $endpoint = match ($this) {
+            self::authLoginPost,
+            self::authLogoutPost,
+            self::authRefreshPost => 'auth',
+            self::userDelete,
+            self::userGet,
+            self::userPost,
+            self::userPut         => 'user',
+        };
+
+        return '/' . str_replace('-', '/', $endpoint);
     }
 
     public function service(): string
     {
         return match ($this) {
-            self::authLoginPost => Container::AUTH_LOGIN_POST_SERVICE,
-            self::userGet       => Container::USER_GET_SERVICE,
+            self::authLoginPost   => Container::AUTH_LOGIN_POST_SERVICE,
+            self::authLogoutPost  => Container::AUTH_LOGOUT_POST_SERVICE,
+            self::authRefreshPost => Container::AUTH_REFRESH_POST_SERVICE,
+            self::userDelete      => Container::USER_DELETE_SERVICE,
+            self::userGet         => Container::USER_GET_SERVICE,
+            self::userPost        => Container::USER_POST_SERVICE,
+            self::userPut         => Container::USER_PUT_SERVICE,
         };
     }
 
@@ -87,6 +120,14 @@ enum RoutesEnum: string
      */
     public function suffix(): string
     {
-        return '';
+        return match ($this) {
+            self::authLoginPost   => '/login',
+            self::authLogoutPost  => '/logout',
+            self::authRefreshPost => '/refresh',
+            self::userDelete,
+            self::userGet,
+            self::userPost,
+            self::userPut         => '',
+        };
     }
 }
