@@ -40,7 +40,7 @@ final class UserPutService extends AbstractUserService
         /**
          * Errors exist - return early
          */
-        if (true !== empty($errors)) {
+        if (!empty($errors)) {
             return new Payload(
                 DomainStatus::INVALID,
                 [
