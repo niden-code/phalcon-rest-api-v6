@@ -20,7 +20,7 @@ use Phalcon\Domain\Payload;
 /**
  * @phpstan-import-type TUserInput from InputTypes
  */
-final class UserGetService extends AbstractUserService
+final class UserDeleteService extends AbstractUserService
 {
     /**
      * @param TUserInput $input
@@ -35,14 +35,15 @@ final class UserGetService extends AbstractUserService
          * Success
          */
         if ($userId > 0) {
-            $dbUser = $this->repository->user()->findById($userId);
-            $user   = $this->transport->newUser($dbUser);
+            $rows = $this->repository->user()->deleteById($userId);
 
-            if (true !== $user->isEmpty()) {
+            if ($rows > 0) {
                 return new Payload(
-                    DomainStatus::SUCCESS,
+                    DomainStatus::DELETED,
                     [
-                        'data' => $user->toArray(),
+                        'data' => [
+                            'Record deleted successfully [#' . $userId . '].',
+                        ],
                     ]
                 );
             }

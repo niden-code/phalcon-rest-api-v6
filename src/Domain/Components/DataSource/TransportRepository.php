@@ -56,12 +56,14 @@ final class TransportRepository
     /**
      * @param UserTransport $user
      * @param string        $token
+     * @param string        $refreshToken
      *
      * @return TLoginResponsePayload
      */
     public function newLoginUser(
         UserTransport $user,
-        string $token
+        string $token,
+        string $refreshToken
     ): array {
         return [
             'authenticated' => true,
@@ -71,7 +73,8 @@ final class TransportRepository
                 'email' => $user->getEmail(),
             ],
             'jwt'           => [
-                'token' => $token,
+                'token'        => $token,
+                'refreshToken' => $refreshToken,
             ],
         ];
     }

@@ -37,7 +37,27 @@ final class RouterProviderTest extends AbstractUnitTestCase
                 'pattern' => '/auth/login',
             ],
             [
+                'method'  => 'POST',
+                'pattern' => '/auth/logout',
+            ],
+            [
+                'method'  => 'POST',
+                'pattern' => '/auth/refresh',
+            ],
+            [
+                'method'  => 'DELETE',
+                'pattern' => '/user',
+            ],
+            [
                 'method'  => 'GET',
+                'pattern' => '/user',
+            ],
+            [
+                'method'  => 'POST',
+                'pattern' => '/user',
+            ],
+            [
+                'method'  => 'PUT',
                 'pattern' => '/user',
             ],
             [

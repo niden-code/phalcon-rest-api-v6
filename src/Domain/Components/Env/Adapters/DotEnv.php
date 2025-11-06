@@ -35,7 +35,7 @@ class DotEnv implements AdapterInterface
         /** @var string|null $filePath */
         $filePath = $options['filePath'] ?? null;
         if (true === empty($filePath) || true !== file_exists($filePath)) {
-            throw new InvalidConfigurationArgumentException(
+            throw InvalidConfigurationArgumentException::new(
                 'The .env file does not exist at the specified path: '
                 . (string)$filePath
             );

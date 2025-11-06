@@ -22,7 +22,8 @@ namespace Phalcon\Api\Domain\Components\DataSource\User;
  *          email: string
  *      },
  *      jwt: array{
- *          token: string
+ *         token: string,
+ *         refreshToken: string,
  *      }
  * }
  *
@@ -46,6 +47,13 @@ namespace Phalcon\Api\Domain\Components\DataSource\User;
  *     usr_updated_usr_id: int,
  * }
  *
+ * @phpstan-type TUserTokenDbRecord array{
+ *     usr_id: int,
+ *     usr_issuer: string,
+ *     usr_token_password: string,
+ *     usr_token_id: string
+ * }
+ *
  * @phpstan-type TUserRecord array{}|TUserDbRecord
  *
  * @phpstan-type TUserTransport array{
@@ -67,6 +75,43 @@ namespace Phalcon\Api\Domain\Components\DataSource\User;
  *     updatedDate: string,
  *     updatedUserId: int,
  * }
+ *
+ * @phpstan-type TUserInsert array{
+ *      status: int,
+ *      email: string,
+ *      password: string,
+ *      namePrefix: string,
+ *      nameFirst: string,
+ *      nameMiddle: string,
+ *      nameLast: string,
+ *      nameSuffix: string,
+ *      issuer: string,
+ *      tokenPassword: string,
+ *      tokenId: string,
+ *      preferences: string,
+ *      createdDate: string,
+ *      createdUserId: int,
+ *      updatedDate: string,
+ *      updatedUserId: int,
+ *  }
+ *
+ * @phpstan-type TUserUpdate array{
+ *      id: int,
+ *      status: int,
+ *      email: string,
+ *      password: string,
+ *      namePrefix: string,
+ *      nameFirst: string,
+ *      nameMiddle: string,
+ *      nameLast: string,
+ *      nameSuffix: string,
+ *      issuer: string,
+ *      tokenPassword: string,
+ *      tokenId: string,
+ *      preferences: string,
+ *      updatedDate: string,
+ *      updatedUserId: int,
+ *  }
  */
 final class UserTypes
 {

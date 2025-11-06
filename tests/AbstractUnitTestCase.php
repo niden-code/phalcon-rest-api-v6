@@ -26,6 +26,10 @@ use Phalcon\Encryption\Security\JWT\Builder;
 use Phalcon\Encryption\Security\JWT\Signer\Hmac;
 use PHPUnit\Framework\TestCase;
 
+use function base64_encode;
+use function random_bytes;
+use function substr;
+
 abstract class AbstractUnitTestCase extends TestCase
 {
     /**
@@ -50,6 +54,12 @@ abstract class AbstractUnitTestCase extends TestCase
         $this->assertStringContainsString($stream, $contents);
     }
 
+    /**
+     * @param string $table
+     * @param array  $criteria
+     *
+     * @return void
+     */
     public function assertInDatabase(string $table, array $criteria = []): void
     {
         $records = $this->getFromDatabase($table, $criteria);
@@ -57,6 +67,12 @@ abstract class AbstractUnitTestCase extends TestCase
         $this->assertNotEmpty($records);
     }
 
+    /**
+     * @param string $table
+     * @param array  $criteria
+     *
+     * @return void
+     */
     public function assertNotInDatabase(string $table, array $criteria = []): void
     {
         $records = $this->getFromDatabase($table, $criteria);
@@ -64,6 +80,11 @@ abstract class AbstractUnitTestCase extends TestCase
         $this->assertEmpty($records);
     }
 
+    /**
+     * @param Connection $connection
+     *
+     * @return void
+     */
     public function getConnection(): Connection
     {
         if (null === $this->connection) {
@@ -115,12 +136,17 @@ abstract class AbstractUnitTestCase extends TestCase
         return $dbUser[0];
     }
 
+    /**
+     * @param array $fields
+     *
+     * @return array
+     */
     public function getNewUserData(array $fields = []): array
     {
         $faker    = Factory::create();
         $password = $fields['usr_password'] ?? $this->getStrongPassword();
         /** @var Security $security */
-        $security = $this->container->get(Container::SECURITY);
+        $security = $this->container->getShared(Container::SECURITY);
 
         $password = $security->hash($password);
 
@@ -235,10 +261,10 @@ abstract class AbstractUnitTestCase extends TestCase
         if (!empty($where)) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
-        $stmt = $this->connection?->prepare($sql);
-        $stmt?->execute($params);
-        $records = $stmt?->fetchAll(PDO::FETCH_ASSOC);
 
-        return $records;
+        $stmt = $this->getConnection()->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -23,10 +23,16 @@ use Phalcon\Api\Domain\Components\Middleware\HealthMiddleware;
 use Phalcon\Api\Domain\Components\Middleware\NotFoundMiddleware;
 use Phalcon\Api\Domain\Components\Middleware\ValidateTokenClaimsMiddleware;
 use Phalcon\Api\Domain\Components\Middleware\ValidateTokenPresenceMiddleware;
+use Phalcon\Api\Domain\Components\Middleware\ValidateTokenRevokedMiddleware;
 use Phalcon\Api\Domain\Components\Middleware\ValidateTokenStructureMiddleware;
 use Phalcon\Api\Domain\Components\Middleware\ValidateTokenUserMiddleware;
 use Phalcon\Api\Domain\Services\Auth\LoginPostService;
+use Phalcon\Api\Domain\Services\Auth\LogoutPostService;
+use Phalcon\Api\Domain\Services\Auth\RefreshPostService;
+use Phalcon\Api\Domain\Services\User\UserDeleteService;
 use Phalcon\Api\Domain\Services\User\UserGetService;
+use Phalcon\Api\Domain\Services\User\UserPostService;
+use Phalcon\Api\Domain\Services\User\UserPutService;
 use Phalcon\Api\Responder\JsonResponder;
 use Phalcon\Cache\AdapterFactory;
 use Phalcon\DataMapper\Pdo\Connection;
@@ -45,10 +51,6 @@ class Container extends Di
 {
     /** @var string */
     public const APPLICATION = 'application';
-    /**
-     * Services
-     */
-    public const AUTH_LOGIN_POST_SERVICE = 'service.auth.login.post';
     /** @var string */
     public const CACHE = 'cache';
     /** @var string */
@@ -63,27 +65,8 @@ class Container extends Di
     public const JWT_TOKEN = 'jwt.token';
     /** @var string */
     public const LOGGER = 'logger';
-    /**
-     * Middleware
-     */
-    public const MIDDLEWARE_HEALTH                  = HealthMiddleware::class;
-    public const MIDDLEWARE_NOT_FOUND               = NotFoundMiddleware::class;
-    public const MIDDLEWARE_VALIDATE_TOKEN_CLAIMS   = ValidateTokenClaimsMiddleware::class;
-    public const MIDDLEWARE_VALIDATE_TOKEN_PRESENCE = ValidateTokenPresenceMiddleware::class;
-    public const MIDDLEWARE_VALIDATE_TOKEN_STRUCTURE = ValidateTokenStructureMiddleware::class;
-    public const MIDDLEWARE_VALIDATE_TOKEN_USER      = ValidateTokenUserMiddleware::class;
-    /**
-     * Repositories
-     */
-    public const REPOSITORY           = 'repository';
-    public const REPOSITORY_TRANSPORT = TransportRepository::class;
     /** @var string */
     public const REQUEST = 'request';
-    /**
-     * Responders
-     */
-    public const RESPONDER_JSON = JsonResponder::class;
-//    public const MIDDLEWARE_VALIDATE_TOKEN_REVOKED   = ValidateTokenRevokedMiddleware::class;
     /** @var string */
     public const RESPONSE = 'response';
     /** @var string */
@@ -92,7 +75,35 @@ class Container extends Di
     public const SECURITY = Security::class;
     /** @var string */
     public const TIME = 'time';
-    public const USER_GET_SERVICE        = 'service.user.get';
+    /**
+     * Services
+     */
+    public const AUTH_LOGIN_POST_SERVICE   = 'service.auth.login.post';
+    public const AUTH_LOGOUT_POST_SERVICE  = 'service.auth.logout.post';
+    public const AUTH_REFRESH_POST_SERVICE = 'service.auth.refresh.post';
+    public const USER_DELETE_SERVICE       = 'service.user.delete';
+    public const USER_GET_SERVICE          = 'service.user.get';
+    public const USER_POST_SERVICE         = 'service.user.post';
+    public const USER_PUT_SERVICE          = 'service.user.put';
+    /**
+     * Middleware
+     */
+    public const MIDDLEWARE_HEALTH                   = HealthMiddleware::class;
+    public const MIDDLEWARE_NOT_FOUND                = NotFoundMiddleware::class;
+    public const MIDDLEWARE_VALIDATE_TOKEN_CLAIMS    = ValidateTokenClaimsMiddleware::class;
+    public const MIDDLEWARE_VALIDATE_TOKEN_PRESENCE  = ValidateTokenPresenceMiddleware::class;
+    public const MIDDLEWARE_VALIDATE_TOKEN_REVOKED   = ValidateTokenRevokedMiddleware::class;
+    public const MIDDLEWARE_VALIDATE_TOKEN_STRUCTURE = ValidateTokenStructureMiddleware::class;
+    public const MIDDLEWARE_VALIDATE_TOKEN_USER      = ValidateTokenUserMiddleware::class;
+    /**
+     * Repositories
+     */
+    public const REPOSITORY           = 'repository';
+    public const REPOSITORY_TRANSPORT = TransportRepository::class;
+    /**
+     * Responders
+     */
+    public const RESPONDER_JSON = JsonResponder::class;
 
     public function __construct()
     {
@@ -110,21 +121,28 @@ class Container extends Di
 
             self::REPOSITORY => $this->getServiceRepository(),
 
-            self::AUTH_LOGIN_POST_SERVICE => $this->getServiceAuthLoginPost(),
-            self::USER_GET_SERVICE        => $this->getServiceUserGet(),
+            self::AUTH_LOGIN_POST_SERVICE   => $this->getServiceAuthPost(LoginPostService::class),
+            self::AUTH_LOGOUT_POST_SERVICE  => $this->getServiceAuthPost(LogoutPostService::class),
+            self::AUTH_REFRESH_POST_SERVICE => $this->getServiceAuthPost(RefreshPostService::class),
+            self::USER_DELETE_SERVICE       => $this->getServiceUser(UserDeleteService::class),
+            self::USER_GET_SERVICE          => $this->getServiceUser(UserGetService::class),
+            self::USER_POST_SERVICE         => $this->getServiceUser(UserPostService::class),
+            self::USER_PUT_SERVICE          => $this->getServiceUser(UserPutService::class),
         ];
 
         parent::__construct();
     }
 
     /**
+     * @param class-string $className
+     *
      * @return Service
      */
-    private function getServiceAuthLoginPost(): Service
+    private function getServiceAuthPost(string $className): Service
     {
         return new Service(
             [
-                'className' => LoginPostService::class,
+                'className' => $className,
                 'arguments' => [
                     [
                         'type' => 'service',
@@ -368,13 +386,15 @@ class Container extends Di
     }
 
     /**
+     * @param class-string $className
+     *
      * @return Service
      */
-    private function getServiceUserGet(): Service
+    private function getServiceUser(string $className): Service
     {
         return new Service(
             [
-                'className' => UserGetService::class,
+                'className' => $className,
                 'arguments' => [
                     [
                         'type' => 'service',
@@ -387,6 +407,10 @@ class Container extends Di
                     [
                         'type' => 'service',
                         'name' => self::FILTER,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::SECURITY,
                     ],
                 ],
             ]

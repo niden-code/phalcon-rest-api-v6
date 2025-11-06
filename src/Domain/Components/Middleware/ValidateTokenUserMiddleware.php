@@ -52,7 +52,7 @@ final class ValidateTokenUserMiddleware extends AbstractMiddleware
         /** @var Token $tokenObject */
         $tokenObject = $transport->getSessionToken();
         /** @var TUserRecord $dbUser */
-        $dbUser      = $jwtToken->getUser($repository, $tokenObject);
+        $dbUser = $jwtToken->getUser($repository, $tokenObject);
 
         if (true === empty($dbUser)) {
             $this->halt(

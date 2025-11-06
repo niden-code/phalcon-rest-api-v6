@@ -34,7 +34,7 @@ final class ValidateTokenPresenceMiddlewareTest extends AbstractUnitTestCase
         $_SERVER = [
             'REQUEST_METHOD'     => 'GET',
             'REQUEST_TIME_FLOAT' => $time,
-            'REQUEST_URI'        => '/user?userId=1234',
+            'REQUEST_URI'        => '/user?id=1234',
         ];
 
         ob_start();
@@ -63,7 +63,7 @@ final class ValidateTokenPresenceMiddlewareTest extends AbstractUnitTestCase
         $_SERVER = [
             'REQUEST_METHOD'     => 'GET',
             'REQUEST_TIME_FLOAT' => $time,
-            'REQUEST_URI'        => '/user?userId=1234',
+            'REQUEST_URI'        => '/user?id=1234',
         ];
 
         ob_start();
@@ -79,7 +79,7 @@ final class ValidateTokenPresenceMiddlewareTest extends AbstractUnitTestCase
             'REQUEST_METHOD'     => 'GET',
             'REQUEST_TIME_FLOAT' => $time,
             'HTTP_AUTHORIZATION' => 'Bearer 123.456.789',
-            'REQUEST_URI'        => '/user?userId=1234',
+            'REQUEST_URI'        => '/user?id=1234',
         ];
 
         ob_start();

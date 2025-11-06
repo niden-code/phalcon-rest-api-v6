@@ -18,10 +18,75 @@ namespace Phalcon\Api\Domain\ADR;
  *     email?: string,
  *     password?: string
  * }
- * @phpstan-type TUserInput array{
- *     userId?: int
+ *
+ * @phpstan-type TLogoutInput array{
+ *     token?: string
  * }
+ *
+ * @phpstan-type TRefreshInput array{
+ *     token?: string
+ * }
+ *
+ * @phpstan-type TUserInput array{
+ *     id?: int,
+ *     status?: int,
+ *     email?: string,
+ *     password?: string,
+ *     namePrefix?: string,
+ *     nameFirst?: string,
+ *     nameMiddle?: string,
+ *     nameLast?: string,
+ *     nameSuffix?: string,
+ *     issuer?: string,
+ *     tokenPassword?: string,
+ *     tokenId?: string,
+ *     preferences?: string,
+ *     createdDate?: string,
+ *     createdUserId?: int,
+ *     updatedDate?: string,
+ *     updatedUserId?: int,
+ * }
+ *
+ * @phpstan-type TUserSanitizedInsertInput array{
+ *     status: int,
+ *     email: string,
+ *     password: string,
+ *     namePrefix: string,
+ *     nameFirst: string,
+ *     nameMiddle: string,
+ *     nameLast: string,
+ *     nameSuffix: string,
+ *     issuer: string,
+ *     tokenPassword: string,
+ *     tokenId: string,
+ *     preferences: string,
+ *     createdDate: string,
+ *     createdUserId: int,
+ *     updatedDate: string,
+ *     updatedUserId: int,
+ * }
+ *
+ * @phpstan-type TUserSanitizedUpdateInput array{
+ *     id: int,
+ *     status: int,
+ *     email: string,
+ *     password: string,
+ *     namePrefix: string,
+ *     nameFirst: string,
+ *     nameMiddle: string,
+ *     nameLast: string,
+ *     nameSuffix: string,
+ *     issuer: string,
+ *     tokenPassword: string,
+ *     tokenId: string,
+ *     preferences: string,
+ *     updatedDate: string,
+ *     updatedUserId: int,
+ * }
+ *
  * @phpstan-type TRequestQuery array<array-key, bool|int|string>
+ *
+ * @phpstan-type TValidationErrors array<int, array<int, string>>
  */
 final class InputTypes
 {
