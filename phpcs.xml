@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <ruleset name="Phalcon-REST-v6">
     <description>Phalcon REST API v6 Coding Standards</description>
-    <arg value="-colors"/>
+    <arg value="--colors"/>
     <arg value="s"/>
     <arg value="p"/>
     <rule ref="PSR12">
