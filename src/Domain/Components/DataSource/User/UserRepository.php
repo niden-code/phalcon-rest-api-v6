@@ -138,7 +138,7 @@ class UserRepository extends AbstractRepository
             ->where('usr_id = ', $userId)
         ;
 
-        if ($updatedUserId > 1) {
+        if ($updatedUserId > 0) {
             $update->column('usr_updated_usr_id', $updatedUserId);
         }
 
