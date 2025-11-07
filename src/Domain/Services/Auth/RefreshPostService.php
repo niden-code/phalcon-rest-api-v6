@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Services\Auth;
 
-use PayloadInterop\DomainStatus;
 use Phalcon\Api\Domain\ADR\InputTypes;
+use Phalcon\Api\Domain\Components\DataSource\Auth\AuthInput;
 use Phalcon\Api\Domain\Components\DataSource\User\UserTypes;
 use Phalcon\Api\Domain\Components\Enums\Common\JWTEnum;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
-use Phalcon\Domain\Payload;
+use Phalcon\Api\Domain\Components\Payload;
 
 /**
  * @phpstan-import-type TUserDbRecord from UserTypes
@@ -37,8 +37,8 @@ final class RefreshPostService extends AbstractAuthService
         /**
          * Get email and password from the input and sanitize them
          */
-        $token = (string)($input['token'] ?? '');
-        $token = $this->filter->string($token);
+        $inputObject = AuthInput::new($this->sanitizer, $input);
+        $token       = $inputObject->token;
 
         /**
          * Validation
@@ -46,7 +46,7 @@ final class RefreshPostService extends AbstractAuthService
          * Empty token
          */
         if (true === empty($token)) {
-            return $this->getUnauthorizedPayload(
+            return Payload::unauthorized(
                 [HttpCodesEnum::AppTokenNotPresent->error()]
             );
         }
@@ -59,7 +59,7 @@ final class RefreshPostService extends AbstractAuthService
         $tokenObject = $this->jwtToken->getObject($token);
         $isRefresh   = $tokenObject->getClaims()->get(JWTEnum::Refresh->value);
         if (false === $isRefresh) {
-            return $this->getUnauthorizedPayload(
+            return Payload::unauthorized(
                 [HttpCodesEnum::AppTokenNotValid->error()]
             );
         }
@@ -67,35 +67,24 @@ final class RefreshPostService extends AbstractAuthService
         /**
          * Get the user - if empty return error
          */
-        $user = $this
+        $domainUser = $this
             ->jwtToken
             ->getUser($this->repository, $tokenObject)
         ;
-        if (true === empty($user)) {
-            return $this->getUnauthorizedPayload(
+        if (null === $domainUser) {
+            return Payload::unauthorized(
                 [HttpCodesEnum::AppTokenInvalidUser->error()]
             );
         }
 
-        $domainUser = $this->transport->newUser($user);
-
         /** @var TValidationErrors $errors */
         $errors = $this->jwtToken->validate($tokenObject, $domainUser);
         if (true !== empty($errors)) {
-            return $this->getUnauthorizedPayload($errors);
+            return Payload::unauthorized($errors);
         }
 
-        /**
-         * @todo change this to be the domain user
-         */
-        $userPayload     = [
-            'usr_issuer'         => $domainUser->getIssuer(),
-            'usr_token_password' => $domainUser->getTokenPassword(),
-            'usr_token_id'       => $domainUser->getTokenId(),
-            'usr_id'             => $domainUser->getId(),
-        ];
-        $newToken        = $this->jwtToken->getForUser($userPayload);
-        $newRefreshToken = $this->jwtToken->getRefreshForUser($userPayload);
+        $newToken        = $this->jwtToken->getForUser($domainUser);
+        $newRefreshToken = $this->jwtToken->getRefreshForUser($domainUser);
 
         /**
          * Invalidate old tokens, store new tokens in cache
@@ -107,14 +96,11 @@ final class RefreshPostService extends AbstractAuthService
         /**
          * Send the payload back
          */
-        return new Payload(
-            DomainStatus::SUCCESS,
+        return Payload::success(
             [
-                'data' => [
-                    'token'        => $newToken,
-                    'refreshToken' => $newRefreshToken,
-                ],
-            ]
+                'token'        => $newToken,
+                'refreshToken' => $newRefreshToken,
+            ],
         );
     }
 }

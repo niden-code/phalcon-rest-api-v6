@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Services\Auth;
 
-use PayloadInterop\DomainStatus;
 use Phalcon\Api\Domain\ADR\InputTypes;
+use Phalcon\Api\Domain\Components\DataSource\Auth\AuthInput;
 use Phalcon\Api\Domain\Components\DataSource\User\UserTypes;
 use Phalcon\Api\Domain\Components\Enums\Common\JWTEnum;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
-use Phalcon\Domain\Payload;
+use Phalcon\Api\Domain\Components\Payload;
 
 /**
  * @phpstan-import-type TUserDbRecord from UserTypes
@@ -40,8 +40,8 @@ final class LogoutPostService extends AbstractAuthService
         /**
          * Get the token
          */
-        $token = (string)($input['token'] ?? '');
-        $token = $this->filter->string($token);
+        $inputObject = AuthInput::new($this->sanitizer, $input);
+        $token       = $inputObject->token;
 
         /**
          * Validation
@@ -49,7 +49,7 @@ final class LogoutPostService extends AbstractAuthService
          * Empty token
          */
         if (true === empty($token)) {
-            return $this->getUnauthorizedPayload(
+            return Payload::unauthorized(
                 [HttpCodesEnum::AppTokenNotPresent->error()]
             );
         }
@@ -62,7 +62,7 @@ final class LogoutPostService extends AbstractAuthService
         $tokenObject = $this->jwtToken->getObject($token);
         $isRefresh   = $tokenObject->getClaims()->get(JWTEnum::Refresh->value);
         if (false === $isRefresh) {
-            return $this->getUnauthorizedPayload(
+            return Payload::unauthorized(
                 [HttpCodesEnum::AppTokenNotValid->error()]
             );
         }
@@ -70,22 +70,21 @@ final class LogoutPostService extends AbstractAuthService
         /**
          * Get the user - if empty return error
          */
-        $user = $this
+        $domainUser = $this
             ->jwtToken
             ->getUser($this->repository, $tokenObject)
         ;
-        if (true === empty($user)) {
-            return $this->getUnauthorizedPayload(
+
+        if (null === $domainUser) {
+            return Payload::unauthorized(
                 [HttpCodesEnum::AppTokenInvalidUser->error()]
             );
         }
 
-        $domainUser = $this->transport->newUser($user);
-
         /** @var TValidationErrors $errors */
         $errors = $this->jwtToken->validate($tokenObject, $domainUser);
         if (true !== empty($errors)) {
-            return $this->getUnauthorizedPayload($errors);
+            return Payload::unauthorized($errors);
         }
 
         /**
@@ -96,13 +95,10 @@ final class LogoutPostService extends AbstractAuthService
         /**
          * Send the payload back
          */
-        return new Payload(
-            DomainStatus::SUCCESS,
+        return Payload::success(
             [
-                'data' => [
-                    'authenticated' => false,
-                ],
-            ]
+                'authenticated' => false,
+            ],
         );
     }
 }
