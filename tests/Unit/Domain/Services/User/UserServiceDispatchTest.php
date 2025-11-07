@@ -15,7 +15,6 @@ namespace Phalcon\Api\Tests\Unit\Domain\Services\User;
 
 use Phalcon\Api\Domain\Components\Cache\Cache;
 use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
 use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Domain\Components\Enums\Http\RoutesEnum;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
@@ -77,7 +76,7 @@ final class UserServiceDispatchTest extends AbstractUnitTestCase
         $this->assertSame($expected, $actual);
 
         $user     = $userMapper->domain($dbUser);
-        $expected = $user->toArray();
+        $expected = [$userId => $user->toArray()];
         $actual   = $data;
         $this->assertSame($expected, $actual);
     }

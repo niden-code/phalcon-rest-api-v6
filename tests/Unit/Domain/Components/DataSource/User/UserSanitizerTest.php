@@ -41,9 +41,9 @@ final class UserSanitizerTest extends AbstractUnitTestCase
             'tokenId'       => null,
             'preferences'   => null,
             'createdDate'   => null,
-            'createdUserId' => null,
+            'createdUserId' => 0,
             'updatedDate'   => null,
-            'updatedUserId' => null,
+            'updatedUserId' => 0,
         ];
         $actual   = $sanitizer->sanitize([]);
         $this->assertSame($expected, $actual);

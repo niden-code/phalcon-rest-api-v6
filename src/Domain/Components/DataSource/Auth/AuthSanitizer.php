@@ -13,9 +13,13 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\Auth;
 
+use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Components\DataSource\SanitizerInterface;
 use Phalcon\Filter\Filter;
 
+/**
+ * @phpstan-import-type TAuthInput from InputTypes
+ */
 final class AuthSanitizer implements SanitizerInterface
 {
     public function __construct(
@@ -26,12 +30,13 @@ final class AuthSanitizer implements SanitizerInterface
     /**
      * Return a sanitized array of the input
      *
-     * @param array $input
+     * @param TAuthInput $input
      *
-     * @return array
+     * @return TAuthInput
      */
     public function sanitize(array $input): array
     {
+        /** @var array<string, string|null> $fields */
         $fields = [
             'email'    => null,
             'password' => null,
@@ -56,6 +61,7 @@ final class AuthSanitizer implements SanitizerInterface
             $sanitized[$name] = $value;
         }
 
+        /** @var TAuthInput $sanitized */
         return $sanitized;
     }
 

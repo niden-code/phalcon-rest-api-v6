@@ -122,8 +122,7 @@ final class UserInputTest extends AbstractUnitTestCase
         $actual   = $userInput->updatedUserId;
         $this->assertSame($expected, $actual);
 
-        // Verify toArray behaviour: key is the id value per implementation
-        $expected = [$userInput->id => get_object_vars($userInput)];
+        $expected =get_object_vars($userInput);
         $actual   = $userInput->toArray();
         $this->assertSame($expected, $actual);
     }

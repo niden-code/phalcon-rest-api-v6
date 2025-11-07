@@ -54,25 +54,23 @@ final class UserTest extends AbstractUnitTestCase
         $this->assertSame($expected, $actual);
 
         $expected = [
-            $userData['usr_id'] => [
-                'id'            => $userData['usr_id'],
-                'status'        => $userData['usr_status_flag'],
-                'email'         => $userData['usr_email'],
-                'password'      => $userData['usr_password'],
-                'namePrefix'    => $userData['usr_name_prefix'],
-                'nameFirst'     => $userData['usr_name_first'],
-                'nameMiddle'    => $userData['usr_name_middle'],
-                'nameLast'      => $userData['usr_name_last'],
-                'nameSuffix'    => $userData['usr_name_suffix'],
-                'issuer'        => $userData['usr_issuer'],
-                'tokenPassword' => $userData['usr_token_password'],
-                'tokenId'       => $userData['usr_token_id'],
-                'preferences'   => $userData['usr_preferences'],
-                'createdDate'   => $userData['usr_created_date'],
-                'createdUserId' => $userData['usr_created_usr_id'],
-                'updatedDate'   => $userData['usr_updated_date'],
-                'updatedUserId' => $userData['usr_updated_usr_id'],
-            ],
+            'id'            => $userData['usr_id'],
+            'status'        => $userData['usr_status_flag'],
+            'email'         => $userData['usr_email'],
+            'password'      => $userData['usr_password'],
+            'namePrefix'    => $userData['usr_name_prefix'],
+            'nameFirst'     => $userData['usr_name_first'],
+            'nameMiddle'    => $userData['usr_name_middle'],
+            'nameLast'      => $userData['usr_name_last'],
+            'nameSuffix'    => $userData['usr_name_suffix'],
+            'issuer'        => $userData['usr_issuer'],
+            'tokenPassword' => $userData['usr_token_password'],
+            'tokenId'       => $userData['usr_token_id'],
+            'preferences'   => $userData['usr_preferences'],
+            'createdDate'   => $userData['usr_created_date'],
+            'createdUserId' => $userData['usr_created_usr_id'],
+            'updatedDate'   => $userData['usr_updated_date'],
+            'updatedUserId' => $userData['usr_updated_usr_id'],
         ];
         $actual   = $user->toArray();
         $this->assertSame($expected, $actual);

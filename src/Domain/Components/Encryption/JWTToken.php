@@ -31,8 +31,6 @@ use Phalcon\Encryption\Security\JWT\Validator;
 use Phalcon\Support\Helper\Json\Decode;
 
 /**
- * @phpstan-import-type TUserRecord from UserTypes
- * @phpstan-import-type TUserTokenDbRecord from UserTypes
  * @phpstan-type TValidatorErrors array{}|array<int, string>
  *
  * Removed the final declaration so that this class can be mocked. This
@@ -139,15 +137,24 @@ class JWTToken
         $signer    = new Hmac();
         $now       = new DateTimeImmutable();
 
+        /** @var string $tokenId */
+        $tokenId = $user->tokenId;
+        /** @var string $issuer */
+        $issuer  = $user->issuer;
+        /** @var string $tokenPassword */
+        $tokenPassword = $user->tokenPassword;
+        /** @var int $userId */
+        $userId = $user->id;
+
         $validator
-            ->validateId($user->tokenId)
+            ->validateId($tokenId)
             ->validateAudience($this->getTokenAudience())
-            ->validateIssuer($user->issuer)
+            ->validateIssuer($issuer)
             ->validateNotBefore($now->getTimestamp())
             ->validateIssuedAt($now->getTimestamp())
             ->validateExpiration($now->getTimestamp())
-            ->validateSignature($signer, $user->tokenPassword)
-            ->validateClaim(JWTEnum::UserId->value, $user->id)
+            ->validateSignature($signer, $tokenPassword)
+            ->validateClaim(JWTEnum::UserId->value, $userId)
         ;
 
         /** @var TValidatorErrors $errors */
@@ -189,7 +196,7 @@ class JWTToken
         $tokenPassword = $user->tokenPassword;
         /** @var string $tokenId */
         $tokenId = $user->tokenId;
-        /** @var string $userId */
+        /** @var int $userId */
         $userId = $user->id;
 
         $tokenObject = $tokenBuilder

@@ -24,6 +24,9 @@ use Phalcon\DataMapper\Query\Update;
 use function array_filter;
 
 /**
+ * @phpstan-import-type TCriteria from UserTypes
+ * @phpstan-import-type TUserDomainToDbRecord from UserTypes
+ * @phpstan-import-type TUserDbRecordOptional from UserTypes
  * @phpstan-import-type TUserRecord from UserTypes
  *
  * The 'final' keyword was intentionally removed from this class to allow
@@ -89,7 +92,7 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
 
 
     /**
-     * @param array<string, bool|int|string|null> $criteria
+     * @param TCriteria $criteria
      *
      * @return User|null
      */
@@ -133,11 +136,6 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
         }
 
         /**
-         * Remove usr_id just in case
-         */
-        unset($row['usr_id']);
-
-        /**
          * Cleanup empty fields if needed
          */
         $columns = $this->cleanupFields($row);
@@ -158,9 +156,12 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
      */
     public function update(User $user): int
     {
+
         $row    = $this->mapper->db($user);
         $now    = Dates::toUTC(format: Dates::DATE_TIME_FORMAT);
+        /** @var int $userId */
         $userId = $row['usr_id'];
+
         /**
          * @todo this should not be here - the update should just add data not validate
          */
@@ -172,15 +173,16 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
         }
 
         /**
-         * Remove createdDate and createdUserId - cannot be changed. This
-         * needs to be here because we don't want to touch those fields.
-         */
-        unset($row['usr_created_date'], $row['usr_created_usr_id']);
-
-        /**
          * Cleanup empty fields if needed
          */
         $columns = $this->cleanupFields($row);
+
+        /**
+         * Remove createdDate and createdUserId - cannot be changed. This
+         * needs to be here because we don't want to touch those fields.
+         */
+        unset($columns['usr_created_date'], $columns['usr_created_usr_id']);
+
         $update  = Update::new($this->connection);
         $update
             ->table($this->table)
@@ -193,9 +195,9 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
     }
 
     /**
-     * @param array $row
+     * @param TUserDomainToDbRecord $row
      *
-     * @return array
+     * @return TUserDbRecordOptional
      */
     private function cleanupFields(array $row): array
     {

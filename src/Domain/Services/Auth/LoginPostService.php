@@ -15,19 +15,17 @@ namespace Phalcon\Api\Domain\Services\Auth;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Components\DataSource\Auth\AuthInput;
-use Phalcon\Api\Domain\Components\DataSource\User\UserInput;
 use Phalcon\Api\Domain\Components\DataSource\User\UserTypes;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Components\Payload;
 
 /**
- * @phpstan-import-type TUserDbRecord from UserTypes
- * @phpstan-import-type TLoginInput from InputTypes
+ * @phpstan-import-type TAuthLoginInput from InputTypes
  */
 final class LoginPostService extends AbstractAuthService
 {
     /**
-     * @param TLoginInput $input
+     * @param TAuthLoginInput $input
      *
      * @return Payload
      */

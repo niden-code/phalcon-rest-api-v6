@@ -71,7 +71,6 @@ final class UserServicePostTest extends AbstractUnitTestCase
          */
         $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = array_shift($domainData);
 
         $payload = $service->__invoke($domainData);
 
@@ -84,7 +83,7 @@ final class UserServicePostTest extends AbstractUnitTestCase
 
         $errors = $actual['errors'];
 
-        $expected = ['Cannot create database record: No id returned'];
+        $expected = [['Cannot create database record: No id returned']];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
     }
@@ -136,7 +135,6 @@ final class UserServicePostTest extends AbstractUnitTestCase
          */
         $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = array_shift($domainData);
 
         $payload = $service->__invoke($domainData);
 
@@ -149,7 +147,7 @@ final class UserServicePostTest extends AbstractUnitTestCase
 
         $errors = $actual['errors'];
 
-        $expected = ['Cannot create database record: abcde'];
+        $expected = [['Cannot create database record: abcde']];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
     }
@@ -176,7 +174,6 @@ final class UserServicePostTest extends AbstractUnitTestCase
          */
         $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = $domainData[0];
 
         $payload = $service->__invoke($domainData);
 
@@ -216,7 +213,6 @@ final class UserServicePostTest extends AbstractUnitTestCase
          */
         $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = array_shift($domainData);
 
         $payload = $service->__invoke($domainData);
 
@@ -318,7 +314,6 @@ final class UserServicePostTest extends AbstractUnitTestCase
          */
         $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = $domainData[0];
 
         $payload = $service->__invoke($domainData);
 

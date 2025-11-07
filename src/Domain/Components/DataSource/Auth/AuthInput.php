@@ -13,10 +13,19 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\Auth;
 
+use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Components\DataSource\SanitizerInterface;
 
+/**
+ * @phpstan-import-type TAuthInput from InputTypes
+ */
 final class AuthInput
 {
+    /**
+     * @param string|null $email
+     * @param string|null $password
+     * @param string|null $token
+     */
     public function __construct(
         public readonly ?string $email,
         public readonly ?string $password,
@@ -24,14 +33,23 @@ final class AuthInput
     ) {
     }
 
+    /**
+     * @param SanitizerInterface $sanitizer
+     * @param TAuthInput         $input
+     *
+     * @return self
+     */
     public static function new(SanitizerInterface $sanitizer, array $input): self
     {
         $sanitized = $sanitizer->sanitize($input);
 
-        return new self(
-            $sanitized['email'] ?? null,
-            $sanitized['password'] ?? null,
-            $sanitized['token'] ?? null,
-        );
+        /** @var string|null $email */
+        $email    = $sanitized['email'] ?? null;
+        /** @var string|null $password */
+        $password = $sanitized['password'] ?? null;
+        /** @var string|null $token */
+        $token    = $sanitized['token'] ?? null;
+
+        return new self($email, $password, $token);
     }
 }

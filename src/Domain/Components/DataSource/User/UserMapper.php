@@ -13,12 +13,19 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
+use Phalcon\Api\Domain\ADR\InputTypes;
+
+/**
+ * @phpstan-import-type TUser from UserTypes
+ * @phpstan-import-type TUserDbRecord from UserTypes
+ * @phpstan-import-type TUserDomainToDbRecord from UserTypes
+ */
 final class UserMapper
 {
     /**
      * Map Domain User -> DB row (usr_*)
      *
-     * @return array
+     * @return TUserDomainToDbRecord
      */
     public function db(User $user): array
     {
@@ -46,7 +53,7 @@ final class UserMapper
     /**
      * Map DB row (usr_*) -> Domain User
      *
-     * @param array<string,mixed> $row
+     * @param TUserDbRecord|array{} $row
      */
     public function domain(array $row): User
     {
@@ -74,15 +81,15 @@ final class UserMapper
     /**
      * Map input row -> Domain User
      *
-     * @param array<string,mixed> $row
+     * @param TUser $row
      */
     public function input(array $row): User
     {
         return new User(
             $row['id'],
             $row['status'],
-            $row['email'],
-            $row['password'],
+            (string)$row['email'],
+            (string)$row['password'],
             $row['namePrefix'],
             $row['nameFirst'],
             $row['nameMiddle'],

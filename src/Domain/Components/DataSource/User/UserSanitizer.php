@@ -16,6 +16,9 @@ namespace Phalcon\Api\Domain\Components\DataSource\User;
 use Phalcon\Api\Domain\Components\DataSource\SanitizerInterface;
 use Phalcon\Filter\Filter;
 
+/**
+ * @phpstan-import-type TUser from UserTypes
+ */
 final class UserSanitizer implements SanitizerInterface
 {
     public function __construct(
@@ -26,9 +29,9 @@ final class UserSanitizer implements SanitizerInterface
     /**
      * Return a sanitized array of the input
      *
-     * @param array $input
+     * @param TUser $input
      *
-     * @return array
+     * @return TUser
      */
     public function sanitize(array $input): array
     {
@@ -47,9 +50,9 @@ final class UserSanitizer implements SanitizerInterface
             'tokenId'       => null,
             'preferences'   => null,
             'createdDate'   => null,
-            'createdUserId' => null,
+            'createdUserId' => 0,
             'updatedDate'   => null,
-            'updatedUserId' => null,
+            'updatedUserId' => 0,
         ];
 
         /**
@@ -70,6 +73,7 @@ final class UserSanitizer implements SanitizerInterface
             $sanitized[$name] = $value;
         }
 
+        /** @var TUser $sanitized */
         return $sanitized;
     }
 

@@ -24,8 +24,6 @@ use Phalcon\Api\Domain\Components\Encryption\Security;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
 
 /**
- * @phpstan-import-type TUserDbRecord from UserTypes
- * @phpstan-import-type TLoginInput from InputTypes
  * @phpstan-import-type TValidationErrors from InputTypes
  */
 abstract class AbstractAuthService implements DomainInterface

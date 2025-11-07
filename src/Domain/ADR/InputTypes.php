@@ -14,16 +14,18 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\ADR;
 
 /**
- * @phpstan-type TLoginInput array{
+ * @phpstan-type TAuthInput TAuthLoginInput|TAuthLogoutInput
+ *
+ * @phpstan-type TAuthLoginInput array{
  *     email?: string,
  *     password?: string
  * }
  *
- * @phpstan-type TLogoutInput array{
+ * @phpstan-type TAuthLogoutInput array{
  *     token?: string
  * }
  *
- * @phpstan-type TRefreshInput array{
+ * @phpstan-type TAuthRefreshInput array{
  *     token?: string
  * }
  *
@@ -45,43 +47,6 @@ namespace Phalcon\Api\Domain\ADR;
  *     createdUserId?: int,
  *     updatedDate?: string,
  *     updatedUserId?: int,
- * }
- *
- * @phpstan-type TUserSanitizedInsertInput array{
- *     status: int,
- *     email: string,
- *     password: string,
- *     namePrefix: string,
- *     nameFirst: string,
- *     nameMiddle: string,
- *     nameLast: string,
- *     nameSuffix: string,
- *     issuer: string,
- *     tokenPassword: string,
- *     tokenId: string,
- *     preferences: string,
- *     createdDate: string,
- *     createdUserId: int,
- *     updatedDate: string,
- *     updatedUserId: int,
- * }
- *
- * @phpstan-type TUserSanitizedUpdateInput array{
- *     id: int,
- *     status: int,
- *     email: string,
- *     password: string,
- *     namePrefix: string,
- *     nameFirst: string,
- *     nameMiddle: string,
- *     nameLast: string,
- *     nameSuffix: string,
- *     issuer: string,
- *     tokenPassword: string,
- *     tokenId: string,
- *     preferences: string,
- *     updatedDate: string,
- *     updatedUserId: int,
  * }
  *
  * @phpstan-type TRequestQuery array<array-key, bool|int|string>

@@ -77,7 +77,6 @@ final class UserServicePutTest extends AbstractUnitTestCase
 
         $updateUser = $userMapper->domain($userData);
         $updateUser = $updateUser->toArray();
-        $updateUser = array_shift($updateUser);
 
         $payload = $service->__invoke($updateUser);
 
@@ -90,7 +89,7 @@ final class UserServicePutTest extends AbstractUnitTestCase
 
         $errors = $actual['errors'];
 
-        $expected = ['Record(s) not found'];
+        $expected = [['Record(s) not found']];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
     }
@@ -144,7 +143,6 @@ final class UserServicePutTest extends AbstractUnitTestCase
 
         $updateUser = $userMapper->domain($userData);
         $updateUser = $updateUser->toArray();
-        $updateUser = array_shift($updateUser);
 
         $payload = $service->__invoke($updateUser);
 
@@ -157,7 +155,7 @@ final class UserServicePutTest extends AbstractUnitTestCase
 
         $errors = $actual['errors'];
 
-        $expected = ['Cannot update database record: No id returned'];
+        $expected = [['Cannot update database record: No id returned']];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
     }
@@ -216,7 +214,6 @@ final class UserServicePutTest extends AbstractUnitTestCase
          */
         $updateUser = $userMapper->domain($userData);
         $updateUser = $updateUser->toArray();
-        $updateUser = array_shift($updateUser);
 
         $payload = $service->__invoke($updateUser);
 
@@ -229,7 +226,7 @@ final class UserServicePutTest extends AbstractUnitTestCase
 
         $errors = $actual['errors'];
 
-        $expected = ['Cannot update database record: abcde'];
+        $expected = [['Cannot update database record: abcde']];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
     }
@@ -253,11 +250,10 @@ final class UserServicePutTest extends AbstractUnitTestCase
         /**
          * $userData is a db record. We need a domain object here
          */
-        $domainUser = $userMapper->domain($userData);
-        $domainData = $domainUser->toArray();
-        $domainData = $domainData[0];
+        $updateUser = $userMapper->domain($userData);
+        $updateUser = $updateUser->toArray();
 
-        $payload = $service->__invoke($domainData);
+        $payload = $service->__invoke($updateUser);
 
         $expected = DomainStatus::INVALID;
         $actual   = $payload->getStatus();
@@ -304,7 +300,6 @@ final class UserServicePutTest extends AbstractUnitTestCase
          */
         $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = array_shift($domainData);
 
         $payload = $service->__invoke($domainData);
 
@@ -368,10 +363,16 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $actual   = $data['preferences'];
         $this->assertSame($expected, $actual);
 
+        /**
+         * These have to be the same on an update
+         */
         $expected = $dbUser['usr_created_date'];
         $actual   = $data['createdDate'];
         $this->assertSame($expected, $actual);
 
+        /**
+         * These have to be the same on an update
+         */
         $expected = 0;
         $actual   = $data['createdUserId'];
         $this->assertSame($expected, $actual);
@@ -414,7 +415,6 @@ final class UserServicePutTest extends AbstractUnitTestCase
          */
         $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = array_shift($domainData);
 
         $payload = $service->__invoke($domainData);
 
@@ -478,10 +478,16 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $actual   = $data['preferences'];
         $this->assertSame($expected, $actual);
 
+        /**
+         * These have to be the same on an update
+         */
         $expected = $dbUser['usr_created_date'];
         $actual   = $data['createdDate'];
         $this->assertSame($expected, $actual);
 
+        /**
+         * These have to be the same on an update
+         */
         $expected = 0;
         $actual   = $data['createdUserId'];
         $this->assertSame($expected, $actual);

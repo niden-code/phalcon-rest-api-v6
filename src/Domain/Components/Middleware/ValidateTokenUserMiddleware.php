@@ -15,7 +15,6 @@ namespace Phalcon\Api\Domain\Components\Middleware;
 
 use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
 use Phalcon\Api\Domain\Components\DataSource\User\UserTypes;
 use Phalcon\Api\Domain\Components\Encryption\JWTToken;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
@@ -26,8 +25,6 @@ use Phalcon\Mvc\Micro;
 use Phalcon\Support\Registry;
 
 /**
- * @phpstan-import-type TUserDbRecord from UserTypes
- * @phpstan-import-type TUserRecord from UserTypes
  */
 final class ValidateTokenUserMiddleware extends AbstractMiddleware
 {

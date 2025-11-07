@@ -21,7 +21,7 @@ use Phalcon\Http\RequestInterface;
 use Phalcon\Http\ResponseInterface;
 
 /**
- * @phpstan-import-type TLoginInput from InputTypes
+ * @phpstan-import-type TAuthLoginInput from InputTypes
  * @phpstan-import-type TUserInput from InputTypes
  */
 final readonly class ActionHandler implements ActionInterface
@@ -37,7 +37,7 @@ final readonly class ActionHandler implements ActionInterface
     public function __invoke(): void
     {
         $input = new Input();
-        /** @var TLoginInput|TUserInput $data */
+        /** @var TAuthLoginInput|TUserInput $data */
         $data  = $input->__invoke($this->request);
 
         $this->responder->__invoke(

@@ -15,20 +15,18 @@ namespace Phalcon\Api\Domain\Services\Auth;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Components\DataSource\Auth\AuthInput;
-use Phalcon\Api\Domain\Components\DataSource\User\UserTypes;
 use Phalcon\Api\Domain\Components\Enums\Common\JWTEnum;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Components\Payload;
 
 /**
- * @phpstan-import-type TUserDbRecord from UserTypes
- * @phpstan-import-type TLogoutInput from InputTypes
+ * @phpstan-import-type TAuthLogoutInput from InputTypes
  * @phpstan-import-type TValidationErrors from InputTypes
  */
 final class LogoutPostService extends AbstractAuthService
 {
     /**
-     * @param TLogoutInput $input
+     * @param TAuthLogoutInput $input
      *
      * @return Payload
      */

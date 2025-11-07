@@ -40,7 +40,7 @@ final class ValidateTokenRevokedMiddleware extends AbstractMiddleware
         /** @var Registry $registry */
         $registry = $application->getSharedService(Container::REGISTRY);
 
-        /** @var User $user */
+        /** @var User $domainUser */
         $domainUser = $registry->get('user');
 
         /**

@@ -47,6 +47,66 @@ namespace Phalcon\Api\Domain\Components\DataSource\User;
  *     usr_updated_usr_id: int,
  * }
  *
+ * @phpstan-type TUserDomainToDbRecord array{
+ *     usr_id: int,
+ *     usr_status_flag: int,
+ *     usr_email: ?string,
+ *     usr_password: ?string,
+ *     usr_name_prefix: ?string,
+ *     usr_name_first: ?string,
+ *     usr_name_middle: ?string,
+ *     usr_name_last: ?string,
+ *     usr_name_suffix: ?string,
+ *     usr_issuer: ?string,
+ *     usr_token_password: ?string,
+ *     usr_token_id: ?string,
+ *     usr_preferences: ?string,
+ *     usr_created_date: ?string,
+ *     usr_created_usr_id: ?int,
+ *     usr_updated_date: ?string,
+ *     usr_updated_usr_id: ?int,
+ * }
+ *
+ * @phpstan-type TUserDbRecordOptional array{
+ *     usr_id?: int,
+ *     usr_status_flag?: int,
+ *     usr_email?: ?string,
+ *     usr_password?: ?string,
+ *     usr_name_prefix?: ?string,
+ *     usr_name_first?: ?string,
+ *     usr_name_middle?: ?string,
+ *     usr_name_last?: ?string,
+ *     usr_name_suffix?: ?string,
+ *     usr_issuer?: ?string,
+ *     usr_token_password?: ?string,
+ *     usr_token_id?: ?string,
+ *     usr_preferences?: ?string,
+ *     usr_created_date?: ?string,
+ *     usr_created_usr_id?: ?int,
+ *     usr_updated_date?: ?string,
+ *     usr_updated_usr_id?: ?int,
+ * }
+ *
+ * @phpstan-type TUser array{
+ *     id: int,
+ *     status: int,
+ *     email: ?string,
+ *     password: ?string,
+ *     namePrefix: ?string,
+ *     nameFirst: ?string,
+ *     nameMiddle: ?string,
+ *     nameLast: ?string,
+ *     nameSuffix: ?string,
+ *     issuer: ?string,
+ *     tokenPassword: ?string,
+ *     tokenId: ?string,
+ *     preferences: ?string,
+ *     createdDate: ?string,
+ *     createdUserId: ?int,
+ *     updatedDate: ?string,
+ *     updatedUserId: ?int,
+ * }
+ *
  * @phpstan-type TUserTokenDbRecord array{
  *     usr_id: int,
  *     usr_issuer: string,
@@ -56,62 +116,7 @@ namespace Phalcon\Api\Domain\Components\DataSource\User;
  *
  * @phpstan-type TUserRecord array{}|TUserDbRecord
  *
- * @phpstan-type TUserTransport array{
- *     id: int,
- *     status: int,
- *     email: string,
- *     password: string,
- *     namePrefix: string,
- *     nameFirst: string,
- *     nameMiddle: string,
- *     nameLast: string,
- *     nameSuffix: string,
- *     issuer: string,
- *     tokenPassword: string,
- *     tokenId: string,
- *     preferences: string,
- *     createdDate: string,
- *     createdUserId: int,
- *     updatedDate: string,
- *     updatedUserId: int,
- * }
- *
- * @phpstan-type TUserInsert array{
- *      status: int,
- *      email: string,
- *      password: string,
- *      namePrefix: string,
- *      nameFirst: string,
- *      nameMiddle: string,
- *      nameLast: string,
- *      nameSuffix: string,
- *      issuer: string,
- *      tokenPassword: string,
- *      tokenId: string,
- *      preferences: string,
- *      createdDate: string,
- *      createdUserId: int,
- *      updatedDate: string,
- *      updatedUserId: int,
- *  }
- *
- * @phpstan-type TUserUpdate array{
- *      id: int,
- *      status: int,
- *      email: string,
- *      password: string,
- *      namePrefix: string,
- *      nameFirst: string,
- *      nameMiddle: string,
- *      nameLast: string,
- *      nameSuffix: string,
- *      issuer: string,
- *      tokenPassword: string,
- *      tokenId: string,
- *      preferences: string,
- *      updatedDate: string,
- *      updatedUserId: int,
- *  }
+ * @phpstan-type TCriteria array<string, bool|int|string|null>
  */
 final class UserTypes
 {

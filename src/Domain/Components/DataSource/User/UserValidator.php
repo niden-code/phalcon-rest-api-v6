@@ -13,6 +13,11 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
+use Phalcon\Api\Domain\ADR\InputTypes;
+
+/**
+ * @phpstan-import-type TValidationErrors from InputTypes
+ */
 final class UserValidator
 {
     /**
@@ -21,7 +26,7 @@ final class UserValidator
      *
      * @param UserInput $input
      *
-     * @return array
+     * @return TValidationErrors|array{}
      */
     public function validate(UserInput $input): array
     {

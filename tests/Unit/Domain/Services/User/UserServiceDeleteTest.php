@@ -76,9 +76,7 @@ final class UserServiceDeleteTest extends AbstractUnitTestCase
 
         $errors = $actual['errors'];
 
-        $expected = [
-            'Record(s) not found',
-        ];
+        $expected = [['Record(s) not found']];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
     }
@@ -103,9 +101,7 @@ final class UserServiceDeleteTest extends AbstractUnitTestCase
 
         $errors = $actual['errors'];
 
-        $expected = [
-            'Record(s) not found',
-        ];
+        $expected = [['Record(s) not found']];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
     }

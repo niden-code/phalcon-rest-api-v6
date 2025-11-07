@@ -37,9 +37,11 @@ final class UserServiceGetTest extends AbstractUnitTestCase
         $actual = $payload->getResult();
         $this->assertArrayHasKey('errors', $actual);
 
-        $expected = 'Record(s) not found';
-        $actual   = $actual['errors'][0];
-        $this->assertStringContainsString($expected, $actual);
+        $errors = $actual['errors'];
+
+        $expected = [['Record(s) not found']];
+        $actual   = $errors;
+        $this->assertSame($expected, $actual);
     }
 
     public function testServiceWithUserId(): void
@@ -155,8 +157,10 @@ final class UserServiceGetTest extends AbstractUnitTestCase
         $actual = $payload->getResult();
         $this->assertArrayHasKey('errors', $actual);
 
-        $expected = 'Record(s) not found';
-        $actual   = $actual['errors'][0];
-        $this->assertStringContainsString($expected, $actual);
+        $errors = $actual['errors'];
+
+        $expected = [['Record(s) not found']];
+        $actual   = $errors;
+        $this->assertSame($expected, $actual);
     }
 }

@@ -18,7 +18,7 @@ use Phalcon\DataMapper\Pdo\Connection;
 use Phalcon\DataMapper\Query\Delete;
 
 /**
- * @phpstan-import-type TUserRecord from UserTypes
+ * @phpstan-import-type TCriteria from UserTypes
  */
 abstract class AbstractRepository
 {
@@ -37,7 +37,7 @@ abstract class AbstractRepository
     }
 
     /**
-     * @param array<string, bool|int|string|null> $criteria
+     * @param TCriteria $criteria
      *
      * @return int
      */
@@ -67,43 +67,4 @@ abstract class AbstractRepository
             ]
         );
     }
-
-//    /**
-//     * @param int $recordId
-//     *
-//     * @return TUserRecord
-//     */
-//    public function findById(int $recordId): array
-//    {
-//        $result = [];
-//        if ($recordId > 0) {
-//            return $this->findOneBy(
-//                [
-//                    $this->idField => $recordId,
-//                ]
-//            );
-//        }
-//
-//        return $result;
-//    }
-//
-//
-//    /**
-//     * @param array<string, bool|int|string|null> $criteria
-//     *
-//     * @return TUserRecord
-//     */
-//    public function findOneBy(array $criteria): array
-//    {
-//        $select = Select::new($this->connection);
-//
-//        /** @var TUserRecord $result */
-//        $result = $select
-//            ->from($this->table)
-//            ->whereEquals($criteria)
-//            ->fetchOne()
-//        ;
-//
-//        return $result;
-//    }
 }

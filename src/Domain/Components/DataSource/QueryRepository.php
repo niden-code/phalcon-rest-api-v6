@@ -32,7 +32,7 @@ class QueryRepository
     }
 
     /**
-     * @return UserRepository
+     * @return UserRepositoryInterface
      */
     public function user(): UserRepositoryInterface
     {

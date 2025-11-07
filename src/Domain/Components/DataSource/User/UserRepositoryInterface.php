@@ -14,14 +14,12 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
 /**
- * @phpstan-import-type TUserRecord from UserTypes
- * @phpstan-import-type TUserInsert from UserTypes
- * @phpstan-import-type TUserUpdate from UserTypes
+ * @phpstan-import-type TCriteria from UserTypes
  */
 interface UserRepositoryInterface
 {
     /**
-     * @param array<string, bool|int|string|null> $criteria
+     * @param TCriteria $criteria
      *
      * @return int
      */
@@ -49,7 +47,7 @@ interface UserRepositoryInterface
     public function findById(int $recordId): ?User;
 
     /**
-     * @param array<string, bool|int|string|null> $criteria
+     * @param TCriteria $criteria
      *
      * @return User|null
      */
