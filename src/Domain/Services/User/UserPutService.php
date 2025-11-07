@@ -15,12 +15,12 @@ namespace Phalcon\Api\Domain\Services\User;
 
 use PDOException;
 use Phalcon\Api\Domain\ADR\InputTypes;
+use Phalcon\Api\Domain\Components\DataSource\User\User;
 use Phalcon\Api\Domain\Components\DataSource\User\UserInput;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Components\Payload;
 
 /**
- * @phpstan-import-type TUserSanitizedUpdateInput from InputTypes
  * @phpstan-import-type TUserInput from InputTypes
  * @phpstan-import-type TValidationErrors from InputTypes
  */
@@ -36,6 +36,7 @@ final class UserPutService extends AbstractUserService
     public function __invoke(array $input): Payload
     {
         $inputObject = UserInput::new($this->sanitizer, $input);
+        /** @var TValidationErrors $errors */
         $errors      = $this->validator->validate($inputObject);
 
         /**
@@ -48,11 +49,12 @@ final class UserPutService extends AbstractUserService
         /**
          * Check if the user exists, If not, return an error
          */
+        /** @var int $userId */
         $userId     = $inputObject->id;
         $domainUser = $this->repository->user()->findById($userId);
 
         if (null === $domainUser) {
-            return Payload::notFound(['Record(s) not found']);
+            return Payload::notFound();
         }
 
         /**
@@ -83,11 +85,12 @@ final class UserPutService extends AbstractUserService
         /**
          * Get the user from the database
          */
+        /** @var User $domainUser */
         $domainUser = $this->repository->user()->findById($userId);
 
         /**
          * Return the user back
          */
-        return Payload::updated($domainUser->toArray());
+        return Payload::updated([$domainUser->id => $domainUser->toArray()]);
     }
 }

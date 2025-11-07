@@ -50,6 +50,6 @@ final class UserDeleteService extends AbstractUserService
         /**
          * 404
          */
-        return Payload::notFound(['Record(s) not found']);
+        return Payload::notFound();
     }
 }

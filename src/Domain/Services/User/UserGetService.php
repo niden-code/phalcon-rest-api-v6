@@ -39,13 +39,13 @@ final class UserGetService extends AbstractUserService
             $user = $this->repository->user()->findById($userId);
 
             if (null !== $user) {
-                return Payload::success($user->toArray());
+                return Payload::success([$user->id => $user->toArray()]);
             }
         }
 
         /**
          * 404
          */
-        return Payload::notFound(['Record(s) not found']);
+        return Payload::notFound();
     }
 }
