@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\ADR;
 
-use Phalcon\Domain\Payload;
+use Phalcon\Api\Domain\Components\Payload;
 
 /**
  * @phpstan-import-type TLoginInput from InputTypes
