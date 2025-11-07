@@ -19,6 +19,7 @@ use Phalcon\Api\Domain\Components\DataSource\SanitizerInterface;
 use Phalcon\Api\Domain\Components\DataSource\User\User;
 use Phalcon\Api\Domain\Components\DataSource\User\UserInput;
 use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
+use Phalcon\Api\Domain\Components\DataSource\User\UserTypes;
 use Phalcon\Api\Domain\Components\DataSource\User\UserValidator;
 use Phalcon\Api\Domain\Components\Encryption\Security;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
@@ -26,10 +27,20 @@ use Phalcon\Api\Domain\Components\Payload;
 
 use function array_shift;
 
+/**
+ * @phpstan-import-type TUser from UserTypes
+ */
 abstract class AbstractUserService implements DomainInterface
 {
     protected HttpCodesEnum $errorMessage;
 
+    /**
+     * @param QueryRepository    $repository
+     * @param UserMapper         $mapper
+     * @param UserValidator      $validator
+     * @param SanitizerInterface $sanitizer
+     * @param Security           $security
+     */
     public function __construct(
         protected readonly QueryRepository $repository,
         protected readonly UserMapper $mapper,
@@ -49,7 +60,7 @@ abstract class AbstractUserService implements DomainInterface
     {
         return Payload::error(
             [
-                $this->errorMessage->text() . $message,
+                [$this->errorMessage->text() . $message],
             ]
         );
     }
@@ -57,12 +68,12 @@ abstract class AbstractUserService implements DomainInterface
     /**
      * @param UserInput $inputObject
      *
-     * @return array
+     * @return User
      */
     protected function processPassword(UserInput $inputObject): User
     {
+        /** @var TUser $inputData */
         $inputData = $inputObject->toArray();
-        $inputData = array_shift($inputData);
 
         if (null !== $inputData['password']) {
             $plain  = $inputData['password'];
