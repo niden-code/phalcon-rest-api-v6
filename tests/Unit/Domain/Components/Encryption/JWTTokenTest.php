@@ -15,8 +15,8 @@ namespace Phalcon\Api\Tests\Unit\Domain\Components\Encryption;
 
 use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
+use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
-use Phalcon\Api\Domain\Components\DataSource\User\UserTransport;
 use Phalcon\Api\Domain\Components\Encryption\JWTToken;
 use Phalcon\Api\Domain\Components\Exceptions\TokenValidationException;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
@@ -37,18 +37,24 @@ final class JWTTokenTest extends AbstractUnitTestCase
 
     public function testGetForUserReturnsTokenString(): void
     {
-        $user = $this->getUserData();
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userData = $this->getUserData();
+        $domainUser     = $userMapper->domain($userData);
 
-        $token = $this->jwtToken->getForUser($user);
+        $token = $this->jwtToken->getForUser($domainUser);
         $this->assertIsString($token);
         $this->assertNotEmpty($token);
     }
 
     public function testGetObjectReturnsPlainToken(): void
     {
-        $user = $this->getUserData();
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userData = $this->getUserData();
+        $domainUser     = $userMapper->domain($userData);
 
-        $tokenString = $this->jwtToken->getForUser($user);
+        $tokenString = $this->jwtToken->getForUser($domainUser);
 
         $plain = $this->jwtToken->getObject($tokenString);
         $this->assertInstanceOf(Token::class, $plain);
@@ -73,9 +79,12 @@ final class JWTTokenTest extends AbstractUnitTestCase
 
     public function testGetUserReturnsUserArray(): void
     {
-        $user = $this->getUserData();
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userData = $this->getUserData();
+        $domainUser     = $userMapper->domain($userData);
 
-        $tokenString = $this->jwtToken->getForUser($user);
+        $tokenString = $this->jwtToken->getForUser($domainUser);
         $plain       = $this->jwtToken->getObject($tokenString);
 
         $userRepository = $this
@@ -91,7 +100,7 @@ final class JWTTokenTest extends AbstractUnitTestCase
 
         $userRepository->expects($this->once())
                        ->method('findOneBy')
-                       ->willReturn($user)
+                       ->willReturn($domainUser)
         ;
 
         $mockRepository = $this
@@ -110,20 +119,20 @@ final class JWTTokenTest extends AbstractUnitTestCase
         ;
 
         $result = $this->jwtToken->getUser($mockRepository, $plain);
-        $this->assertEquals($user, $result);
+        $this->assertEquals($domainUser, $result);
     }
 
     public function testValidateSuccess(): void
     {
-        $user = $this->getUserData();
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userData = $this->getUserData();
+        $domainUser     = $userMapper->domain($userData);
 
-        $tokenString   = $this->jwtToken->getForUser($user);
+        $tokenString   = $this->jwtToken->getForUser($domainUser);
         $plain         = $this->jwtToken->getObject($tokenString);
-        $userTransport = new UserTransport($user);
 
-        sleep(1);
-
-        $actual = $this->jwtToken->validate($plain, $userTransport);
+        $actual = $this->jwtToken->validate($plain, $domainUser);
 
         $this->assertSame([], $actual);
     }

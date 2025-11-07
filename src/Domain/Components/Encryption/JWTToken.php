@@ -17,7 +17,7 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use Phalcon\Api\Domain\Components\Cache\Cache;
 use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
-use Phalcon\Api\Domain\Components\DataSource\User\UserTransport;
+use Phalcon\Api\Domain\Components\DataSource\User\User;
 use Phalcon\Api\Domain\Components\DataSource\User\UserTypes;
 use Phalcon\Api\Domain\Components\Enums\Common\FlagsEnum;
 use Phalcon\Api\Domain\Components\Enums\Common\JWTEnum;
@@ -53,11 +53,11 @@ class JWTToken
     /**
      * Returns the string token
      *
-     * @param TUserTokenDbRecord $user
+     * @param User $user
      *
      * @return string
      */
-    public function getForUser(array $user): string
+    public function getForUser(User $user): string
     {
         return $this->generateTokenForUser($user);
     }
@@ -87,11 +87,11 @@ class JWTToken
     /**
      * Returns the string token
      *
-     * @param TUserTokenDbRecord $user
+     * @param User $user
      *
      * @return string
      */
-    public function getRefreshForUser(array $user): string
+    public function getRefreshForUser(User $user): string
     {
         return $this->generateTokenForUser($user, true);
     }
@@ -100,12 +100,12 @@ class JWTToken
      * @param QueryRepository $repository
      * @param Token           $token
      *
-     * @return TUserRecord
+     * @return User|null
      */
     public function getUser(
         QueryRepository $repository,
         Token $token,
-    ): array {
+    ): ?User {
         /** @var string $issuer */
         $issuer = $token->getClaims()->get(JWTEnum::Issuer->value);
         /** @var string $tokenId */
@@ -120,37 +120,34 @@ class JWTToken
             'usr_token_id'    => $tokenId,
         ];
 
-        /** @var TUserRecord $user */
-        $user = $repository->user()->findOneBy($criteria);
-
-        return $user;
+        return $repository->user()->findOneBy($criteria);
     }
 
     /**
      * Returns an array with the validation errors for this token
      *
-     * @param Token         $tokenObject
-     * @param UserTransport $user
+     * @param Token $tokenObject
+     * @param User  $user
      *
      * @return TValidatorErrors
      */
     public function validate(
         Token $tokenObject,
-        UserTransport $user
+        User $user
     ): array {
         $validator = new Validator($tokenObject);
         $signer    = new Hmac();
         $now       = new DateTimeImmutable();
 
         $validator
-            ->validateId($user->getTokenId())
+            ->validateId($user->tokenId)
             ->validateAudience($this->getTokenAudience())
-            ->validateIssuer($user->getIssuer())
+            ->validateIssuer($user->issuer)
             ->validateNotBefore($now->getTimestamp())
             ->validateIssuedAt($now->getTimestamp())
             ->validateExpiration($now->getTimestamp())
-            ->validateSignature($signer, $user->getTokenPassword())
-            ->validateClaim(JWTEnum::UserId->value, $user->getId())
+            ->validateSignature($signer, $user->tokenPassword)
+            ->validateClaim(JWTEnum::UserId->value, $user->id)
         ;
 
         /** @var TValidatorErrors $errors */
@@ -162,13 +159,13 @@ class JWTToken
     /**
      * Returns the string token
      *
-     * @param TUserTokenDbRecord $user
-     * @param bool               $isRefresh
+     * @param User $user
+     * @param bool $isRefresh
      *
      * @return string
      */
     private function generateTokenForUser(
-        array $user,
+        User $user,
         bool $isRefresh = false
     ): string {
         /** @var int $expiration */
@@ -187,13 +184,13 @@ class JWTToken
 
         $tokenBuilder = new Builder(new Hmac());
         /** @var string $issuer */
-        $issuer = $user['usr_issuer'];
+        $issuer = $user->issuer;
         /** @var string $tokenPassword */
-        $tokenPassword = $user['usr_token_password'];
+        $tokenPassword = $user->tokenPassword;
         /** @var string $tokenId */
-        $tokenId = $user['usr_token_id'];
+        $tokenId = $user->tokenId;
         /** @var string $userId */
-        $userId = $user['usr_id'];
+        $userId = $user->id;
 
         $tokenObject = $tokenBuilder
             ->setIssuer($issuer)
