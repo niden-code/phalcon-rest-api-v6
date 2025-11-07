@@ -15,7 +15,7 @@ namespace Phalcon\Api\Domain\Components\Cache;
 
 use DateTimeImmutable;
 use Phalcon\Api\Domain\Components\Constants\Dates;
-use Phalcon\Api\Domain\Components\DataSource\User\UserTransport;
+use Phalcon\Api\Domain\Components\DataSource\User\User;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
 use Phalcon\Cache\Adapter\Redis;
 use Phalcon\Cache\Cache as PhalconCache;
@@ -48,12 +48,12 @@ class Cache extends PhalconCache
     private const MASK_TOKEN_USER = 'tk-%s-%s';
 
     /**
-     * @param UserTransport $domainUser
-     * @param string        $token
+     * @param User   $domainUser
+     * @param string $token
      *
      * @return string
      */
-    public function getCacheTokenKey(UserTransport $domainUser, string $token): string
+    public function getCacheTokenKey(User $domainUser, string $token): string
     {
         $tokenString = '';
         if (true !== empty($token)) {
@@ -62,21 +62,21 @@ class Cache extends PhalconCache
 
         return sprintf(
             self::MASK_TOKEN_USER,
-            $domainUser->getId(),
+            $domainUser->id,
             $tokenString
         );
     }
 
     /**
-     * @param EnvManager    $env
-     * @param UserTransport $domainUser
+     * @param EnvManager $env
+     * @param User       $domainUser
      *
      * @return bool
      * @throws InvalidArgumentException
      */
     public function invalidateForUser(
         EnvManager $env,
-        UserTransport $domainUser
+        User $domainUser
     ): bool {
         /**
          * We could store the tokens in the database but this way is faster
@@ -104,16 +104,16 @@ class Cache extends PhalconCache
     }
 
     /**
-     * @param EnvManager    $env
-     * @param UserTransport $domainUser
-     * @param string        $token
+     * @param EnvManager $env
+     * @param User       $domainUser
+     * @param string     $token
      *
      * @return bool
      * @throws InvalidArgumentException
      */
     public function storeTokenInCache(
         EnvManager $env,
-        UserTransport $domainUser,
+        User $domainUser,
         string $token
     ): bool {
         $cacheKey = $this->getCacheTokenKey($domainUser, $token);

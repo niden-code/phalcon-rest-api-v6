@@ -14,8 +14,11 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Components;
 
 use Phalcon\Api\Domain\Components\Cache\Cache;
+use Phalcon\Api\Domain\Components\DataSource\Auth\AuthSanitizer;
 use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
+use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
+use Phalcon\Api\Domain\Components\DataSource\User\UserSanitizer;
+use Phalcon\Api\Domain\Components\DataSource\User\UserValidator;
 use Phalcon\Api\Domain\Components\Encryption\JWTToken;
 use Phalcon\Api\Domain\Components\Encryption\Security;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
@@ -46,6 +49,7 @@ use Phalcon\Logger\Adapter\Stream;
 use Phalcon\Logger\Logger;
 use Phalcon\Mvc\Router;
 use Phalcon\Storage\SerializerFactory;
+use Phalcon\Support\Registry;
 
 class Container extends Di
 {
@@ -65,6 +69,8 @@ class Container extends Di
     public const JWT_TOKEN = 'jwt.token';
     /** @var string */
     public const LOGGER = 'logger';
+    /** @var string */
+    public const REGISTRY = 'registry';
     /** @var string */
     public const REQUEST = 'request';
     /** @var string */
@@ -96,10 +102,13 @@ class Container extends Di
     public const MIDDLEWARE_VALIDATE_TOKEN_STRUCTURE = ValidateTokenStructureMiddleware::class;
     public const MIDDLEWARE_VALIDATE_TOKEN_USER      = ValidateTokenUserMiddleware::class;
     /**
-     * Repositories
+     * Repositories/Sanitizers/Validators
      */
-    public const REPOSITORY           = 'repository';
-    public const REPOSITORY_TRANSPORT = TransportRepository::class;
+    public const REPOSITORY     = 'repository';
+    public const AUTH_SANITIZER = 'auth.sanitizer';
+    public const USER_MAPPER    = UserMapper::class;
+    public const USER_VALIDATOR = UserValidator::class;
+    public const USER_SANITIZER = 'user.sanitizer';
     /**
      * Responders
      */
@@ -115,11 +124,14 @@ class Container extends Di
             self::FILTER         => $this->getServiceFilter(),
             self::JWT_TOKEN      => $this->getServiceJWTToken(),
             self::LOGGER         => $this->getServiceLogger(),
+            self::REGISTRY       => new Service(Registry::class, true),
             self::REQUEST        => new Service(Request::class, true),
             self::RESPONSE       => new Service(Response::class, true),
             self::ROUTER         => $this->getServiceRouter(),
 
-            self::REPOSITORY => $this->getServiceRepository(),
+            self::REPOSITORY     => $this->getServiceRepository(),
+            self::AUTH_SANITIZER => $this->getServiceSanitizer(AuthSanitizer::class),
+            self::USER_SANITIZER => $this->getServiceSanitizer(UserSanitizer::class),
 
             self::AUTH_LOGIN_POST_SERVICE   => $this->getServiceAuthPost(LoginPostService::class),
             self::AUTH_LOGOUT_POST_SERVICE  => $this->getServiceAuthPost(LogoutPostService::class),
@@ -150,10 +162,6 @@ class Container extends Di
                     ],
                     [
                         'type' => 'service',
-                        'name' => self::REPOSITORY_TRANSPORT,
-                    ],
-                    [
-                        'type' => 'service',
                         'name' => self::CACHE,
                     ],
                     [
@@ -166,7 +174,7 @@ class Container extends Di
                     ],
                     [
                         'type' => 'service',
-                        'name' => self::FILTER,
+                        'name' => self::AUTH_SANITIZER,
                     ],
                     [
                         'type' => 'service',
@@ -362,6 +370,10 @@ class Container extends Di
                         'type' => 'service',
                         'name' => self::CONNECTION,
                     ],
+                    [
+                        'type' => 'service',
+                        'name' => self::USER_MAPPER,
+                    ],
                 ],
             ]
         );
@@ -402,15 +414,39 @@ class Container extends Di
                     ],
                     [
                         'type' => 'service',
-                        'name' => self::REPOSITORY_TRANSPORT,
+                        'name' => self::USER_MAPPER,
                     ],
                     [
                         'type' => 'service',
-                        'name' => self::FILTER,
+                        'name' => self::USER_VALIDATOR,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::USER_SANITIZER,
                     ],
                     [
                         'type' => 'service',
                         'name' => self::SECURITY,
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * @param class-string $className
+     *
+     * @return Service
+     */
+    private function getServiceSanitizer(string $className): Service
+    {
+        return new Service(
+            [
+                'className' => $className,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => self::FILTER,
                     ],
                 ],
             ]
