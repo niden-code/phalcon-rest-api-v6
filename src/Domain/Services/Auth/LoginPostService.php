@@ -13,11 +13,12 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Services\Auth;
 
-use PayloadInterop\DomainStatus;
 use Phalcon\Api\Domain\ADR\InputTypes;
+use Phalcon\Api\Domain\Components\DataSource\Auth\AuthInput;
+use Phalcon\Api\Domain\Components\DataSource\User\UserInput;
 use Phalcon\Api\Domain\Components\DataSource\User\UserTypes;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
-use Phalcon\Domain\Payload;
+use Phalcon\Api\Domain\Components\Payload;
 
 /**
  * @phpstan-import-type TUserDbRecord from UserTypes
@@ -35,16 +36,15 @@ final class LoginPostService extends AbstractAuthService
         /**
          * Get email and password from the input and sanitize them
          */
-        $email    = (string)($input['email'] ?? '');
-        $password = (string)($input['password'] ?? '');
-        $email    = $this->filter->string($email);
-        $password = $this->filter->string($password);
+        $inputObject = AuthInput::new($this->sanitizer, $input);
+        $email       = $inputObject->email;
+        $password    = $inputObject->password;
 
         /**
          * Check if email or password are empty
          */
         if (true === empty($email) || true === empty($password)) {
-            return $this->getUnauthorizedPayload(
+            return Payload::unauthorized(
                 [HttpCodesEnum::AppIncorrectCredentials->error()]
             );
         }
@@ -52,18 +52,22 @@ final class LoginPostService extends AbstractAuthService
         /**
          * Find the user in the database
          */
-        $dbUser     = $this->repository->user()->findByEmail($email);
-        $dbUserId   = (int)($dbUser['usr_id'] ?? 0);
-        $dbPassword = $dbUser['usr_password'] ?? '';
+        $domainUser = $this->repository->user()->findByEmail($email);
 
         /**
-         * Check if the user exists and if the password matches
+         * Check if the user exists
          */
-        if (
-            $dbUserId < 1 ||
-            true !== $this->security->verify($password, $dbPassword)
-        ) {
-            return $this->getUnauthorizedPayload(
+        if (null === $domainUser) {
+            return Payload::unauthorized(
+                [HttpCodesEnum::AppIncorrectCredentials->error()]
+            );
+        }
+
+        /**
+         * Check if the password matches
+         */
+        if (true !== $this->security->verify($password, $domainUser->password)) {
+            return Payload::unauthorized(
                 [HttpCodesEnum::AppIncorrectCredentials->error()]
             );
         }
@@ -71,15 +75,8 @@ final class LoginPostService extends AbstractAuthService
         /**
          * Get a new token for this user
          */
-        /** @var TUserDbRecord $dbUser */
-        $token        = $this->jwtToken->getForUser($dbUser);
-        $refreshToken = $this->jwtToken->getRefreshForUser($dbUser);
-        $domainUser   = $this->transport->newUser($dbUser);
-        $results      = $this->transport->newLoginUser(
-            $domainUser,
-            $token,
-            $refreshToken
-        );
+        $token        = $this->jwtToken->getForUser($domainUser);
+        $refreshToken = $this->jwtToken->getRefreshForUser($domainUser);
 
         /**
          * Store the token in cache
@@ -90,11 +87,19 @@ final class LoginPostService extends AbstractAuthService
         /**
          * Send the payload back
          */
-        return new Payload(
-            DomainStatus::SUCCESS,
-            [
-                'data' => $results,
-            ]
-        );
+        $results = [
+            'authenticated' => true,
+            'user'          => [
+                'id'    => $domainUser->id,
+                'name'  => $domainUser->fullName(),
+                'email' => $domainUser->email,
+            ],
+            'jwt'           => [
+                'token'        => $token,
+                'refreshToken' => $refreshToken,
+            ],
+        ];
+
+        return Payload::success($results);
     }
 }
