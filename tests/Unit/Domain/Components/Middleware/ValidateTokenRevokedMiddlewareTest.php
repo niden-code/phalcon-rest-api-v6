@@ -15,11 +15,12 @@ namespace Phalcon\Api\Tests\Unit\Domain\Components\Middleware;
 
 use Phalcon\Api\Domain\Components\Cache\Cache;
 use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\User\UserTransport;
+use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 use Phalcon\Mvc\Micro;
+use Phalcon\Support\Registry;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 
 #[BackupGlobals(true)]
@@ -27,20 +28,22 @@ final class ValidateTokenRevokedMiddlewareTest extends AbstractUnitTestCase
 {
     public function testValidateTokenRevokedFailureInvalidToken(): void
     {
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
         $migration = new UsersMigration($this->getConnection());
         $user      = $this->getNewUser($migration);
-        $tokenUser = $user;
+        $tokenUser = $userMapper->domain($user);
 
         [$micro, $middleware] = $this->setupTest();
 
-        $token = $this->getUserToken($tokenUser);
+        $token = $this->getUserToken($user);
 
         /**
-         * Store the user in the session
+         * Store the user in the registry
          */
-        /** @var UserTransport $userRepository */
-        $userRepository = $micro->getSharedService(Container::REPOSITORY_TRANSPORT);
-        $userRepository->setSessionUser($user);
+        /** @var Registry $registry */
+        $registry = $this->container->get(Container::REGISTRY);
+        $registry->set('user', $tokenUser);
 
         // There is no entry in the cache for this token, so this should fail.
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
@@ -68,23 +71,26 @@ final class ValidateTokenRevokedMiddlewareTest extends AbstractUnitTestCase
 
     public function testValidateTokenRevokedSuccess(): void
     {
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
         $migration = new UsersMigration($this->getConnection());
         $user      = $this->getNewUser($migration);
-        $tokenUser = $user;
+        $tokenUser = $userMapper->domain($user);
 
         [$micro, $middleware] = $this->setupTest();
 
-        $token = $this->getUserToken($tokenUser);
+        $token = $this->getUserToken($user);
 
         /**
-         * Store the user in the session
+         * Store the user in the registry
          */
-        /** @var UserTransport $userRepository */
-        $userRepository = $micro->getSharedService(Container::REPOSITORY_TRANSPORT);
-        $userRepository->setSessionUser($user);
+        /** @var Registry $registry */
+        $registry = $this->container->get(Container::REGISTRY);
+        $registry->set('user', $tokenUser);
+
         /** @var Cache $cache */
         $cache       = $micro->getSharedService(Container::CACHE);
-        $sessionUser = $userRepository->getSessionUser();
+        $sessionUser = $registry->get('user');
         $cacheKey    = $cache->getCacheTokenKey($sessionUser, $token);
         $payload     = [
             'token' => $token,

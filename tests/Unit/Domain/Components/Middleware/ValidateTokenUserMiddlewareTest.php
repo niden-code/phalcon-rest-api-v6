@@ -14,10 +14,12 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Components\Middleware;
 
 use Phalcon\Api\Domain\Components\Container;
+use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 use Phalcon\Mvc\Micro;
+use Phalcon\Support\Registry;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 
 #[BackupGlobals(true)]
@@ -30,8 +32,9 @@ final class ValidateTokenUserMiddlewareTest extends AbstractUnitTestCase
         $userData['usr_id'] = 1;
         $token              = $this->getUserToken($userData);
         $tokenObject        = $jwtToken->getObject($token);
-        $transport          = $this->container->getShared(Container::REPOSITORY_TRANSPORT);
-        $transport->setSessionToken($tokenObject);
+        /** @var Registry $registry */
+        $registry = $this->container->get(Container::REGISTRY);
+        $registry->set('token', $tokenObject);
 
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
         $_SERVER = [
@@ -58,15 +61,19 @@ final class ValidateTokenUserMiddlewareTest extends AbstractUnitTestCase
 
     public function testValidateTokenUserSuccess(): void
     {
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
         $migration = new UsersMigration($this->getConnection());
         $user      = $this->getNewUser($migration);
+        $domainUser = $userMapper->domain($user);
 
         [$micro, $middleware, $jwtToken] = $this->setupTest();
 
-        $token       = $jwtToken->getForUser($user);
+        $token       = $jwtToken->getForUser($domainUser);
         $tokenObject = $jwtToken->getObject($token);
-        $transport   = $this->container->getShared(Container::REPOSITORY_TRANSPORT);
-        $transport->setSessionToken($tokenObject);
+        /** @var Registry $registry */
+        $registry = $this->container->get(Container::REGISTRY);
+        $registry->set('token', $tokenObject);
 
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
         $_SERVER = [

@@ -23,6 +23,7 @@ use Phalcon\Events\Exception as EventsException;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response\Exception;
 use Phalcon\Mvc\Micro;
+use Phalcon\Support\Registry;
 
 final class ValidateTokenStructureMiddleware extends AbstractMiddleware
 {
@@ -63,9 +64,9 @@ final class ValidateTokenStructureMiddleware extends AbstractMiddleware
         /**
          * If we are down here the token is an object and is valid
          */
-        /** @var TransportRepository $transport */
-        $transport = $application->getSharedService(Container::REPOSITORY_TRANSPORT);
-        $transport->setSessionToken($token);
+        /** @var Registry $registry */
+        $registry = $application->getSharedService(Container::REGISTRY);
+        $registry->set('token', $token);
 
         return true;
     }

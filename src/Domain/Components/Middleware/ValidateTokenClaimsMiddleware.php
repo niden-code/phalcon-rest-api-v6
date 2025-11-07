@@ -14,14 +14,14 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Components\Middleware;
 
 use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
-use Phalcon\Api\Domain\Components\DataSource\User\UserTransport;
+use Phalcon\Api\Domain\Components\DataSource\User\User;
 use Phalcon\Api\Domain\Components\Encryption\JWTToken;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
 use Phalcon\Encryption\Security\JWT\Token\Token;
 use Phalcon\Events\Exception as EventsException;
 use Phalcon\Http\Response\Exception;
 use Phalcon\Mvc\Micro;
+use Phalcon\Support\Registry;
 
 /**
  * Validates the token claims
@@ -39,20 +39,20 @@ final class ValidateTokenClaimsMiddleware extends AbstractMiddleware
     {
         /** @var JWTToken $jwtToken */
         $jwtToken = $application->getSharedService(Container::JWT_TOKEN);
-        /** @var TransportRepository $transport */
-        $transport = $application->getSharedService(Container::REPOSITORY_TRANSPORT);
+        /** @var Registry $registry */
+        $registry = $application->getSharedService(Container::REGISTRY);
 
         /**
          * Get the token object
          */
         /** @var Token $tokenObject */
-        $tokenObject = $transport->getSessionToken();
+        $tokenObject = $registry->get('token');
         /**
          * Our used is in the transport, so we can get it without a
          * database call
          */
-        /** @var UserTransport $sessionUser */
-        $sessionUser = $transport->getSessionUser();
+        /** @var User $sessionUser */
+        $sessionUser = $registry->get('user');
 
         /**
          * This is where we validate everything. Even though the user

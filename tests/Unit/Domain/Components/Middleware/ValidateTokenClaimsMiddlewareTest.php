@@ -14,10 +14,11 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Components\Middleware;
 
 use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
+use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 use Phalcon\Mvc\Micro;
+use Phalcon\Support\Registry;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -67,26 +68,28 @@ final class ValidateTokenClaimsMiddlewareTest extends AbstractUnitTestCase
         array $userData,
         array $expectedErrors
     ): void {
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
         $migration = new UsersMigration($this->getConnection());
         $user      = $this->getNewUser($migration);
-        $tokenUser = $user;
 
         [$micro, $middleware, $jwtToken] = $this->setupTest();
 
         /**
          * Make the signature non valid
          */
-        $tokenUser   = array_replace($tokenUser, $userData);
+        $tokenUser   = array_replace($user, $userData);
         $token       = $this->getUserToken($tokenUser);
         $tokenObject = $jwtToken->getObject($token);
+        $domainUser  = $userMapper->domain($user);
 
         /**
-         * Store the user in the session
+         * Store the user in the registry
          */
-        /** @var TransportRepository $transport */
-        $transport = $this->container->getShared(Container::REPOSITORY_TRANSPORT);
-        $transport->setSessionUser($user);
-        $transport->setSessionToken($tokenObject);
+        /** @var Registry $registry */
+        $registry = $this->container->get(Container::REGISTRY);
+        $registry->set('user', $domainUser);
+        $registry->set('token', $tokenObject);
 
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
         $_SERVER = [
@@ -113,22 +116,24 @@ final class ValidateTokenClaimsMiddlewareTest extends AbstractUnitTestCase
 
     public function testValidateTokenClaimsSuccess(): void
     {
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
         $migration = new UsersMigration($this->getConnection());
         $user      = $this->getNewUser($migration);
-        $tokenUser = $user;
+        $tokenUser = $userMapper->domain($user);
 
         [$micro, $middleware, $jwtToken] = $this->setupTest();
 
-        $token       = $this->getUserToken($tokenUser);
+        $token       = $this->getUserToken($user);
         $tokenObject = $jwtToken->getObject($token);
 
         /**
-         * Store the user in the session
+         * Store the user in the registry
          */
-        /** @var TransportRepository $transport */
-        $transport = $this->container->getShared(Container::REPOSITORY_TRANSPORT);
-        $transport->setSessionUser($user);
-        $transport->setSessionToken($tokenObject);
+        /** @var Registry $registry */
+        $registry = $this->container->get(Container::REGISTRY);
+        $registry->set('user', $tokenUser);
+        $registry->set('token', $tokenObject);
 
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
         $_SERVER = [

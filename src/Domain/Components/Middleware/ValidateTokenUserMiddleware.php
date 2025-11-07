@@ -23,6 +23,7 @@ use Phalcon\Encryption\Security\JWT\Token\Token;
 use Phalcon\Events\Exception as EventsException;
 use Phalcon\Http\Response\Exception;
 use Phalcon\Mvc\Micro;
+use Phalcon\Support\Registry;
 
 /**
  * @phpstan-import-type TUserDbRecord from UserTypes
@@ -43,18 +44,17 @@ final class ValidateTokenUserMiddleware extends AbstractMiddleware
         $jwtToken = $application->getSharedService(Container::JWT_TOKEN);
         /** @var QueryRepository $repository */
         $repository = $application->getSharedService(Container::REPOSITORY);
-        /** @var TransportRepository $transport */
-        $transport = $application->getSharedService(Container::REPOSITORY_TRANSPORT);
+        /** @var Registry $registry */
+        $registry = $application->getSharedService(Container::REGISTRY);
 
         /**
          * Get the token object
          */
         /** @var Token $tokenObject */
-        $tokenObject = $transport->getSessionToken();
-        /** @var TUserRecord $dbUser */
-        $dbUser = $jwtToken->getUser($repository, $tokenObject);
+        $tokenObject = $registry->get('token');
+        $domainUser  = $jwtToken->getUser($repository, $tokenObject);
 
-        if (true === empty($dbUser)) {
+        if (null === $domainUser) {
             $this->halt(
                 $application,
                 HttpCodesEnum::Unauthorized->value,
@@ -70,8 +70,7 @@ final class ValidateTokenUserMiddleware extends AbstractMiddleware
          * If we are here everything is fine and we need to keep the user
          * as a "session" user in the transport
          */
-        /** @var TUserDbRecord $dbUser */
-        $transport->setSessionUser($dbUser);
+        $registry->set('user', $domainUser);
 
         return true;
     }

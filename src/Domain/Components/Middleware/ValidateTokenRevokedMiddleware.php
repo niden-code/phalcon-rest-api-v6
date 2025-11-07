@@ -15,12 +15,12 @@ namespace Phalcon\Api\Domain\Components\Middleware;
 
 use Phalcon\Api\Domain\Components\Cache\Cache;
 use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
-use Phalcon\Api\Domain\Components\DataSource\User\UserTransport;
+use Phalcon\Api\Domain\Components\DataSource\User\User;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Mvc\Micro;
+use Phalcon\Support\Registry;
 
 final class ValidateTokenRevokedMiddleware extends AbstractMiddleware
 {
@@ -37,17 +37,17 @@ final class ValidateTokenRevokedMiddleware extends AbstractMiddleware
         $cache = $application->getSharedService(Container::CACHE);
         /** @var EnvManager $env */
         $env = $application->getSharedService(Container::ENV);
-        /** @var TransportRepository $userTransport */
-        $userTransport = $application->getSharedService(Container::REPOSITORY_TRANSPORT);
+        /** @var Registry $registry */
+        $registry = $application->getSharedService(Container::REGISTRY);
 
-        /** @var UserTransport $user */
-        $user = $userTransport->getSessionUser();
+        /** @var User $user */
+        $domainUser = $registry->get('user');
 
         /**
          * Get the token object
          */
         $token = $this->getBearerTokenFromHeader($request, $env);
-        $cacheKey = $cache->getCacheTokenKey($user, $token);
+        $cacheKey = $cache->getCacheTokenKey($domainUser, $token);
         $exists = $cache->has($cacheKey);
 
         if (true !== $exists) {
