@@ -37,7 +37,7 @@ final class UserPutService extends AbstractUserService
     {
         $inputObject = UserInput::new($this->sanitizer, $input);
         /** @var TValidationErrors $errors */
-        $errors      = $this->validator->validate($inputObject);
+        $errors = $this->validator->validate($inputObject);
 
         /**
          * Errors exist - return early

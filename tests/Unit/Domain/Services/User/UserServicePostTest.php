@@ -24,7 +24,6 @@ use Phalcon\Api\Domain\Services\User\UserPostService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 
-use function array_shift;
 use function htmlspecialchars;
 
 #[BackupGlobals(true)]

@@ -25,80 +25,14 @@ use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 
-use function array_shift;
-
 #[BackupGlobals(true)]
 final class UserServicePutTest extends AbstractUnitTestCase
 {
-    public function testServiceFailureRecordNotFound(): void
-    {
-        /** @var UserMapper $userMapper */
-        $userMapper = $this->container->get(Container::USER_MAPPER);
-        $userData = $this->getNewUserData();
-
-        $userData['usr_id'] = 1;
-
-        $findByUser = $userMapper->domain($userData);
-
-        $userRepository = $this
-            ->getMockBuilder(UserRepository::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(
-                [
-                    'findById'
-                ]
-            )
-            ->getMock()
-        ;
-        $userRepository->method('findById')->willReturn(null);
-
-        $repository = $this
-            ->getMockBuilder(QueryRepository::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(
-                [
-                    'user',
-                ]
-            )
-            ->getMock()
-        ;
-        $repository->method('user')->willReturn($userRepository);
-
-        $this->container->setShared(Container::REPOSITORY, $repository);
-
-        /** @var UserPutService $service */
-        $service = $this->container->get(Container::USER_PUT_SERVICE);
-
-        /**
-         * Update user
-         */
-        $userData           = $this->getNewUserData();
-        $userData['usr_id'] = 1;
-
-        $updateUser = $userMapper->domain($userData);
-        $updateUser = $updateUser->toArray();
-
-        $payload = $service->__invoke($updateUser);
-
-        $expected = DomainStatus::NOT_FOUND;
-        $actual   = $payload->getStatus();
-        $this->assertSame($expected, $actual);
-
-        $actual = $payload->getResult();
-        $this->assertArrayHasKey('errors', $actual);
-
-        $errors = $actual['errors'];
-
-        $expected = [['Record(s) not found']];
-        $actual   = $errors;
-        $this->assertSame($expected, $actual);
-    }
-
     public function testServiceFailureNoIdReturned(): void
     {
         /** @var UserMapper $userMapper */
         $userMapper = $this->container->get(Container::USER_MAPPER);
-        $userData = $this->getNewUserData();
+        $userData   = $this->getNewUserData();
 
         $userData['usr_id'] = 1;
 
@@ -110,7 +44,7 @@ final class UserServicePutTest extends AbstractUnitTestCase
             ->onlyMethods(
                 [
                     'update',
-                    'findById'
+                    'findById',
                 ]
             )
             ->getMock()
@@ -164,7 +98,7 @@ final class UserServicePutTest extends AbstractUnitTestCase
     {
         /** @var UserMapper $userMapper */
         $userMapper = $this->container->get(Container::USER_MAPPER);
-        $userData = $this->getNewUserData();
+        $userData   = $this->getNewUserData();
 
         $userData['usr_id'] = 1;
 
@@ -176,7 +110,7 @@ final class UserServicePutTest extends AbstractUnitTestCase
             ->onlyMethods(
                 [
                     'update',
-                    'findById'
+                    'findById',
                 ]
             )
             ->getMock()
@@ -227,6 +161,70 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $errors = $actual['errors'];
 
         $expected = [['Cannot update database record: abcde']];
+        $actual   = $errors;
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testServiceFailureRecordNotFound(): void
+    {
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userData   = $this->getNewUserData();
+
+        $userData['usr_id'] = 1;
+
+        $findByUser = $userMapper->domain($userData);
+
+        $userRepository = $this
+            ->getMockBuilder(UserRepository::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'findById',
+                ]
+            )
+            ->getMock()
+        ;
+        $userRepository->method('findById')->willReturn(null);
+
+        $repository = $this
+            ->getMockBuilder(QueryRepository::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'user',
+                ]
+            )
+            ->getMock()
+        ;
+        $repository->method('user')->willReturn($userRepository);
+
+        $this->container->setShared(Container::REPOSITORY, $repository);
+
+        /** @var UserPutService $service */
+        $service = $this->container->get(Container::USER_PUT_SERVICE);
+
+        /**
+         * Update user
+         */
+        $userData           = $this->getNewUserData();
+        $userData['usr_id'] = 1;
+
+        $updateUser = $userMapper->domain($userData);
+        $updateUser = $updateUser->toArray();
+
+        $payload = $service->__invoke($updateUser);
+
+        $expected = DomainStatus::NOT_FOUND;
+        $actual   = $payload->getStatus();
+        $this->assertSame($expected, $actual);
+
+        $actual = $payload->getResult();
+        $this->assertArrayHasKey('errors', $actual);
+
+        $errors = $actual['errors'];
+
+        $expected = [['Record(s) not found']];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
     }
@@ -492,8 +490,8 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $actual   = $data['createdUserId'];
         $this->assertSame($expected, $actual);
 
-        $today    = date('Y-m-d ');
-        $actual   = $data['updatedDate'];
+        $today  = date('Y-m-d ');
+        $actual = $data['updatedDate'];
         $this->assertStringContainsString($today, $actual);
 
         $expected = $dbUser['usr_updated_usr_id'];

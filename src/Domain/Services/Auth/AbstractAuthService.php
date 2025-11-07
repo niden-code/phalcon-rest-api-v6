@@ -18,7 +18,6 @@ use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Components\Cache\Cache;
 use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
 use Phalcon\Api\Domain\Components\DataSource\SanitizerInterface;
-use Phalcon\Api\Domain\Components\DataSource\User\UserTypes;
 use Phalcon\Api\Domain\Components\Encryption\JWTToken;
 use Phalcon\Api\Domain\Components\Encryption\Security;
 use Phalcon\Api\Domain\Components\Env\EnvManager;

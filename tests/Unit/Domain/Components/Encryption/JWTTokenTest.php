@@ -22,8 +22,6 @@ use Phalcon\Api\Domain\Components\Exceptions\TokenValidationException;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Encryption\Security\JWT\Token\Token;
 
-use function sleep;
-
 final class JWTTokenTest extends AbstractUnitTestCase
 {
     private JWTToken $jwtToken;
@@ -39,8 +37,8 @@ final class JWTTokenTest extends AbstractUnitTestCase
     {
         /** @var UserMapper $userMapper */
         $userMapper = $this->container->get(Container::USER_MAPPER);
-        $userData = $this->getUserData();
-        $domainUser     = $userMapper->domain($userData);
+        $userData   = $this->getUserData();
+        $domainUser = $userMapper->domain($userData);
 
         $token = $this->jwtToken->getForUser($domainUser);
         $this->assertIsString($token);
@@ -51,8 +49,8 @@ final class JWTTokenTest extends AbstractUnitTestCase
     {
         /** @var UserMapper $userMapper */
         $userMapper = $this->container->get(Container::USER_MAPPER);
-        $userData = $this->getUserData();
-        $domainUser     = $userMapper->domain($userData);
+        $userData   = $this->getUserData();
+        $domainUser = $userMapper->domain($userData);
 
         $tokenString = $this->jwtToken->getForUser($domainUser);
 
@@ -81,8 +79,8 @@ final class JWTTokenTest extends AbstractUnitTestCase
     {
         /** @var UserMapper $userMapper */
         $userMapper = $this->container->get(Container::USER_MAPPER);
-        $userData = $this->getUserData();
-        $domainUser     = $userMapper->domain($userData);
+        $userData   = $this->getUserData();
+        $domainUser = $userMapper->domain($userData);
 
         $tokenString = $this->jwtToken->getForUser($domainUser);
         $plain       = $this->jwtToken->getObject($tokenString);
@@ -126,11 +124,11 @@ final class JWTTokenTest extends AbstractUnitTestCase
     {
         /** @var UserMapper $userMapper */
         $userMapper = $this->container->get(Container::USER_MAPPER);
-        $userData = $this->getUserData();
-        $domainUser     = $userMapper->domain($userData);
+        $userData   = $this->getUserData();
+        $domainUser = $userMapper->domain($userData);
 
-        $tokenString   = $this->jwtToken->getForUser($domainUser);
-        $plain         = $this->jwtToken->getObject($tokenString);
+        $tokenString = $this->jwtToken->getForUser($domainUser);
+        $plain       = $this->jwtToken->getObject($tokenString);
 
         $actual = $this->jwtToken->validate($plain, $domainUser);
 

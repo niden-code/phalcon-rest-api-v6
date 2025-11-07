@@ -70,8 +70,8 @@ final class ValidateTokenClaimsMiddlewareTest extends AbstractUnitTestCase
     ): void {
         /** @var UserMapper $userMapper */
         $userMapper = $this->container->get(Container::USER_MAPPER);
-        $migration = new UsersMigration($this->getConnection());
-        $user      = $this->getNewUser($migration);
+        $migration  = new UsersMigration($this->getConnection());
+        $user       = $this->getNewUser($migration);
 
         [$micro, $middleware, $jwtToken] = $this->setupTest();
 
@@ -118,9 +118,9 @@ final class ValidateTokenClaimsMiddlewareTest extends AbstractUnitTestCase
     {
         /** @var UserMapper $userMapper */
         $userMapper = $this->container->get(Container::USER_MAPPER);
-        $migration = new UsersMigration($this->getConnection());
-        $user      = $this->getNewUser($migration);
-        $tokenUser = $userMapper->domain($user);
+        $migration  = new UsersMigration($this->getConnection());
+        $user       = $this->getNewUser($migration);
+        $tokenUser  = $userMapper->domain($user);
 
         [$micro, $middleware, $jwtToken] = $this->setupTest();
 

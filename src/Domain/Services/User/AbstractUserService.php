@@ -25,8 +25,6 @@ use Phalcon\Api\Domain\Components\Encryption\Security;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Components\Payload;
 
-use function array_shift;
-
 /**
  * @phpstan-import-type TUser from UserTypes
  */
@@ -47,7 +45,6 @@ abstract class AbstractUserService implements DomainInterface
         protected readonly UserValidator $validator,
         protected readonly SanitizerInterface $sanitizer,
         protected readonly Security $security,
-
     ) {
     }
 

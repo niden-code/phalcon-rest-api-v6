@@ -107,8 +107,9 @@ class Container extends Di
     public const REPOSITORY     = 'repository';
     public const AUTH_SANITIZER = 'auth.sanitizer';
     public const USER_MAPPER    = UserMapper::class;
-    public const USER_VALIDATOR = UserValidator::class;
     public const USER_SANITIZER = 'user.sanitizer';
+    public const USER_VALIDATOR = UserValidator::class;
+
     /**
      * Responders
      */
@@ -402,6 +403,26 @@ class Container extends Di
      *
      * @return Service
      */
+    private function getServiceSanitizer(string $className): Service
+    {
+        return new Service(
+            [
+                'className' => $className,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => self::FILTER,
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * @param class-string $className
+     *
+     * @return Service
+     */
     private function getServiceUser(string $className): Service
     {
         return new Service(
@@ -427,26 +448,6 @@ class Container extends Di
                     [
                         'type' => 'service',
                         'name' => self::SECURITY,
-                    ],
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @param class-string $className
-     *
-     * @return Service
-     */
-    private function getServiceSanitizer(string $className): Service
-    {
-        return new Service(
-            [
-                'className' => $className,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::FILTER,
                     ],
                 ],
             ]

@@ -30,9 +30,9 @@ final class ValidateTokenRevokedMiddlewareTest extends AbstractUnitTestCase
     {
         /** @var UserMapper $userMapper */
         $userMapper = $this->container->get(Container::USER_MAPPER);
-        $migration = new UsersMigration($this->getConnection());
-        $user      = $this->getNewUser($migration);
-        $tokenUser = $userMapper->domain($user);
+        $migration  = new UsersMigration($this->getConnection());
+        $user       = $this->getNewUser($migration);
+        $tokenUser  = $userMapper->domain($user);
 
         [$micro, $middleware] = $this->setupTest();
 
@@ -73,9 +73,9 @@ final class ValidateTokenRevokedMiddlewareTest extends AbstractUnitTestCase
     {
         /** @var UserMapper $userMapper */
         $userMapper = $this->container->get(Container::USER_MAPPER);
-        $migration = new UsersMigration($this->getConnection());
-        $user      = $this->getNewUser($migration);
-        $tokenUser = $userMapper->domain($user);
+        $migration  = new UsersMigration($this->getConnection());
+        $user       = $this->getNewUser($migration);
+        $tokenUser  = $userMapper->domain($user);
 
         [$micro, $middleware] = $this->setupTest();
 

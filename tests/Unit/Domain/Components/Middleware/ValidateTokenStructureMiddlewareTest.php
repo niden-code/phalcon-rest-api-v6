@@ -85,8 +85,8 @@ final class ValidateTokenStructureMiddlewareTest extends AbstractUnitTestCase
     {
         /** @var UserMapper $userMapper */
         $userMapper = $this->container->get(Container::USER_MAPPER);
-        $userData = $this->getNewUserData();
-        $domainUser     = $userMapper->domain($userData);
+        $userData   = $this->getNewUserData();
+        $domainUser = $userMapper->domain($userData);
 
         [$micro, $middleware] = $this->setupTest();
         /** @var JWTToken $jwtToken */

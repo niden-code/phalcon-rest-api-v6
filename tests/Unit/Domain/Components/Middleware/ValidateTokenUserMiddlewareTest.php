@@ -63,8 +63,8 @@ final class ValidateTokenUserMiddlewareTest extends AbstractUnitTestCase
     {
         /** @var UserMapper $userMapper */
         $userMapper = $this->container->get(Container::USER_MAPPER);
-        $migration = new UsersMigration($this->getConnection());
-        $user      = $this->getNewUser($migration);
+        $migration  = new UsersMigration($this->getConnection());
+        $user       = $this->getNewUser($migration);
         $domainUser = $userMapper->domain($user);
 
         [$micro, $middleware, $jwtToken] = $this->setupTest();

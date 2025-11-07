@@ -38,7 +38,7 @@ final readonly class ActionHandler implements ActionInterface
     {
         $input = new Input();
         /** @var TAuthLoginInput|TUserInput $data */
-        $data  = $input->__invoke($this->request);
+        $data = $input->__invoke($this->request);
 
         $this->responder->__invoke(
             $this->response,

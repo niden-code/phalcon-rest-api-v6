@@ -44,11 +44,11 @@ final class AuthInput
         $sanitized = $sanitizer->sanitize($input);
 
         /** @var string|null $email */
-        $email    = $sanitized['email'] ?? null;
+        $email = $sanitized['email'] ?? null;
         /** @var string|null $password */
         $password = $sanitized['password'] ?? null;
         /** @var string|null $token */
-        $token    = $sanitized['token'] ?? null;
+        $token = $sanitized['token'] ?? null;
 
         return new self($email, $password, $token);
     }

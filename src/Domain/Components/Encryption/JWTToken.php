@@ -18,7 +18,6 @@ use InvalidArgumentException;
 use Phalcon\Api\Domain\Components\Cache\Cache;
 use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
 use Phalcon\Api\Domain\Components\DataSource\User\User;
-use Phalcon\Api\Domain\Components\DataSource\User\UserTypes;
 use Phalcon\Api\Domain\Components\Enums\Common\FlagsEnum;
 use Phalcon\Api\Domain\Components\Enums\Common\JWTEnum;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
@@ -140,7 +139,7 @@ class JWTToken
         /** @var string $tokenId */
         $tokenId = $user->tokenId;
         /** @var string $issuer */
-        $issuer  = $user->issuer;
+        $issuer = $user->issuer;
         /** @var string $tokenPassword */
         $tokenPassword = $user->tokenPassword;
         /** @var int $userId */

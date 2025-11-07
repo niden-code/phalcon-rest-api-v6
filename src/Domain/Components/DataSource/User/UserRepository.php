@@ -156,9 +156,8 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
      */
     public function update(User $user): int
     {
-
-        $row    = $this->mapper->db($user);
-        $now    = Dates::toUTC(format: Dates::DATE_TIME_FORMAT);
+        $row = $this->mapper->db($user);
+        $now = Dates::toUTC(format: Dates::DATE_TIME_FORMAT);
         /** @var int $userId */
         $userId = $row['usr_id'];
 
@@ -183,7 +182,7 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
          */
         unset($columns['usr_created_date'], $columns['usr_created_usr_id']);
 
-        $update  = Update::new($this->connection);
+        $update = Update::new($this->connection);
         $update
             ->table($this->table)
             ->columns($columns)

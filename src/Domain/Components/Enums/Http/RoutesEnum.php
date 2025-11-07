@@ -31,9 +31,9 @@ enum RoutesEnum: int
      */
     public const EVENT_BEFORE = 'before';
     public const EVENT_FINISH = 'finish';
-    public const GET    = 'get';
-    public const POST   = 'post';
-    public const PUT    = 'put';
+    public const GET          = 'get';
+    public const POST         = 'post';
+    public const PUT          = 'put';
 
     case authLoginPost   = 11;
     case authLogoutPost  = 12;

@@ -15,7 +15,6 @@ namespace Phalcon\Api\Domain\Services\Auth;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Components\DataSource\Auth\AuthInput;
-use Phalcon\Api\Domain\Components\DataSource\User\UserTypes;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Components\Payload;
 

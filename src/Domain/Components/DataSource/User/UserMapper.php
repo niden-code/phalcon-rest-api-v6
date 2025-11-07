@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
-use Phalcon\Api\Domain\ADR\InputTypes;
-
 /**
  * @phpstan-import-type TUser from UserTypes
  * @phpstan-import-type TUserDbRecord from UserTypes

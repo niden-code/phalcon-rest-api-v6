@@ -122,7 +122,7 @@ final class UserInputTest extends AbstractUnitTestCase
         $actual   = $userInput->updatedUserId;
         $this->assertSame($expected, $actual);
 
-        $expected =get_object_vars($userInput);
+        $expected = get_object_vars($userInput);
         $actual   = $userInput->toArray();
         $this->assertSame($expected, $actual);
     }

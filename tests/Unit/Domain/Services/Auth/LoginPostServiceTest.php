@@ -110,22 +110,18 @@ final class LoginPostServiceTest extends AbstractUnitTestCase
         $this->assertNotEmpty($jwt['refreshToken']);
     }
 
-    public function testServiceWrongCredentialsForUser(): void
+    public function testServiceWrongCredentials(): void
     {
+        $faker = Factory::create();
         /** @var LoginPostService $service */
-        $service   = $this->container->get(Container::AUTH_LOGIN_POST_SERVICE);
-        $migration = new UsersMigration($this->getConnection());
-
-        $password = 'password';
+        $service = $this->container->get(Container::AUTH_LOGIN_POST_SERVICE);
 
         /**
          * Issue a wrong password
          */
-        $dbUser  = $this->getNewUser($migration, ['usr_password' => $password]);
-        $email   = $dbUser['usr_email'];
         $payload = [
-            'email'    => $email,
-            'password' => $password . '2',
+            'email'    => $faker->email(),
+            'password' => $faker->password(),
         ];
 
         $payload = $service->__invoke($payload);
@@ -142,18 +138,22 @@ final class LoginPostServiceTest extends AbstractUnitTestCase
         $this->assertSame($expected, $actual);
     }
 
-    public function testServiceWrongCredentials(): void
+    public function testServiceWrongCredentialsForUser(): void
     {
-        $faker = Factory::create();
         /** @var LoginPostService $service */
         $service   = $this->container->get(Container::AUTH_LOGIN_POST_SERVICE);
+        $migration = new UsersMigration($this->getConnection());
+
+        $password = 'password';
 
         /**
          * Issue a wrong password
          */
+        $dbUser  = $this->getNewUser($migration, ['usr_password' => $password]);
+        $email   = $dbUser['usr_email'];
         $payload = [
-            'email'    => $faker->email(),
-            'password' => $faker->password(),
+            'email'    => $email,
+            'password' => $password . '2',
         ];
 
         $payload = $service->__invoke($payload);
