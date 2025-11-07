@@ -15,6 +15,7 @@ namespace Phalcon\Api\Tests\Unit\Domain\Components\DataSource\User;
 
 use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
+use Phalcon\Api\Domain\Components\DataSource\User\User;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 
@@ -56,74 +57,74 @@ final class UserRepositoryTest extends AbstractUnitTestCase
         $this->runAssertions($migrationUser, $repositoryUser);
     }
 
-    private function runAssertions(array $dbUser, array $user): void
+    private function runAssertions(array $dbUser, User $user): void
     {
         $expected = $dbUser['usr_id'];
-        $actual   = $user['usr_id'];
+        $actual   = $user->id;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_status_flag'];
-        $actual   = $user['usr_status_flag'];
+        $actual   = $user->status;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_email'];
-        $actual   = $user['usr_email'];
+        $actual   = $user->email;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_password'];
-        $actual   = $user['usr_password'];
+        $actual   = $user->password;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_name_prefix'];
-        $actual   = $user['usr_name_prefix'];
+        $actual   = $user->namePrefix;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_name_first'];
-        $actual   = $user['usr_name_first'];
+        $actual   = $user->nameFirst;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_name_middle'];
-        $actual   = $user['usr_name_middle'];
+        $actual   = $user->nameMiddle;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_name_last'];
-        $actual   = $user['usr_name_last'];
+        $actual   = $user->nameLast;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_name_suffix'];
-        $actual   = $user['usr_name_suffix'];
+        $actual   = $user->nameSuffix;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_issuer'];
-        $actual   = $user['usr_issuer'];
+        $actual   = $user->issuer;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_token_password'];
-        $actual   = $user['usr_token_password'];
+        $actual   = $user->tokenPassword;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_token_id'];
-        $actual   = $user['usr_token_id'];
+        $actual   = $user->tokenId;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_preferences'];
-        $actual   = $user['usr_preferences'];
+        $actual   = $user->preferences;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_created_date'];
-        $actual   = $user['usr_created_date'];
+        $actual   = $user->createdDate;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_created_usr_id'];
-        $actual   = $user['usr_created_usr_id'];
+        $actual   = $user->createdUserId;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_updated_date'];
-        $actual   = $user['usr_updated_date'];
+        $actual   = $user->updatedDate;
         $this->assertSame($expected, $actual);
 
         $expected = $dbUser['usr_updated_usr_id'];
-        $actual   = $user['usr_updated_usr_id'];
+        $actual   = $user->updatedUserId;
         $this->assertSame($expected, $actual);
     }
 }

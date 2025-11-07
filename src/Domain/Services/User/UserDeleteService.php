@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Services\User;
 
-use PayloadInterop\DomainStatus;
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Domain\Payload;
+use Phalcon\Api\Domain\Components\DataSource\User\UserInput;
+use Phalcon\Api\Domain\Components\Payload;
 
 /**
  * @phpstan-import-type TUserInput from InputTypes
@@ -29,7 +29,8 @@ final class UserDeleteService extends AbstractUserService
      */
     public function __invoke(array $input): Payload
     {
-        $userId = $this->filter->absint($input['id'] ?? 0);
+        $inputObject = UserInput::new($this->sanitizer, $input);
+        $userId      = $inputObject->id;
 
         /**
          * Success
@@ -38,13 +39,10 @@ final class UserDeleteService extends AbstractUserService
             $rows = $this->repository->user()->deleteById($userId);
 
             if ($rows > 0) {
-                return new Payload(
-                    DomainStatus::DELETED,
+                return Payload::deleted(
                     [
-                        'data' => [
-                            'Record deleted successfully [#' . $userId . '].',
-                        ],
-                    ]
+                        'Record deleted successfully [#' . $userId . '].',
+                    ],
                 );
             }
         }
@@ -52,13 +50,6 @@ final class UserDeleteService extends AbstractUserService
         /**
          * 404
          */
-        return new Payload(
-            DomainStatus::NOT_FOUND,
-            [
-                'errors' => [
-                    'Record(s) not found',
-                ],
-            ]
-        );
+        return Payload::notFound(['Record(s) not found']);
     }
 }

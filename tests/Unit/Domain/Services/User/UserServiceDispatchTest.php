@@ -16,6 +16,7 @@ namespace Phalcon\Api\Tests\Unit\Domain\Services\User;
 use Phalcon\Api\Domain\Components\Cache\Cache;
 use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
+use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Domain\Components\Enums\Http\RoutesEnum;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
@@ -31,14 +32,14 @@ final class UserServiceDispatchTest extends AbstractUnitTestCase
         $env = $this->container->getShared(Container::ENV);
         /** @var Cache $cache */
         $cache = $this->container->getShared(Container::CACHE);
-        /** @var TransportRepository $transport */
-        $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
 
         $migration  = new UsersMigration($this->getConnection());
         $dbUser     = $this->getNewUser($migration);
         $userId     = $dbUser['usr_id'];
         $token      = $this->getUserToken($dbUser);
-        $domainUser = $transport->newUser($dbUser);
+        $domainUser = $userMapper->domain($dbUser);
 
         /**
          * Store the token in the cache
@@ -75,7 +76,7 @@ final class UserServiceDispatchTest extends AbstractUnitTestCase
         $actual   = $errors;
         $this->assertSame($expected, $actual);
 
-        $user     = $transport->newUser($dbUser);
+        $user     = $userMapper->domain($dbUser);
         $expected = $user->toArray();
         $actual   = $data;
         $this->assertSame($expected, $actual);

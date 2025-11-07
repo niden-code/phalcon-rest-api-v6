@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Services\User;
 
-use PayloadInterop\DomainStatus;
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Domain\Payload;
+use Phalcon\Api\Domain\Components\DataSource\User\UserInput;
+use Phalcon\Api\Domain\Components\Payload;
 
 /**
  * @phpstan-import-type TUserInput from InputTypes
@@ -29,35 +29,23 @@ final class UserGetService extends AbstractUserService
      */
     public function __invoke(array $input): Payload
     {
-        $userId = $this->filter->absint($input['id'] ?? 0);
+        $inputObject = UserInput::new($this->sanitizer, $input);
+        $userId      = $inputObject->id;
 
         /**
          * Success
          */
         if ($userId > 0) {
-            $dbUser = $this->repository->user()->findById($userId);
-            $user   = $this->transport->newUser($dbUser);
+            $user = $this->repository->user()->findById($userId);
 
-            if (true !== $user->isEmpty()) {
-                return new Payload(
-                    DomainStatus::SUCCESS,
-                    [
-                        'data' => $user->toArray(),
-                    ]
-                );
+            if (null !== $user) {
+                return Payload::success($user->toArray());
             }
         }
 
         /**
          * 404
          */
-        return new Payload(
-            DomainStatus::NOT_FOUND,
-            [
-                'errors' => [
-                    'Record(s) not found',
-                ],
-            ]
-        );
+        return Payload::notFound(['Record(s) not found']);
     }
 }

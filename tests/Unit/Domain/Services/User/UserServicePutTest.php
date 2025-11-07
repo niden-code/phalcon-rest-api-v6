@@ -13,35 +13,44 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Services\User;
 
+use DateTimeImmutable;
 use PayloadInterop\DomainStatus;
 use PDOException;
 use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
+use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
-use Phalcon\Api\Domain\Components\Encryption\Security;
 use Phalcon\Api\Domain\Services\User\UserPutService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
-use Phalcon\Filter\Filter;
 use PHPUnit\Framework\Attributes\BackupGlobals;
+
+use function array_shift;
 
 #[BackupGlobals(true)]
 final class UserServicePutTest extends AbstractUnitTestCase
 {
-    public function testServiceFailureNoIdReturned(): void
+    public function testServiceFailureRecordNotFound(): void
     {
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userData = $this->getNewUserData();
+
+        $userData['usr_id'] = 1;
+
+        $findByUser = $userMapper->domain($userData);
+
         $userRepository = $this
             ->getMockBuilder(UserRepository::class)
             ->disableOriginalConstructor()
             ->onlyMethods(
                 [
-                    'update',
+                    'findById'
                 ]
             )
             ->getMock()
         ;
-        $userRepository->method('update')->willReturn(0);
+        $userRepository->method('findById')->willReturn(null);
 
         $repository = $this
             ->getMockBuilder(QueryRepository::class)
@@ -55,25 +64,89 @@ final class UserServicePutTest extends AbstractUnitTestCase
         ;
         $repository->method('user')->willReturn($userRepository);
 
-        /** @var Filter $filter */
-        $filter = $this->container->get(Container::FILTER);
-        /** @var Security $security */
-        $security = $this->container->get(Container::SECURITY);
-        /** @var TransportRepository $transport */
-        $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
+        $this->container->setShared(Container::REPOSITORY, $repository);
 
-        $service = new UserPutService($repository, $transport, $filter, $security);
-
-        $userData = $this->getNewUserData();
+        /** @var UserPutService $service */
+        $service = $this->container->get(Container::USER_PUT_SERVICE);
 
         /**
-         * $userData is a db record. We need a domain object here
+         * Update user
          */
-        $domainUser = $transport->newUser($userData);
-        $domainData = $domainUser->toArray();
-        $domainData = $domainData[0];
+        $userData           = $this->getNewUserData();
+        $userData['usr_id'] = 1;
 
-        $payload = $service->__invoke($domainData);
+        $updateUser = $userMapper->domain($userData);
+        $updateUser = $updateUser->toArray();
+        $updateUser = array_shift($updateUser);
+
+        $payload = $service->__invoke($updateUser);
+
+        $expected = DomainStatus::NOT_FOUND;
+        $actual   = $payload->getStatus();
+        $this->assertSame($expected, $actual);
+
+        $actual = $payload->getResult();
+        $this->assertArrayHasKey('errors', $actual);
+
+        $errors = $actual['errors'];
+
+        $expected = ['Record(s) not found'];
+        $actual   = $errors;
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testServiceFailureNoIdReturned(): void
+    {
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userData = $this->getNewUserData();
+
+        $userData['usr_id'] = 1;
+
+        $findByUser = $userMapper->domain($userData);
+
+        $userRepository = $this
+            ->getMockBuilder(UserRepository::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'update',
+                    'findById'
+                ]
+            )
+            ->getMock()
+        ;
+        $userRepository->method('update')->willReturn(0);
+        $userRepository->method('findById')->willReturn($findByUser);
+
+        $repository = $this
+            ->getMockBuilder(QueryRepository::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'user',
+                ]
+            )
+            ->getMock()
+        ;
+        $repository->method('user')->willReturn($userRepository);
+
+        $this->container->setShared(Container::REPOSITORY, $repository);
+
+        /** @var UserPutService $service */
+        $service = $this->container->get(Container::USER_PUT_SERVICE);
+
+        /**
+         * Update user
+         */
+        $userData           = $this->getNewUserData();
+        $userData['usr_id'] = 1;
+
+        $updateUser = $userMapper->domain($userData);
+        $updateUser = $updateUser->toArray();
+        $updateUser = array_shift($updateUser);
+
+        $payload = $service->__invoke($updateUser);
 
         $expected = DomainStatus::ERROR;
         $actual   = $payload->getStatus();
@@ -91,16 +164,26 @@ final class UserServicePutTest extends AbstractUnitTestCase
 
     public function testServiceFailurePdoError(): void
     {
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userData = $this->getNewUserData();
+
+        $userData['usr_id'] = 1;
+
+        $findByUser = $userMapper->domain($userData);
+
         $userRepository = $this
             ->getMockBuilder(UserRepository::class)
             ->disableOriginalConstructor()
             ->onlyMethods(
                 [
                     'update',
+                    'findById'
                 ]
             )
             ->getMock()
         ;
+        $userRepository->method('findById')->willReturn($findByUser);
         $userRepository
             ->method('update')
             ->willThrowException(new PDOException('abcde'))
@@ -121,25 +204,21 @@ final class UserServicePutTest extends AbstractUnitTestCase
             ->willReturn($userRepository)
         ;
 
-        /** @var Filter $filter */
-        $filter = $this->container->get(Container::FILTER);
-        /** @var Security $security */
-        $security = $this->container->get(Container::SECURITY);
-        /** @var TransportRepository $transport */
-        $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
+        $this->container->set(Container::REPOSITORY, $repository);
+        /** @var UserPutService $service */
+        $service = $this->container->get(Container::USER_PUT_SERVICE);
 
-        $service = new UserPutService($repository, $transport, $filter, $security);
-
-        $userData = $this->getNewUserData();
+        $userData           = $this->getNewUserData();
+        $userData['usr_id'] = 1;
 
         /**
          * $userData is a db record. We need a domain object here
          */
-        $domainUser = $transport->newUser($userData);
-        $domainData = $domainUser->toArray();
-        $domainData = $domainData[0];
+        $updateUser = $userMapper->domain($userData);
+        $updateUser = $updateUser->toArray();
+        $updateUser = array_shift($updateUser);
 
-        $payload = $service->__invoke($domainData);
+        $payload = $service->__invoke($updateUser);
 
         $expected = DomainStatus::ERROR;
         $actual   = $payload->getStatus();
@@ -159,10 +238,9 @@ final class UserServicePutTest extends AbstractUnitTestCase
     {
         /** @var UserPutService $service */
         $service = $this->container->get(Container::USER_PUT_SERVICE);
-        /** @var TransportRepository $transport */
-        $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
-
-        $userData = $this->getNewUserData();
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userData   = $this->getNewUserData();
 
         unset(
             $userData['usr_email'],
@@ -175,7 +253,7 @@ final class UserServicePutTest extends AbstractUnitTestCase
         /**
          * $userData is a db record. We need a domain object here
          */
-        $domainUser = $transport->newUser($userData);
+        $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
         $domainData = $domainData[0];
 
@@ -205,13 +283,18 @@ final class UserServicePutTest extends AbstractUnitTestCase
     {
         /** @var UserPutService $service */
         $service = $this->container->get(Container::USER_PUT_SERVICE);
-        /** @var TransportRepository $transport */
-        $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
 
-        $migration = new UsersMigration($this->getConnection());
-        $dbUser    = $this->getNewUser($migration);
-        $userId    = $dbUser['usr_id'];
-        $userData  = $this->getNewUserData();
+        $migration          = new UsersMigration($this->getConnection());
+        $dbUser             = $this->getNewUser($migration);
+        $userId             = $dbUser['usr_id'];
+        $userData           = $this->getNewUserData();
+        $userData['usr_id'] = $userId;
+        /**
+         * Don't hash the password
+         */
+        $userData['usr_password'] = $this->getStrongPassword();
 
         $userData['usr_created_usr_id'] = 4;
         $userData['usr_updated_usr_id'] = 5;
@@ -219,11 +302,9 @@ final class UserServicePutTest extends AbstractUnitTestCase
         /**
          * $userData is a db record. We need a domain object here
          */
-        $domainUser = $transport->newUser($userData);
+        $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = $domainData[0];
-
-        $domainData['id'] = $userId;
+        $domainData = array_shift($domainData);
 
         $payload = $service->__invoke($domainData);
 
@@ -251,23 +332,23 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $actual = str_starts_with($data['password'], '$argon2i$');
         $this->assertTrue($actual);
 
-        $expected = $domainData['namePrefix'];
+        $expected = htmlspecialchars($domainData['namePrefix']);
         $actual   = $data['namePrefix'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameFirst'];
+        $expected = htmlspecialchars($domainData['nameFirst']);
         $actual   = $data['nameFirst'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameMiddle'];
+        $expected = htmlspecialchars($domainData['nameMiddle']);
         $actual   = $data['nameMiddle'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameLast'];
+        $expected = htmlspecialchars($domainData['nameLast']);
         $actual   = $data['nameLast'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameSuffix'];
+        $expected = htmlspecialchars($domainData['nameSuffix']);
         $actual   = $data['nameSuffix'];
         $this->assertSame($expected, $actual);
 
@@ -283,7 +364,7 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $actual   = $data['tokenId'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['preferences'];
+        $expected = '';
         $actual   = $data['preferences'];
         $this->assertSame($expected, $actual);
 
@@ -295,9 +376,9 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $actual   = $data['createdUserId'];
         $this->assertSame($expected, $actual);
 
-        $expected = $dbUser['usr_updated_date'];
+        $expected = $domainData['updatedDate'];
         $actual   = $data['updatedDate'];
-        $this->assertNotSame($expected, $actual);
+        $this->assertSame($expected, $actual);
 
         $expected = 5;
         $actual   = $data['updatedUserId'];
@@ -306,15 +387,24 @@ final class UserServicePutTest extends AbstractUnitTestCase
 
     public function testServiceSuccessEmptyDates(): void
     {
+        $now   = new DateTimeImmutable();
+        $today = $now->format('Y-m-d');
         /** @var UserPutService $service */
         $service = $this->container->get(Container::USER_PUT_SERVICE);
-        /** @var TransportRepository $transport */
-        $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
 
         $migration = new UsersMigration($this->getConnection());
         $dbUser    = $this->getNewUser($migration);
-        $userId    = $dbUser['usr_id'];
-        $userData  = $this->getNewUserData();
+
+        $userId             = $dbUser['usr_id'];
+        $userData           = $this->getNewUserData();
+        $userData['usr_id'] = $userId;
+        /**
+         * Don't hash the password
+         */
+        $userData['usr_password'] = $this->getStrongPassword();
+
         unset(
             $userData['usr_updated_date'],
         );
@@ -322,11 +412,9 @@ final class UserServicePutTest extends AbstractUnitTestCase
         /**
          * $userData is a db record. We need a domain object here
          */
-        $domainUser = $transport->newUser($userData);
+        $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = $domainData[0];
-
-        $domainData['id'] = $userId;
+        $domainData = array_shift($domainData);
 
         $payload = $service->__invoke($domainData);
 
@@ -354,23 +442,23 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $actual = str_starts_with($data['password'], '$argon2i$');
         $this->assertTrue($actual);
 
-        $expected = $domainData['namePrefix'];
+        $expected = htmlspecialchars($domainData['namePrefix']);
         $actual   = $data['namePrefix'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameFirst'];
+        $expected = htmlspecialchars($domainData['nameFirst']);
         $actual   = $data['nameFirst'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameMiddle'];
+        $expected = htmlspecialchars($domainData['nameMiddle']);
         $actual   = $data['nameMiddle'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameLast'];
+        $expected = htmlspecialchars($domainData['nameLast']);
         $actual   = $data['nameLast'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameSuffix'];
+        $expected = htmlspecialchars($domainData['nameSuffix']);
         $actual   = $data['nameSuffix'];
         $this->assertSame($expected, $actual);
 
@@ -386,7 +474,7 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $actual   = $data['tokenId'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['preferences'];
+        $expected = '';
         $actual   = $data['preferences'];
         $this->assertSame($expected, $actual);
 
@@ -398,9 +486,9 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $actual   = $data['createdUserId'];
         $this->assertSame($expected, $actual);
 
-        $expected = $dbUser['usr_updated_date'];
+        $today    = date('Y-m-d ');
         $actual   = $data['updatedDate'];
-        $this->assertNotSame($expected, $actual);
+        $this->assertStringContainsString($today, $actual);
 
         $expected = $dbUser['usr_updated_usr_id'];
         $actual   = $data['updatedUserId'];

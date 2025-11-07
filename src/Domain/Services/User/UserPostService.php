@@ -13,12 +13,11 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Services\User;
 
-use PayloadInterop\DomainStatus;
 use PDOException;
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Components\Constants\Dates;
+use Phalcon\Api\Domain\Components\DataSource\User\UserInput;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
-use Phalcon\Domain\Payload;
+use Phalcon\Api\Domain\Components\Payload;
 
 /**
  * @phpstan-import-type TUserSanitizedInsertInput from InputTypes
@@ -27,6 +26,8 @@ use Phalcon\Domain\Payload;
  */
 final class UserPostService extends AbstractUserService
 {
+    protected HttpCodesEnum $errorMessage = HttpCodesEnum::AppCannotCreateDatabaseRecord;
+
     /**
      * @param TUserInput $input
      *
@@ -34,28 +35,20 @@ final class UserPostService extends AbstractUserService
      */
     public function __invoke(array $input): Payload
     {
-        $inputData = $this->sanitizeInput($input);
-        $errors    = $this->validateInput($inputData);
+        $inputObject = UserInput::new($this->sanitizer, $input);
+        $errors      = $this->validator->validate($inputObject);
 
         /**
          * Errors exist - return early
          */
-        if (!empty($errors)) {
-            return new Payload(
-                DomainStatus::INVALID,
-                [
-                    'errors' => $errors,
-                ]
-            );
+        if (true !== empty($errors)) {
+            return Payload::invalid($errors);
         }
 
         /**
          * The password needs to be hashed
          */
-        $password = $inputData['password'];
-        $hashed   = $this->security->hash($password);
-
-        $inputData['password'] = $hashed;
+        $domainUser = $this->processPassword($inputObject);
 
         /**
          * Insert the record
@@ -64,7 +57,7 @@ final class UserPostService extends AbstractUserService
             $userId = $this
                 ->repository
                 ->user()
-                ->insert($inputData)
+                ->insert($domainUser)
             ;
         } catch (PDOException $ex) {
             /**
@@ -80,104 +73,11 @@ final class UserPostService extends AbstractUserService
         /**
          * Get the user from the database
          */
-        $dbUser     = $this->repository->user()->findById($userId);
-        $domainUser = $this->transport->newUser($dbUser);
+        $domainUser = $this->repository->user()->findById($userId);
 
         /**
          * Return the user back
          */
-        return new Payload(
-            DomainStatus::CREATED,
-            [
-                'data' => $domainUser->toArray(),
-            ]
-        );
-    }
-
-    /**
-     * @param string $message
-     *
-     * @return Payload
-     */
-    private function getErrorPayload(string $message): Payload
-    {
-        return new Payload(
-            DomainStatus::ERROR,
-            [
-                'errors' => [
-                    HttpCodesEnum::AppCannotCreateDatabaseRecord->text()
-                    . $message,
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @param TUserInput $input
-     *
-     * @return TUserSanitizedInsertInput
-     */
-    private function sanitizeInput(array $input): array
-    {
-        /**
-         * Only the fields we want
-         *
-         * @todo add sanitizers here
-         * @todo maybe this is another domain object?
-         */
-        $sanitized = [
-            'status'        => $input['status'] ?? 0,
-            'email'         => $input['email'] ?? '',
-            'password'      => $input['password'] ?? '',
-            'namePrefix'    => $input['namePrefix'] ?? '',
-            'nameFirst'     => $input['nameFirst'] ?? '',
-            'nameLast'      => $input['nameLast'] ?? '',
-            'nameMiddle'    => $input['nameMiddle'] ?? '',
-            'nameSuffix'    => $input['nameSuffix'] ?? '',
-            'issuer'        => $input['issuer'] ?? '',
-            'tokenPassword' => $input['tokenPassword'] ?? '',
-            'tokenId'       => $input['tokenId'] ?? '',
-            'preferences'   => $input['preferences'] ?? '',
-            'createdDate'   => $input['createdDate'] ?? null,
-            'createdUserId' => $input['createdUserId'] ?? 0,
-            'updatedDate'   => $input['updatedDate'] ?? null,
-            'updatedUserId' => $input['updatedUserId'] ?? 0,
-        ];
-
-        if (empty($sanitized['createdDate'])) {
-            $sanitized['createdDate'] = Dates::toUTC('now', Dates::DATE_TIME_FORMAT);
-        }
-
-        if (empty($sanitized['updatedDate'])) {
-            $sanitized['updatedDate'] = Dates::toUTC('now', Dates::DATE_TIME_FORMAT);
-        }
-
-        return $sanitized;
-    }
-
-    /**
-     * @param TUserSanitizedInsertInput $inputData
-     *
-     * @return TValidationErrors|array{}
-     */
-    private function validateInput(array $inputData): array
-    {
-        $errors   = [];
-        $required = [
-            'email',
-            'password',
-            'issuer',
-            'tokenPassword',
-            'tokenId',
-        ];
-
-        foreach ($required as $name) {
-            $field = $inputData[$name];
-            if (true === empty($field)) {
-                $errors[] = ['Field ' . $name . ' cannot be empty.'];
-            }
-        }
-
-        return $errors;
+        return Payload::created($domainUser->toArray());
     }
 }
