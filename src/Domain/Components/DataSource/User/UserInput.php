@@ -13,10 +13,36 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
+use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Components\DataSource\SanitizerInterface;
 
+use function get_object_vars;
+
+/**
+ * @phpstan-import-type TUserInput from InputTypes
+ * @phpstan-import-type TUser from UserTypes
+ */
 final class UserInput
 {
+    /**
+     * @param int|null    $id
+     * @param int|null    $status
+     * @param string|null $email
+     * @param string|null $password
+     * @param string|null $namePrefix
+     * @param string|null $nameFirst
+     * @param string|null $nameMiddle
+     * @param string|null $nameLast
+     * @param string|null $nameSuffix
+     * @param string|null $issuer
+     * @param string|null $tokenPassword
+     * @param string|null $tokenId
+     * @param string|null $preferences
+     * @param string|null $createdDate
+     * @param int|null    $createdUserId
+     * @param string|null $updatedDate
+     * @param int|null    $updatedUserId
+     */
     public function __construct(
         public readonly ?int $id,
         public readonly ?int $status,
@@ -38,8 +64,15 @@ final class UserInput
     ) {
     }
 
+    /**
+     * @param SanitizerInterface $sanitizer
+     * @param TUserInput         $input
+     *
+     * @return self
+     */
     public static function new(SanitizerInterface $sanitizer, array $input): self
     {
+        /** @var TUser $sanitized */
         $sanitized = $sanitizer->sanitize($input);
 
         return new self(
@@ -63,8 +96,14 @@ final class UserInput
         );
     }
 
+    /**
+     * @return TUser
+     */
     public function toArray(): array
     {
-        return [$this->id => get_object_vars($this)];
+        /** @var TUser $vars */
+        $vars = get_object_vars($this);
+
+        return $vars;
     }
 }

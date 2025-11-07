@@ -13,8 +13,12 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
+use function get_object_vars;
 use function trim;
 
+/**
+ * @phpstan-import-type TUser from UserTypes
+ */
 final class User
 {
     public function __construct(
@@ -45,8 +49,14 @@ final class User
         );
     }
 
+    /**
+     * @return TUser
+     */
     public function toArray(): array
     {
-        return [$this->id => get_object_vars($this)];
+        /** @var TUser $vars */
+        $vars = get_object_vars($this);
+
+        return $vars;
     }
 }
