@@ -13,22 +13,25 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
+use Phalcon\Api\Domain\Components\Constants\Dates;
 use Phalcon\Api\Domain\Components\DataSource\AbstractRepository;
 use Phalcon\Api\Domain\Components\Enums\Common\FlagsEnum;
+use Phalcon\DataMapper\Pdo\Connection;
 use Phalcon\DataMapper\Query\Insert;
+use Phalcon\DataMapper\Query\Select;
 use Phalcon\DataMapper\Query\Update;
+
+use function array_filter;
 
 /**
  * @phpstan-import-type TUserRecord from UserTypes
- * @phpstan-import-type TUserInsert from UserTypes
- * @phpstan-import-type TUserUpdate from UserTypes
  *
  * The 'final' keyword was intentionally removed from this class to allow
  * extension for testing purposes (e.g., mocking in unit tests).
  *
  * Please avoid extending this class in production code unless absolutely necessary.
  */
-class UserRepository extends AbstractRepository
+class UserRepository extends AbstractRepository implements UserRepositoryInterface
 {
     /**
      * @var string
@@ -39,111 +42,168 @@ class UserRepository extends AbstractRepository
      */
     protected string $table = 'co_users';
 
+    public function __construct(
+        Connection $connection,
+        private readonly UserMapper $mapper,
+    ) {
+        parent::__construct($connection);
+    }
+
+
     /**
      * @param string $email
      *
-     * @return TUserRecord
+     * @return User|null
      */
-    public function findByEmail(string $email): array
+    public function findByEmail(string $email): ?User
     {
-        $result = [];
         if (true !== empty($email)) {
             return $this->findOneBy(
                 [
-                    'usr_email'       => $email,
+                    'usr_email' => $email,
                     'usr_status_flag' => FlagsEnum::Active->value,
                 ]
             );
         }
 
-        return $result;
+        return null;
     }
 
     /**
-     * @param TUserInsert $userData
+     * @param int $recordId
+     *
+     * @return User|null
+     */
+    public function findById(int $recordId): ?User
+    {
+        if ($recordId > 0) {
+            return $this->findOneBy(
+                [
+                    $this->idField => $recordId,
+                ]
+            );
+        }
+
+        return null;
+    }
+
+
+    /**
+     * @param array<string, bool|int|string|null> $criteria
+     *
+     * @return User|null
+     */
+    public function findOneBy(array $criteria): ?User
+    {
+        $select = Select::new($this->connection);
+
+        /** @var TUserRecord $result */
+        $result = $select
+            ->from($this->table)
+            ->whereEquals($criteria)
+            ->fetchOne()
+        ;
+
+        if (empty($result)) {
+            return null;
+        }
+
+        return $this->mapper->domain($result);
+    }
+
+
+    /**
+     * @param User $user
      *
      * @return int
      */
-    public function insert(array $userData): int
+    public function insert(User $user): int
     {
-        $createdUserId = $userData['createdUserId'];
-        $updatedUserId = $userData['updatedUserId'];
+        $row = $this->mapper->db($user);
+        $now = Dates::toUTC(format: Dates::DATE_TIME_FORMAT);
 
-        $columns = [
-            'usr_status_flag'    => $userData['status'],
-            'usr_email'          => $userData['email'],
-            'usr_password'       => $userData['password'],
-            'usr_name_prefix'    => $userData['namePrefix'],
-            'usr_name_first'     => $userData['nameFirst'],
-            'usr_name_middle'    => $userData['nameMiddle'],
-            'usr_name_last'      => $userData['nameLast'],
-            'usr_name_suffix'    => $userData['nameSuffix'],
-            'usr_issuer'         => $userData['issuer'],
-            'usr_token_password' => $userData['tokenPassword'],
-            'usr_token_id'       => $userData['tokenId'],
-            'usr_preferences'    => $userData['preferences'],
-            'usr_created_date'   => $userData['createdDate'],
-            'usr_updated_date'   => $userData['updatedDate'],
-        ];
+        /**
+         * @todo this should not be here - the insert should just add data not validate
+         */
+        if (true === empty($row['usr_created_date'])) {
+            $row['usr_created_date'] = $now;
+        }
+        if (true === empty($row['usr_updated_date'])) {
+            $row['usr_updated_date'] = $now;
+        }
 
-        $insert = Insert::new($this->connection);
+        /**
+         * Remove usr_id just in case
+         */
+        unset($row['usr_id']);
 
+        /**
+         * Cleanup empty fields if needed
+         */
+        $columns = $this->cleanupFields($row);
+        $insert  = Insert::new($this->connection);
         $insert
             ->into($this->table)
             ->columns($columns)
+            ->perform()
         ;
-
-        if ($createdUserId > 0) {
-            $insert->column('usr_created_usr_id', $createdUserId);
-        }
-        if ($updatedUserId > 0) {
-            $insert->column('usr_updated_usr_id', $updatedUserId);
-        }
-
-        $insert->perform();
 
         return (int)$insert->getLastInsertId();
     }
 
     /**
-     * @param TUserUpdate $userData
+     * @param User $user
      *
      * @return int
      */
-    public function update(array $userData): int
+    public function update(User $user): int
     {
-        $userId        = $userData['id'];
-        $updatedUserId = $userData['updatedUserId'];
+        $row    = $this->mapper->db($user);
+        $now    = Dates::toUTC(format: Dates::DATE_TIME_FORMAT);
+        $userId = $row['usr_id'];
+        /**
+         * @todo this should not be here - the update should just add data not validate
+         */
+        /**
+         * Set updated date to now if it has not been set
+         */
+        if (true === empty($row['usr_updated_date'])) {
+            $row['usr_updated_date'] = $now;
+        }
 
-        $columns = [
-            'usr_status_flag'    => $userData['status'],
-            'usr_email'          => $userData['email'],
-            'usr_password'       => $userData['password'],
-            'usr_name_prefix'    => $userData['namePrefix'],
-            'usr_name_first'     => $userData['nameFirst'],
-            'usr_name_middle'    => $userData['nameMiddle'],
-            'usr_name_last'      => $userData['nameLast'],
-            'usr_name_suffix'    => $userData['nameSuffix'],
-            'usr_issuer'         => $userData['issuer'],
-            'usr_token_password' => $userData['tokenPassword'],
-            'usr_token_id'       => $userData['tokenId'],
-            'usr_preferences'    => $userData['preferences'],
-            'usr_updated_date'   => $userData['updatedDate'],
-        ];
+        /**
+         * Remove createdDate and createdUserId - cannot be changed. This
+         * needs to be here because we don't want to touch those fields.
+         */
+        unset($row['usr_created_date'], $row['usr_created_usr_id']);
 
-        $update = Update::new($this->connection);
+        /**
+         * Cleanup empty fields if needed
+         */
+        $columns = $this->cleanupFields($row);
+        $update  = Update::new($this->connection);
         $update
             ->table($this->table)
             ->columns($columns)
             ->where('usr_id = ', $userId)
+            ->perform()
         ;
 
-        if ($updatedUserId > 0) {
-            $update->column('usr_updated_usr_id', $updatedUserId);
-        }
+        return $userId;
+    }
 
-        $update->perform();
+    /**
+     * @param array $row
+     *
+     * @return array
+     */
+    private function cleanupFields(array $row): array
+    {
+        unset($row['usr_id']);
 
-        return (int)$userId;
+        return array_filter(
+            $row,
+            static fn($v) => $v !== null && $v !== ''
+        );
     }
 }
