@@ -17,7 +17,6 @@ use DateTimeImmutable;
 use PayloadInterop\DomainStatus;
 use PDOException;
 use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
 use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
 use Phalcon\Api\Domain\Services\User\UserPostService;
@@ -43,19 +42,7 @@ final class UserServicePostTest extends AbstractUnitTestCase
         ;
         $userRepository->method('insert')->willReturn(0);
 
-        $repository = $this
-            ->getMockBuilder(QueryRepository::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(
-                [
-                    'user',
-                ]
-            )
-            ->getMock()
-        ;
-        $repository->method('user')->willReturn($userRepository);
-
-        $this->container->setShared(Container::REPOSITORY, $repository);
+        $this->container->setShared(Container::USER_REPOSITORY, $userRepository);
 
         /** @var UserPostService $service */
         $service = $this->container->get(Container::USER_POST_SERVICE);
@@ -104,22 +91,7 @@ final class UserServicePostTest extends AbstractUnitTestCase
             ->willThrowException(new PDOException('abcde'))
         ;
 
-        $repository = $this
-            ->getMockBuilder(QueryRepository::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(
-                [
-                    'user',
-                ]
-            )
-            ->getMock()
-        ;
-        $repository
-            ->method('user')
-            ->willReturn($userRepository)
-        ;
-
-        $this->container->set(Container::REPOSITORY, $repository);
+        $this->container->setShared(Container::USER_REPOSITORY, $userRepository);
 
         /** @var UserPostService $service */
         $service = $this->container->get(Container::USER_POST_SERVICE);

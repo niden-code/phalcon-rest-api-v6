@@ -17,7 +17,6 @@ use DateTimeImmutable;
 use PayloadInterop\DomainStatus;
 use PDOException;
 use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
 use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
 use Phalcon\Api\Domain\Services\User\UserPutService;
@@ -52,19 +51,7 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $userRepository->method('update')->willReturn(0);
         $userRepository->method('findById')->willReturn($findByUser);
 
-        $repository = $this
-            ->getMockBuilder(QueryRepository::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(
-                [
-                    'user',
-                ]
-            )
-            ->getMock()
-        ;
-        $repository->method('user')->willReturn($userRepository);
-
-        $this->container->setShared(Container::REPOSITORY, $repository);
+        $this->container->setShared(Container::USER_REPOSITORY, $userRepository);
 
         /** @var UserPutService $service */
         $service = $this->container->get(Container::USER_PUT_SERVICE);
@@ -121,22 +108,8 @@ final class UserServicePutTest extends AbstractUnitTestCase
             ->willThrowException(new PDOException('abcde'))
         ;
 
-        $repository = $this
-            ->getMockBuilder(QueryRepository::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(
-                [
-                    'user',
-                ]
-            )
-            ->getMock()
-        ;
-        $repository
-            ->method('user')
-            ->willReturn($userRepository)
-        ;
+        $this->container->setShared(Container::USER_REPOSITORY, $userRepository);
 
-        $this->container->set(Container::REPOSITORY, $repository);
         /** @var UserPutService $service */
         $service = $this->container->get(Container::USER_PUT_SERVICE);
 
@@ -187,19 +160,7 @@ final class UserServicePutTest extends AbstractUnitTestCase
         ;
         $userRepository->method('findById')->willReturn(null);
 
-        $repository = $this
-            ->getMockBuilder(QueryRepository::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(
-                [
-                    'user',
-                ]
-            )
-            ->getMock()
-        ;
-        $repository->method('user')->willReturn($userRepository);
-
-        $this->container->setShared(Container::REPOSITORY, $repository);
+        $this->container->setShared(Container::USER_REPOSITORY, $userRepository);
 
         /** @var UserPutService $service */
         $service = $this->container->get(Container::USER_PUT_SERVICE);

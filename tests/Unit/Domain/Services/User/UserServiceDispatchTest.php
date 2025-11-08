@@ -13,13 +13,16 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Services\User;
 
-use Phalcon\Api\Domain\Components\Cache\Cache;
+use DateTimeImmutable;
+use Phalcon\Api\Domain\Components\Constants\Cache as CacheConstants;
+use Phalcon\Api\Domain\Components\Constants\Dates;
 use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Domain\Components\Enums\Http\RoutesEnum;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
+use Phalcon\Cache\Cache;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 
 #[BackupGlobals(true)]
@@ -43,7 +46,24 @@ final class UserServiceDispatchTest extends AbstractUnitTestCase
         /**
          * Store the token in the cache
          */
-        $cache->storeTokenInCache($env, $domainUser, $token);
+        $cacheKey = CacheConstants::getCacheTokenKey($domainUser, $token);
+        /** @var int $expiration */
+        $expiration     = $env->get(
+            'TOKEN_EXPIRATION',
+            CacheConstants::CACHE_TOKEN_EXPIRY,
+            'int'
+        );
+        $expirationDate = (new DateTimeImmutable())
+            ->modify('+' . $expiration . ' seconds')
+            ->format(Dates::DATE_TIME_FORMAT)
+        ;
+
+        $payload = [
+            'token'  => $token,
+            'expiry' => $expirationDate,
+        ];
+
+        $cache->set($cacheKey, $payload, $expiration);
 
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
         $_SERVER = [

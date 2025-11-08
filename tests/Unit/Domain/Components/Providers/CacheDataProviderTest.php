@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Components\Providers;
 
-use Phalcon\Api\Domain\Components\Cache\Cache;
 use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
+use Phalcon\Cache\Cache;
 
 final class CacheDataProviderTest extends AbstractUnitTestCase
 {
