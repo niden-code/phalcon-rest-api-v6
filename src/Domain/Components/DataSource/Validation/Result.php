@@ -63,6 +63,14 @@ final class Result
     }
 
     /**
+     * @return bool
+     */
+    public function isValid(): bool
+    {
+        return $this->errors === [];
+    }
+
+    /**
      * @param string $key
      * @param mixed  $value
      *
@@ -71,14 +79,6 @@ final class Result
     public function setMeta(string $key, mixed $value): void
     {
         $this->meta[$key] = $value;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isValid(): bool
-    {
-        return $this->errors === [];
     }
 
     /**

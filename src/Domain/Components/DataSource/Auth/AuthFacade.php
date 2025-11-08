@@ -85,7 +85,7 @@ final class AuthFacade
         /** @var string $suppliedPassword */
         $suppliedPassword = $dto->password;
         /** @var string $dbPassword */
-        $dbPassword       = $domainUser->password;
+        $dbPassword = $domainUser->password;
         if (true !== $this->security->verify($suppliedPassword, $dbPassword)) {
             return Payload::unauthorized([HttpCodesEnum::AppIncorrectCredentials->error()]);
         }

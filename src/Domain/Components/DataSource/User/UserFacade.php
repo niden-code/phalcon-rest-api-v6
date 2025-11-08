@@ -250,14 +250,29 @@ final class UserFacade
     }
 
     /**
+     * @param TUserDbRecordOptional $row
+     *
+     * @return TUserDbRecordOptional
+     */
+    private function cleanupFields(array $row): array
+    {
+        unset($row['usr_id']);
+
+        return array_filter(
+            $row,
+            static fn($v) => $v !== null && $v !== ''
+        );
+    }
+
+    /**
      * @param string $message
      *
      * @return Payload
      */
     private function getErrorPayload(
         HttpCodesEnum $item,
-        string $message): Payload
-    {
+        string $message
+    ): Payload {
         return Payload::error([[$item->text() . $message]]);
     }
 
@@ -327,20 +342,5 @@ final class UserFacade
         }
 
         return $input;
-    }
-
-    /**
-     * @param TUserDbRecordOptional $row
-     *
-     * @return TUserDbRecordOptional
-     */
-    private function cleanupFields(array $row): array
-    {
-        unset($row['usr_id']);
-
-        return array_filter(
-            $row,
-            static fn($v) => $v !== null && $v !== ''
-        );
     }
 }

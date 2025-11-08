@@ -15,7 +15,6 @@ namespace Phalcon\Api\Tests\Unit\Domain\Components\DataSource\User;
 
 use Faker\Factory as FakerFactory;
 use Phalcon\Api\Domain\Components\Constants\Dates;
-use Phalcon\Api\Domain\Components\DataSource\User\User;
 use Phalcon\Api\Domain\Components\DataSource\User\UserInput;
 use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Tests\AbstractUnitTestCase;

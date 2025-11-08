@@ -13,19 +13,12 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\Encryption;
 
-use DateTimeImmutable;
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Components\Constants\Cache as CacheConstants;
-use Phalcon\Api\Domain\Components\Constants\Dates;
 use Phalcon\Api\Domain\Components\DataSource\User\User;
 use Phalcon\Api\Domain\Components\DataSource\User\UserRepositoryInterface;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
-use Phalcon\Cache\Adapter\Redis;
 use Phalcon\Encryption\Security\JWT\Token\Token;
-use Psr\SimpleCache\InvalidArgumentException;
 use Throwable;
-
-use function str_replace;
 
 /**
  * Small component to issue/rotate/revoke tokens and

@@ -18,14 +18,10 @@ use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Components\Constants\Cache as CacheConstants;
 use Phalcon\Api\Domain\Components\Constants\Dates;
 use Phalcon\Api\Domain\Components\DataSource\User\User;
-use Phalcon\Api\Domain\Components\DataSource\User\UserRepositoryInterface;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
 use Phalcon\Cache\Adapter\Redis;
 use Phalcon\Cache\Cache;
-use Phalcon\Encryption\Security\JWT\Token\Token;
-use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
-use Throwable;
 
 use function str_replace;
 

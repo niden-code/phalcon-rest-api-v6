@@ -96,7 +96,7 @@ class JWTToken
 
     /**
      * @param UserRepositoryInterface $repository
-     * @param Token           $token
+     * @param Token                   $token
      *
      * @return User|null
      */

@@ -93,6 +93,21 @@ class Container extends Di
     /** @var string */
     public const TIME = 'time';
     /**
+     * Middleware
+     */
+    public const MIDDLEWARE_HEALTH                   = HealthMiddleware::class;
+    public const MIDDLEWARE_NOT_FOUND                = NotFoundMiddleware::class;
+    public const MIDDLEWARE_VALIDATE_TOKEN_CLAIMS    = ValidateTokenClaimsMiddleware::class;
+    public const MIDDLEWARE_VALIDATE_TOKEN_PRESENCE  = ValidateTokenPresenceMiddleware::class;
+    public const MIDDLEWARE_VALIDATE_TOKEN_REVOKED   = ValidateTokenRevokedMiddleware::class;
+    public const MIDDLEWARE_VALIDATE_TOKEN_STRUCTURE = ValidateTokenStructureMiddleware::class;
+    public const MIDDLEWARE_VALIDATE_TOKEN_USER      = ValidateTokenUserMiddleware::class;
+    /**
+     * Facades
+     */
+    public const AUTH_FACADE = 'auth.facade';
+    public const USER_FACADE = 'user.facade';
+    /**
      * Services
      */
     public const AUTH_LOGIN_POST_SERVICE   = 'service.auth.login.post';
@@ -103,25 +118,13 @@ class Container extends Di
     public const USER_POST_SERVICE         = 'service.user.post';
     public const USER_PUT_SERVICE          = 'service.user.put';
     /**
-     * Middleware
-     */
-    public const MIDDLEWARE_HEALTH                   = HealthMiddleware::class;
-    public const MIDDLEWARE_NOT_FOUND                = NotFoundMiddleware::class;
-    public const MIDDLEWARE_VALIDATE_TOKEN_CLAIMS    = ValidateTokenClaimsMiddleware::class;
-    public const MIDDLEWARE_VALIDATE_TOKEN_PRESENCE  = ValidateTokenPresenceMiddleware::class;
-    public const MIDDLEWARE_VALIDATE_TOKEN_REVOKED   = ValidateTokenRevokedMiddleware::class;
-    public const MIDDLEWARE_VALIDATE_TOKEN_STRUCTURE = ValidateTokenStructureMiddleware::class;
-    public const MIDDLEWARE_VALIDATE_TOKEN_USER      = ValidateTokenUserMiddleware::class;
-
-    /**
-     * Facades
-     */
-    public const AUTH_FACADE     = 'auth.facade';
-    public const USER_FACADE     = 'user.facade';
-    /**
      * Mappers
      */
-    public const USER_MAPPER     = UserMapper::class;
+    public const USER_MAPPER = UserMapper::class;
+    /**
+     * Responders
+     */
+    public const RESPONDER_JSON = JsonResponder::class;
     /**
      * Repositories
      */
@@ -129,20 +132,14 @@ class Container extends Di
     /**
      * Sanitizers
      */
-    public const AUTH_SANITIZER  = 'auth.sanitizer';
-    public const USER_SANITIZER  = 'user.sanitizer';
-
+    public const AUTH_SANITIZER = 'auth.sanitizer';
+    public const USER_SANITIZER = 'user.sanitizer';
     /**
      * Validators
      */
-    public const AUTH_LOGIN_VALIDATOR  = AuthLoginValidator::class;
-    public const AUTH_TOKEN_VALIDATOR  = 'auth.validator.token';
-    public const USER_VALIDATOR        = UserValidator::class;
-
-    /**
-     * Responders
-     */
-    public const RESPONDER_JSON = JsonResponder::class;
+    public const AUTH_LOGIN_VALIDATOR = AuthLoginValidator::class;
+    public const AUTH_TOKEN_VALIDATOR = 'auth.validator.token';
+    public const USER_VALIDATOR       = UserValidator::class;
 
     public function __construct()
     {
@@ -368,7 +365,7 @@ class Container extends Di
                         'type' => 'service',
                         'name' => self::SECURITY,
                     ],
-                ]
+                ],
             ]
         );
     }
@@ -402,7 +399,7 @@ class Container extends Di
                         'type' => 'service',
                         'name' => self::SECURITY,
                     ],
-                ]
+                ],
             ]
         );
     }
@@ -525,7 +522,7 @@ class Container extends Di
                         'type' => 'service',
                         'name' => self::USER_MAPPER,
                     ],
-                ]
+                ],
             ]
         );
     }

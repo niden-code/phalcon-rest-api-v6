@@ -14,12 +14,8 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Services\Auth;
 
 use Phalcon\Api\Domain\ADR\DomainInterface;
-use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Components\Cache\Cache;
 use Phalcon\Api\Domain\Components\DataSource\Auth\AuthFacade;
 use Phalcon\Api\Domain\Components\DataSource\Validation\ValidatorInterface;
-use Phalcon\Api\Domain\Components\Encryption\JWTToken;
-use Phalcon\Api\Domain\Components\Env\EnvManager;
 
 abstract class AbstractAuthService implements DomainInterface
 {

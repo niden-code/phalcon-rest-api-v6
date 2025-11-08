@@ -13,16 +13,12 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\Auth;
 
-use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Components\DataSource\User\UserInput;
 use Phalcon\Api\Domain\Components\DataSource\User\UserRepositoryInterface;
 use Phalcon\Api\Domain\Components\DataSource\Validation\Result;
 use Phalcon\Api\Domain\Components\DataSource\Validation\ValidatorInterface;
-use Phalcon\Api\Domain\Components\Encryption\TokenManager;
 use Phalcon\Api\Domain\Components\Encryption\TokenManagerInterface;
 use Phalcon\Api\Domain\Components\Enums\Common\JWTEnum;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
-use Phalcon\Api\Domain\Components\Payload;
 use Phalcon\Encryption\Security\JWT\Token\Token;
 
 final class AuthTokenValidator implements ValidatorInterface
@@ -48,7 +44,7 @@ final class AuthTokenValidator implements ValidatorInterface
             return Result::error([HttpCodesEnum::AppTokenNotPresent->error()]);
         }
 
-        $token = $input->token;
+        $token       = $input->token;
         $tokenObject = $this->tokenManager->getObject($token);
         if (null === $tokenObject) {
             return Result::error([HttpCodesEnum::AppTokenNotValid->error()]);

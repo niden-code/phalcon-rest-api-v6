@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
-use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Components\DataSource\Validation\Result;
 use Phalcon\Api\Domain\Components\DataSource\Validation\ValidatorInterface;
 

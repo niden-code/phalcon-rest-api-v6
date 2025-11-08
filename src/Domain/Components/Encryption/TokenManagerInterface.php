@@ -29,6 +29,15 @@ use Phalcon\Encryption\Security\JWT\Token\Token;
 interface TokenManagerInterface
 {
     /**
+     * Parse a token and return either null or a Token object
+     *
+     * @param string $token
+     *
+     * @return Token|null
+     */
+    public function getObject(string $token): ?Token;
+
+    /**
      * Return the domain user from the database
      *
      * @param UserRepositoryInterface $repository
@@ -40,15 +49,6 @@ interface TokenManagerInterface
         UserRepositoryInterface $repository,
         Token $tokenObject
     ): ?User;
-
-    /**
-     * Parse a token and return either null or a Token object
-     *
-     * @param string $token
-     *
-     * @return Token|null
-     */
-    public function getObject(string $token): ?Token;
 
     /**
      * Issue new tokens for the user (token, refreshToken)
