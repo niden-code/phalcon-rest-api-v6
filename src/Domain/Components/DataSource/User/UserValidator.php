@@ -14,11 +14,10 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
+use Phalcon\Api\Domain\Components\DataSource\Validation\Result;
+use Phalcon\Api\Domain\Components\DataSource\Validation\ValidatorInterface;
 
-/**
- * @phpstan-import-type TValidationErrors from InputTypes
- */
-final class UserValidator
+final class UserValidator implements ValidatorInterface
 {
     /**
      * Validate a UserInput and return an array of errors.
@@ -26,9 +25,9 @@ final class UserValidator
      *
      * @param UserInput $input
      *
-     * @return TValidationErrors|array{}
+     * @return Result
      */
-    public function validate(UserInput $input): array
+    public function validate(mixed $input): Result
     {
         $errors   = [];
         $required = [
@@ -50,6 +49,6 @@ final class UserValidator
          * @todo add validators
          */
 
-        return $errors;
+        return new Result($errors);
     }
 }

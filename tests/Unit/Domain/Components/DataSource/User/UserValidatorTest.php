@@ -31,7 +31,8 @@ final class UserValidatorTest extends AbstractUnitTestCase
         $userInput = UserInput::new($sanitizer, $input);
 
         $validator = new UserValidator();
-        $actual    = $validator->validate($userInput);
+        $result    = $validator->validate($userInput);
+        $actual    = $result->getErrors();
 
         $expected = [
             ['Field email cannot be empty.'],
@@ -61,7 +62,8 @@ final class UserValidatorTest extends AbstractUnitTestCase
         $userInput = UserInput::new($sanitizer, $input);
 
         $validator = new UserValidator();
-        $actual    = $validator->validate($userInput);
+        $result    = $validator->validate($userInput);
+        $actual    = $result->getErrors();
 
         $expected = [];
         $this->assertSame($expected, $actual);
