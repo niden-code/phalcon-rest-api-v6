@@ -44,7 +44,7 @@ class AbsInt extends Numericality
             return false;
         }
 
-        // Dump spaces in the string if we have any
+        /** @var string $value */
         $value = $validation->getValue($field);
         $value = abs((int)$value);
 

@@ -17,7 +17,6 @@ use Phalcon\Api\Domain\Components\DataSource\Auth\AuthInput;
 use Phalcon\Api\Domain\Components\Enums\Input\ValidatorEnumInterface;
 use Phalcon\Filter\Validation\ValidationInterface;
 use Phalcon\Filter\Validation\ValidatorInterface as PhalconValidator;
-use UnitEnum;
 
 abstract class AbstractValidator implements ValidatorInterface
 {
@@ -35,7 +34,6 @@ abstract class AbstractValidator implements ValidatorInterface
      */
     protected function runValidations(mixed $input): array
     {
-        /** @var UnitEnum $enum */
         $enum     = $this->fields;
         /** @var ValidatorEnumInterface[] $elements */
         $elements = $enum::cases();
