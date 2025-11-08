@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Components\Encryption;
 
 use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
 use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
 use Phalcon\Api\Domain\Components\Encryption\JWTToken;
@@ -101,22 +100,7 @@ final class JWTTokenTest extends AbstractUnitTestCase
                        ->willReturn($domainUser)
         ;
 
-        $mockRepository = $this
-            ->getMockBuilder(QueryRepository::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(
-                [
-                    'user',
-                ]
-            )
-            ->getMock()
-        ;
-        $mockRepository->expects($this->once())
-                       ->method('user')
-                       ->willReturn($userRepository)
-        ;
-
-        $result = $this->jwtToken->getUser($mockRepository, $plain);
+        $result = $this->jwtToken->getUser($userRepository, $plain);
         $this->assertEquals($domainUser, $result);
     }
 

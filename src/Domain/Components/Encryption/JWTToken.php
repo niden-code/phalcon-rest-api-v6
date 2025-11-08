@@ -15,9 +15,10 @@ namespace Phalcon\Api\Domain\Components\Encryption;
 
 use DateTimeImmutable;
 use InvalidArgumentException;
-use Phalcon\Api\Domain\Components\Cache\Cache;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
+use Phalcon\Api\Domain\ADR\InputTypes;
+use Phalcon\Api\Domain\Components\Constants\Cache as CacheConstants;
 use Phalcon\Api\Domain\Components\DataSource\User\User;
+use Phalcon\Api\Domain\Components\DataSource\User\UserRepositoryInterface;
 use Phalcon\Api\Domain\Components\Enums\Common\FlagsEnum;
 use Phalcon\Api\Domain\Components\Enums\Common\JWTEnum;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
@@ -30,7 +31,7 @@ use Phalcon\Encryption\Security\JWT\Validator;
 use Phalcon\Support\Helper\Json\Decode;
 
 /**
- * @phpstan-type TValidatorErrors array{}|array<int, string>
+ * @phpstan-import-type TValidatorErrors from InputTypes
  *
  * Removed the final declaration so that this class can be mocked. This
  * class should not be extended
@@ -94,13 +95,13 @@ class JWTToken
     }
 
     /**
-     * @param QueryRepository $repository
+     * @param UserRepositoryInterface $repository
      * @param Token           $token
      *
      * @return User|null
      */
     public function getUser(
-        QueryRepository $repository,
+        UserRepositoryInterface $repository,
         Token $token,
     ): ?User {
         /** @var string $issuer */
@@ -117,7 +118,7 @@ class JWTToken
             'usr_token_id'    => $tokenId,
         ];
 
-        return $repository->user()->findOneBy($criteria);
+        return $repository->findOneBy($criteria);
     }
 
     /**
@@ -177,7 +178,7 @@ class JWTToken
         /** @var int $expiration */
         $expiration = $this->env->get(
             'TOKEN_EXPIRATION',
-            Cache::CACHE_TOKEN_EXPIRY,
+            CacheConstants::CACHE_TOKEN_EXPIRY,
             'int'
         );
 
