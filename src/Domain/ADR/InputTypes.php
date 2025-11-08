@@ -50,8 +50,8 @@ namespace Phalcon\Api\Domain\ADR;
  * }
  *
  * @phpstan-type TRequestQuery array<array-key, bool|int|string>
- *
- * @phpstan-type TValidationErrors array<int, array<int, string>>
+ * @phpstan-type TValidatorErrors array{}|array<int, array<int, string>>
+ * @phpstan-type TInputSanitize TUserInput|TAuthInput
  */
 final class InputTypes
 {
