@@ -15,6 +15,8 @@ namespace Phalcon\Api\Domain\Components\Middleware;
 
 use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
+use Phalcon\Api\Domain\Components\DataSource\User\User;
+use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
 use Phalcon\Api\Domain\Components\Encryption\JWTToken;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
 use Phalcon\Encryption\Security\JWT\Token\Token;
@@ -38,8 +40,8 @@ final class ValidateTokenUserMiddleware extends AbstractMiddleware
     {
         /** @var JWTToken $jwtToken */
         $jwtToken = $application->getSharedService(Container::JWT_TOKEN);
-        /** @var QueryRepository $repository */
-        $repository = $application->getSharedService(Container::REPOSITORY);
+        /** @var UserRepository $repository */
+        $repository = $application->getSharedService(Container::USER_REPOSITORY);
         /** @var Registry $registry */
         $registry = $application->getSharedService(Container::REGISTRY);
 

@@ -60,6 +60,7 @@ final class ValidateTokenClaimsMiddleware extends AbstractMiddleware
          * claims of the token, we will still check the claims against the
          * user stored in the session
          */
+        /** @var array<int, string> $errors */
         $errors = $jwtToken->validate($tokenObject, $sessionUser);
 
         if (true !== empty($errors)) {

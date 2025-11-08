@@ -13,11 +13,12 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\Middleware;
 
-use Phalcon\Api\Domain\Components\Cache\Cache;
+use Phalcon\Api\Domain\Components\Constants\Cache as CacheConstants;
 use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\DataSource\User\User;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
+use Phalcon\Cache\Cache;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Mvc\Micro;
 use Phalcon\Support\Registry;
@@ -47,7 +48,7 @@ final class ValidateTokenRevokedMiddleware extends AbstractMiddleware
          * Get the token object
          */
         $token = $this->getBearerTokenFromHeader($request, $env);
-        $cacheKey = $cache->getCacheTokenKey($domainUser, $token);
+        $cacheKey = CacheConstants::getCacheTokenKey($domainUser, $token);
         $exists = $cache->has($cacheKey);
 
         if (true !== $exists) {

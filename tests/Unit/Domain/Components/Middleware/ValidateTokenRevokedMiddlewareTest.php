@@ -13,12 +13,13 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Components\Middleware;
 
-use Phalcon\Api\Domain\Components\Cache\Cache;
+use Phalcon\Api\Domain\Components\Constants\Cache as CacheConstants;
 use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
+use Phalcon\Cache\Cache;
 use Phalcon\Mvc\Micro;
 use Phalcon\Support\Registry;
 use PHPUnit\Framework\Attributes\BackupGlobals;
@@ -91,7 +92,7 @@ final class ValidateTokenRevokedMiddlewareTest extends AbstractUnitTestCase
         /** @var Cache $cache */
         $cache       = $micro->getSharedService(Container::CACHE);
         $sessionUser = $registry->get('user');
-        $cacheKey    = $cache->getCacheTokenKey($sessionUser, $token);
+        $cacheKey    = CacheConstants::getCacheTokenKey($sessionUser, $token);
         $payload     = [
             'token' => $token,
         ];
