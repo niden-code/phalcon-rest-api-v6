@@ -35,6 +35,7 @@ abstract class AbstractValidator implements ValidatorInterface
      */
     protected function runValidations(mixed $input): array
     {
+        /** @var UnitEnum $enum */
         $enum     = $this->fields;
         /** @var ValidatorEnumInterface[] $elements */
         $elements = $enum::cases();

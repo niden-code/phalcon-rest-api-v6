@@ -199,6 +199,7 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $userData   = $this->getNewUserData();
 
         unset(
+            $userData['usr_id'],
             $userData['usr_email'],
             $userData['usr_password'],
             $userData['usr_issuer'],
@@ -224,6 +225,7 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $errors = $actual['errors'];
 
         $expected = [
+            ['Field id is not a valid absolute integer and greater than 0'],
             ['Field email is required'],
             ['Field email must be an email address'],
             ['Field password is required'],

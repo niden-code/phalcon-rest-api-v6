@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\Enums\Input;
 
+use Phalcon\Api\Domain\Components\DataSource\Validation\AbsInt;
 use Phalcon\Filter\Validation\Validator\Email;
-use Phalcon\Filter\Validation\Validator\Numericality;
 use Phalcon\Filter\Validation\Validator\PresenceOf;
 
 enum UserInputUpdateEnum implements ValidatorEnumInterface
@@ -31,7 +31,7 @@ enum UserInputUpdateEnum implements ValidatorEnumInterface
         return match ($this) {
             self::id    => [
                 PresenceOf::class,
-                Numericality::class
+                AbsInt::class
             ],
             self::email    => [
                 PresenceOf::class,
