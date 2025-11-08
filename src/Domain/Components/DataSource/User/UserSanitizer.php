@@ -13,25 +13,27 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
-use Phalcon\Api\Domain\Components\DataSource\SanitizerInterface;
+use Phalcon\Api\Domain\ADR\InputTypes;
+use Phalcon\Api\Domain\Components\DataSource\Interfaces\SanitizerInterface;
 use Phalcon\Filter\Filter;
+use Phalcon\Filter\FilterInterface;
 
 /**
- * @phpstan-import-type TUser from UserTypes
+ * @phpstan-import-type TUserInput from InputTypes
  */
 final class UserSanitizer implements SanitizerInterface
 {
     public function __construct(
-        private readonly Filter $filter,
+        private readonly FilterInterface $filter,
     ) {
     }
 
     /**
      * Return a sanitized array of the input
      *
-     * @param TUser $input
+     * @param TUserInput $input
      *
-     * @return TUser
+     * @return TUserInput
      */
     public function sanitize(array $input): array
     {
@@ -73,7 +75,7 @@ final class UserSanitizer implements SanitizerInterface
             $sanitized[$name] = $value;
         }
 
-        /** @var TUser $sanitized */
+        /** @var TUserInput $sanitized */
         return $sanitized;
     }
 

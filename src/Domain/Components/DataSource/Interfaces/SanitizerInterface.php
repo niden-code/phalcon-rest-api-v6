@@ -11,19 +11,21 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Components\DataSource;
+namespace Phalcon\Api\Domain\Components\DataSource\Interfaces;
+
+use Phalcon\Api\Domain\ADR\InputTypes;
 
 /**
- * @phpstan-type TInput array<string, bool|int|string|null>
+ * @phpstan-import-type TInputSanitize from InputTypes
  */
 interface SanitizerInterface
 {
     /**
      * Return a sanitized array of the input
      *
-     * @param TInput $input
+     * @param TInputSanitize $input
      *
-     * @return TInput
+     * @return TInputSanitize
      */
     public function sanitize(array $input): array;
 }

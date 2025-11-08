@@ -14,8 +14,9 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Components\DataSource\Auth;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Components\DataSource\SanitizerInterface;
+use Phalcon\Api\Domain\Components\DataSource\Interfaces\SanitizerInterface;
 use Phalcon\Filter\Filter;
+use Phalcon\Filter\FilterInterface;
 
 /**
  * @phpstan-import-type TAuthInput from InputTypes
@@ -23,7 +24,7 @@ use Phalcon\Filter\Filter;
 final class AuthSanitizer implements SanitizerInterface
 {
     public function __construct(
-        private readonly Filter $filter,
+        private readonly FilterInterface $filter,
     ) {
     }
 
