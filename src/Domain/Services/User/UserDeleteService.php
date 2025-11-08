@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Services\User;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Components\DataSource\User\UserInput;
 use Phalcon\Api\Domain\Components\Payload;
 
 /**
@@ -29,27 +28,6 @@ final class UserDeleteService extends AbstractUserService
      */
     public function __invoke(array $input): Payload
     {
-        $inputObject = UserInput::new($this->sanitizer, $input);
-        $userId      = $inputObject->id;
-
-        /**
-         * Success
-         */
-        if ($userId > 0) {
-            $rows = $this->repository->user()->deleteById($userId);
-
-            if ($rows > 0) {
-                return Payload::deleted(
-                    [
-                        'Record deleted successfully [#' . $userId . '].',
-                    ],
-                );
-            }
-        }
-
-        /**
-         * 404
-         */
-        return Payload::notFound();
+        return $this->facade->delete($input);
     }
 }

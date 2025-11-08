@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Services\User;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Components\DataSource\User\UserInput;
 use Phalcon\Api\Domain\Components\Payload;
 
 /**
@@ -29,23 +28,6 @@ final class UserGetService extends AbstractUserService
      */
     public function __invoke(array $input): Payload
     {
-        $inputObject = UserInput::new($this->sanitizer, $input);
-        $userId      = $inputObject->id;
-
-        /**
-         * Success
-         */
-        if ($userId > 0) {
-            $user = $this->repository->user()->findById($userId);
-
-            if (null !== $user) {
-                return Payload::success([$user->id => $user->toArray()]);
-            }
-        }
-
-        /**
-         * 404
-         */
-        return Payload::notFound();
+        return $this->facade->get($input);
     }
 }

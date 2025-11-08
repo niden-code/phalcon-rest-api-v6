@@ -16,24 +16,16 @@ namespace Phalcon\Api\Domain\Services\Auth;
 use Phalcon\Api\Domain\ADR\DomainInterface;
 use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Components\Cache\Cache;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
-use Phalcon\Api\Domain\Components\DataSource\SanitizerInterface;
+use Phalcon\Api\Domain\Components\DataSource\Auth\AuthFacade;
+use Phalcon\Api\Domain\Components\DataSource\Validation\ValidatorInterface;
 use Phalcon\Api\Domain\Components\Encryption\JWTToken;
-use Phalcon\Api\Domain\Components\Encryption\Security;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
 
-/**
- * @phpstan-import-type TValidationErrors from InputTypes
- */
 abstract class AbstractAuthService implements DomainInterface
 {
     public function __construct(
-        protected readonly QueryRepository $repository,
-        protected readonly Cache $cache,
-        protected readonly EnvManager $env,
-        protected readonly JWTToken $jwtToken,
-        protected readonly SanitizerInterface $sanitizer,
-        protected readonly Security $security,
+        protected readonly AuthFacade $facade,
+        protected readonly ValidatorInterface $validator
     ) {
     }
 }

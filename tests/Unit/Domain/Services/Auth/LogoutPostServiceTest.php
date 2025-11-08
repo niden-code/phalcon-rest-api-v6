@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Services\Auth;
 
 use PayloadInterop\DomainStatus;
-use Phalcon\Api\Domain\Components\Cache\Cache;
+use Phalcon\Api\Domain\Components\Constants\Cache as CacheConstants;
 use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Domain\Components\Encryption\JWTToken;
@@ -23,6 +23,7 @@ use Phalcon\Api\Domain\Services\Auth\LoginPostService;
 use Phalcon\Api\Domain\Services\Auth\LogoutPostService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
+use Phalcon\Cache\Cache;
 use Phalcon\Encryption\Security\JWT\Token\Item;
 use Phalcon\Encryption\Security\JWT\Token\Token;
 use PHPUnit\Framework\Attributes\BackupGlobals;
@@ -237,13 +238,13 @@ final class LogoutPostServiceTest extends AbstractUnitTestCase
 
         $token      = $data['jwt']['token'];
         $domainUser = $userMapper->domain($dbUser);
-        $tokenKey   = $cache->getCacheTokenKey($domainUser, $token);
+        $tokenKey   = CacheConstants::getCacheTokenKey($domainUser, $token);
 
         $actual = $cache->has($tokenKey);
         $this->assertTrue($actual);
 
         $refreshToken = $data['jwt']['refreshToken'];
-        $tokenKey     = $cache->getCacheTokenKey($domainUser, $refreshToken);
+        $tokenKey     = CacheConstants::getCacheTokenKey($domainUser, $refreshToken);
 
         $actual = $cache->has($tokenKey);
         $this->assertTrue($actual);
