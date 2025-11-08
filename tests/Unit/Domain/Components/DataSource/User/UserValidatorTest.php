@@ -19,6 +19,7 @@ use Phalcon\Api\Domain\Components\DataSource\User\UserInput;
 use Phalcon\Api\Domain\Components\DataSource\User\UserSanitizer;
 use Phalcon\Api\Domain\Components\DataSource\User\UserValidator;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
+use Phalcon\Filter\Validation\ValidationInterface;
 
 final class UserValidatorTest extends AbstractUnitTestCase
 {
@@ -26,20 +27,23 @@ final class UserValidatorTest extends AbstractUnitTestCase
     {
         /** @var UserSanitizer $sanitizer */
         $sanitizer = $this->container->get(Container::USER_SANITIZER);
+        /** @var ValidationInterface $validation */
+        $validation = $this->container->get(Container::VALIDATION);
 
         $input     = [];
         $userInput = UserInput::new($sanitizer, $input);
 
-        $validator = new UserValidator();
+        $validator = new UserValidator($validation);
         $result    = $validator->validate($userInput);
         $actual    = $result->getErrors();
 
         $expected = [
-            ['Field email cannot be empty.'],
-            ['Field password cannot be empty.'],
-            ['Field issuer cannot be empty.'],
-            ['Field tokenPassword cannot be empty.'],
-            ['Field tokenId cannot be empty.'],
+            ['Field email is required'],
+            ['Field email must be an email address'],
+            ['Field password is required'],
+            ['Field issuer is required'],
+            ['Field tokenPassword is required'],
+            ['Field tokenId is required'],
         ];
 
         $this->assertSame($expected, $actual);
@@ -49,6 +53,8 @@ final class UserValidatorTest extends AbstractUnitTestCase
     {
         /** @var UserSanitizer $sanitizer */
         $sanitizer = $this->container->get(Container::USER_SANITIZER);
+        /** @var ValidationInterface $validation */
+        $validation = $this->container->get(Container::VALIDATION);
         $faker     = FakerFactory::create();
 
         $input = [
@@ -61,7 +67,7 @@ final class UserValidatorTest extends AbstractUnitTestCase
 
         $userInput = UserInput::new($sanitizer, $input);
 
-        $validator = new UserValidator();
+        $validator = new UserValidator($validation);
         $result    = $validator->validate($userInput);
         $actual    = $result->getErrors();
 

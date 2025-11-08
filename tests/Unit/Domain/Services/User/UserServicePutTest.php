@@ -224,11 +224,12 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $errors = $actual['errors'];
 
         $expected = [
-            ['Field email cannot be empty.'],
-            ['Field password cannot be empty.'],
-            ['Field issuer cannot be empty.'],
-            ['Field tokenPassword cannot be empty.'],
-            ['Field tokenId cannot be empty.'],
+            ['Field email is required'],
+            ['Field email must be an email address'],
+            ['Field password is required'],
+            ['Field issuer is required'],
+            ['Field tokenPassword is required'],
+            ['Field tokenId is required'],
         ];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
