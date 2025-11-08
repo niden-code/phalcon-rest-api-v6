@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
-use Phalcon\Api\Domain\Components\Constants\Dates;
 use Phalcon\Api\Domain\Components\DataSource\AbstractRepository;
 use Phalcon\Api\Domain\Components\Enums\Common\FlagsEnum;
 use Phalcon\DataMapper\Pdo\Connection;
@@ -21,18 +20,10 @@ use Phalcon\DataMapper\Query\Insert;
 use Phalcon\DataMapper\Query\Select;
 use Phalcon\DataMapper\Query\Update;
 
-use function array_filter;
-
 /**
  * @phpstan-import-type TCriteria from UserTypes
- * @phpstan-import-type TUserDomainToDbRecord from UserTypes
- * @phpstan-import-type TUserDbRecordOptional from UserTypes
  * @phpstan-import-type TUserRecord from UserTypes
- *
- * The 'final' keyword was intentionally removed from this class to allow
- * extension for testing purposes (e.g., mocking in unit tests).
- *
- * Please avoid extending this class in production code unless absolutely necessary.
+ * @phpstan-import-type TUserDbRecordOptional from UserTypes
  */
 class UserRepository extends AbstractRepository implements UserRepositoryInterface
 {
@@ -63,7 +54,7 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
         if (true !== empty($email)) {
             return $this->findOneBy(
                 [
-                    'usr_email' => $email,
+                    'usr_email'       => $email,
                     'usr_status_flag' => FlagsEnum::Active->value,
                 ]
             );
@@ -116,33 +107,16 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
 
 
     /**
-     * @param User $user
+     * @param TUserDbRecordOptional $user
      *
      * @return int
      */
-    public function insert(User $user): int
+    public function insert(array $user): int
     {
-        $row = $this->mapper->db($user);
-        $now = Dates::toUTC(format: Dates::DATE_TIME_FORMAT);
-
-        /**
-         * @todo this should not be here - the insert should just add data not validate
-         */
-        if (true === empty($row['usr_created_date'])) {
-            $row['usr_created_date'] = $now;
-        }
-        if (true === empty($row['usr_updated_date'])) {
-            $row['usr_updated_date'] = $now;
-        }
-
-        /**
-         * Cleanup empty fields if needed
-         */
-        $columns = $this->cleanupFields($row);
-        $insert  = Insert::new($this->connection);
+        $insert = Insert::new($this->connection);
         $insert
             ->into($this->table)
-            ->columns($columns)
+            ->columns($user)
             ->perform()
         ;
 
@@ -150,61 +124,20 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
     }
 
     /**
-     * @param User $user
+     * @param TUserDbRecordOptional $user
      *
      * @return int
      */
-    public function update(User $user): int
+    public function update(int $userId, array $user): int
     {
-        $row = $this->mapper->db($user);
-        $now = Dates::toUTC(format: Dates::DATE_TIME_FORMAT);
-        /** @var int $userId */
-        $userId = $row['usr_id'];
-
-        /**
-         * @todo this should not be here - the update should just add data not validate
-         */
-        /**
-         * Set updated date to now if it has not been set
-         */
-        if (true === empty($row['usr_updated_date'])) {
-            $row['usr_updated_date'] = $now;
-        }
-
-        /**
-         * Cleanup empty fields if needed
-         */
-        $columns = $this->cleanupFields($row);
-
-        /**
-         * Remove createdDate and createdUserId - cannot be changed. This
-         * needs to be here because we don't want to touch those fields.
-         */
-        unset($columns['usr_created_date'], $columns['usr_created_usr_id']);
-
         $update = Update::new($this->connection);
         $update
             ->table($this->table)
-            ->columns($columns)
+            ->columns($user)
             ->where('usr_id = ', $userId)
             ->perform()
         ;
 
         return $userId;
-    }
-
-    /**
-     * @param TUserDomainToDbRecord $row
-     *
-     * @return TUserDbRecordOptional
-     */
-    private function cleanupFields(array $row): array
-    {
-        unset($row['usr_id']);
-
-        return array_filter(
-            $row,
-            static fn($v) => $v !== null && $v !== ''
-        );
     }
 }

@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Components\DataSource\User;
 
 use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
 use Phalcon\Api\Domain\Components\DataSource\User\User;
+use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 
@@ -23,36 +23,36 @@ final class UserRepositoryTest extends AbstractUnitTestCase
 {
     public function testFindByEmail(): void
     {
-        /** @var QueryRepository $repository */
-        $repository = $this->container->get(Container::REPOSITORY);
+        /** @var UserRepository $repository */
+        $repository = $this->container->get(Container::USER_REPOSITORY);
 
         $migration = new UsersMigration($this->getConnection());
 
-        $repositoryUser = $repository->user()->findByEmail('');
+        $repositoryUser = $repository->findByEmail('');
         $this->assertEmpty($repositoryUser);
 
         $migrationUser = $this->getNewUser($migration);
         $email         = $migrationUser['usr_email'];
 
-        $repositoryUser = $repository->user()->findByEmail($email);
+        $repositoryUser = $repository->findByEmail($email);
 
         $this->runAssertions($migrationUser, $repositoryUser);
     }
 
     public function testFindById(): void
     {
-        /** @var QueryRepository $repository */
-        $repository = $this->container->get(Container::REPOSITORY);
+        /** @var UserRepository $repository */
+        $repository = $this->container->get(Container::USER_REPOSITORY);
 
         $migration = new UsersMigration($this->getConnection());
 
-        $repositoryUser = $repository->user()->findById(0);
+        $repositoryUser = $repository->findById(0);
         $this->assertEmpty($repositoryUser);
 
         $migrationUser = $this->getNewUser($migration);
         $userId        = $migrationUser['usr_id'];
 
-        $repositoryUser = $repository->user()->findById($userId);
+        $repositoryUser = $repository->findById($userId);
 
         $this->runAssertions($migrationUser, $repositoryUser);
     }

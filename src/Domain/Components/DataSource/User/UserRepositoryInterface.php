@@ -15,6 +15,7 @@ namespace Phalcon\Api\Domain\Components\DataSource\User;
 
 /**
  * @phpstan-import-type TCriteria from UserTypes
+ * @phpstan-import-type TUserDbRecordOptional from UserTypes
  */
 interface UserRepositoryInterface
 {
@@ -54,16 +55,17 @@ interface UserRepositoryInterface
     public function findOneBy(array $criteria): ?User;
 
     /**
-     * @param User $user
+     * @param TUserDbRecordOptional $user
      *
      * @return int
      */
-    public function insert(User $user): int;
+    public function insert(array $user): int;
 
     /**
-     * @param User $user
+     * @param int                   $userId
+     * @param TUserDbRecordOptional $user
      *
      * @return int
      */
-    public function update(User $user): int;
+    public function update(int $userId, array $user): int;
 }
