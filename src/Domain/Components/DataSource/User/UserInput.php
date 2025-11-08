@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Components\DataSource\SanitizerInterface;
+use Phalcon\Api\Domain\Components\DataSource\AbstractInput;
 
 use function get_object_vars;
 
@@ -22,11 +22,11 @@ use function get_object_vars;
  * @phpstan-import-type TUserInput from InputTypes
  * @phpstan-import-type TUser from UserTypes
  */
-final class UserInput
+final class UserInput extends AbstractInput
 {
     /**
-     * @param int|null    $id
-     * @param int|null    $status
+     * @param int         $id
+     * @param int         $status
      * @param string|null $email
      * @param string|null $password
      * @param string|null $namePrefix
@@ -44,8 +44,8 @@ final class UserInput
      * @param int|null    $updatedUserId
      */
     public function __construct(
-        public readonly ?int $id,
-        public readonly ?int $status,
+        public readonly int $id,
+        public readonly int $status,
         public readonly ?string $email,
         public readonly ?string $password,
         public readonly ?string $namePrefix,
@@ -65,38 +65,6 @@ final class UserInput
     }
 
     /**
-     * @param SanitizerInterface $sanitizer
-     * @param TUserInput         $input
-     *
-     * @return self
-     */
-    public static function new(SanitizerInterface $sanitizer, array $input): self
-    {
-        /** @var TUser $sanitized */
-        $sanitized = $sanitizer->sanitize($input);
-
-        return new self(
-            $sanitized['id'],
-            $sanitized['status'],
-            $sanitized['email'],
-            $sanitized['password'],
-            $sanitized['namePrefix'],
-            $sanitized['nameFirst'],
-            $sanitized['nameMiddle'],
-            $sanitized['nameLast'],
-            $sanitized['nameSuffix'],
-            $sanitized['issuer'],
-            $sanitized['tokenPassword'],
-            $sanitized['tokenId'],
-            $sanitized['preferences'],
-            $sanitized['createdDate'],
-            $sanitized['createdUserId'],
-            $sanitized['updatedDate'],
-            $sanitized['updatedUserId']
-        );
-    }
-
-    /**
      * @return TUser
      */
     public function toArray(): array
@@ -105,5 +73,41 @@ final class UserInput
         $vars = get_object_vars($this);
 
         return $vars;
+    }
+
+    /**
+     * Build the concrete DTO from a sanitized array.
+     *
+     * @param TUserInput $sanitized
+     *
+     * @return static
+     */
+    protected static function fromArray(array $sanitized): static
+    {
+        $id     = isset($sanitized['id']) ? (int)$sanitized['id'] : 0;
+        $status = isset($sanitized['status']) ? (int)$sanitized['status'] : 0;
+
+        $createdUserId = isset($sanitized['createdUserId']) ? (int)$sanitized['createdUserId'] : 0;
+        $updatedUserId = isset($sanitized['updatedUserId']) ? (int)$sanitized['updatedUserId'] : 0;
+
+        return new self(
+            $id,
+            $status,
+            isset($sanitized['email']) ? (string)$sanitized['email'] : null,
+            isset($sanitized['password']) ? (string)$sanitized['password'] : null,
+            isset($sanitized['namePrefix']) ? (string)$sanitized['namePrefix'] : null,
+            isset($sanitized['nameFirst']) ? (string)$sanitized['nameFirst'] : null,
+            isset($sanitized['nameMiddle']) ? (string)$sanitized['nameMiddle'] : null,
+            isset($sanitized['nameLast']) ? (string)$sanitized['nameLast'] : null,
+            isset($sanitized['nameSuffix']) ? (string)$sanitized['nameSuffix'] : null,
+            isset($sanitized['issuer']) ? (string)$sanitized['issuer'] : null,
+            isset($sanitized['tokenPassword']) ? (string)$sanitized['tokenPassword'] : null,
+            isset($sanitized['tokenId']) ? (string)$sanitized['tokenId'] : null,
+            isset($sanitized['preferences']) ? (string)$sanitized['preferences'] : null,
+            isset($sanitized['createdDate']) ? (string)$sanitized['createdDate'] : null,
+            $createdUserId,
+            isset($sanitized['updatedDate']) ? (string)$sanitized['updatedDate'] : null,
+            $updatedUserId
+        );
     }
 }

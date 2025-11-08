@@ -14,12 +14,12 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Components\DataSource\Auth;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Components\DataSource\SanitizerInterface;
+use Phalcon\Api\Domain\Components\DataSource\AbstractInput;
 
 /**
  * @phpstan-import-type TAuthInput from InputTypes
  */
-final class AuthInput
+final class AuthInput extends AbstractInput
 {
     /**
      * @param string|null $email
@@ -34,21 +34,17 @@ final class AuthInput
     }
 
     /**
-     * @param SanitizerInterface $sanitizer
-     * @param TAuthInput         $input
+     * Build the concrete DTO from a sanitized array.
      *
-     * @return self
+     * @param TAuthInput $sanitized
+     *
+     * @return static
      */
-    public static function new(SanitizerInterface $sanitizer, array $input): self
+    protected static function fromArray(array $sanitized): static
     {
-        $sanitized = $sanitizer->sanitize($input);
-
-        /** @var string|null $email */
-        $email = $sanitized['email'] ?? null;
-        /** @var string|null $password */
+        $email    = $sanitized['email'] ?? null;
         $password = $sanitized['password'] ?? null;
-        /** @var string|null $token */
-        $token = $sanitized['token'] ?? null;
+        $token    = $sanitized['token'] ?? null;
 
         return new self($email, $password, $token);
     }
