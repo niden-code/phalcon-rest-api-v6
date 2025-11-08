@@ -23,6 +23,7 @@ use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
 use Phalcon\Api\Domain\Components\DataSource\User\UserSanitizer;
 use Phalcon\Api\Domain\Components\DataSource\User\UserValidator;
+use Phalcon\Api\Domain\Components\DataSource\User\UserValidatorUpdate;
 use Phalcon\Api\Domain\Components\Encryption\JWTToken;
 use Phalcon\Api\Domain\Components\Encryption\Security;
 use Phalcon\Api\Domain\Components\Encryption\TokenCache;
@@ -50,6 +51,7 @@ use Phalcon\Di\Di;
 use Phalcon\Di\Service;
 use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Filter\FilterFactory;
+use Phalcon\Filter\Validation;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response;
 use Phalcon\Logger\Adapter\Stream;
@@ -92,6 +94,8 @@ class Container extends Di
     public const SECURITY = Security::class;
     /** @var string */
     public const TIME = 'time';
+    /** @var string */
+    public const VALIDATION = Validation::class;
     /**
      * Middleware
      */
@@ -105,8 +109,9 @@ class Container extends Di
     /**
      * Facades
      */
-    public const AUTH_FACADE = 'auth.facade';
-    public const USER_FACADE = 'user.facade';
+    public const AUTH_FACADE        = 'auth.facade';
+    public const USER_FACADE        = 'user.facade';
+    public const USER_FACADE_UPDATE = 'user.facade.update';
     /**
      * Services
      */
@@ -137,9 +142,10 @@ class Container extends Di
     /**
      * Validators
      */
-    public const AUTH_LOGIN_VALIDATOR = AuthLoginValidator::class;
-    public const AUTH_TOKEN_VALIDATOR = 'auth.validator.token';
-    public const USER_VALIDATOR       = UserValidator::class;
+    public const AUTH_LOGIN_VALIDATOR  = 'auth.validator.login';
+    public const AUTH_TOKEN_VALIDATOR  = 'auth.validator.token';
+    public const USER_VALIDATOR        = 'user.validator.insert';
+    public const USER_VALIDATOR_UPDATE = 'user.validator.update';
 
     public function __construct()
     {
@@ -158,14 +164,18 @@ class Container extends Di
             self::RESPONSE          => new Service(Response::class, true),
             self::ROUTER            => $this->getServiceRouter(),
 
-            self::AUTH_FACADE     => $this->getServiceFacadeAuth(),
-            self::USER_FACADE     => $this->getServiceFacadeUser(),
-            self::USER_REPOSITORY => $this->getServiceRepositoryUser(),
+            self::AUTH_FACADE        => $this->getServiceFacadeAuth(),
+            self::USER_FACADE        => $this->getServiceFacadeUser(),
+            self::USER_FACADE_UPDATE => $this->getServiceFacadeUserUpdate(),
+            self::USER_REPOSITORY    => $this->getServiceRepositoryUser(),
 
             self::AUTH_SANITIZER => $this->getServiceSanitizer(AuthSanitizer::class),
             self::USER_SANITIZER => $this->getServiceSanitizer(UserSanitizer::class),
 
-            self::AUTH_TOKEN_VALIDATOR => $this->getServiceValidatorAuthToken(),
+            self::AUTH_LOGIN_VALIDATOR  => $this->getServiceValidator(AuthLoginValidator::class),
+            self::AUTH_TOKEN_VALIDATOR  => $this->getServiceValidatorAuthToken(),
+            self::USER_VALIDATOR        => $this->getServiceValidator(UserValidator::class),
+            self::USER_VALIDATOR_UPDATE => $this->getServiceValidator(UserValidatorUpdate::class),
 
             self::AUTH_LOGIN_POST_SERVICE   => $this->getServiceAuthLoginPost(),
             self::AUTH_LOGOUT_POST_SERVICE  => $this->getServiceAuthTokenPost(LogoutPostService::class),
@@ -173,7 +183,7 @@ class Container extends Di
             self::USER_DELETE_SERVICE       => $this->getServiceUser(UserDeleteService::class),
             self::USER_GET_SERVICE          => $this->getServiceUser(UserGetService::class),
             self::USER_POST_SERVICE         => $this->getServiceUser(UserPostService::class),
-            self::USER_PUT_SERVICE          => $this->getServiceUser(UserPutService::class),
+            self::USER_PUT_SERVICE          => $this->getServiceUserUpdate(),
         ];
 
         parent::__construct();
@@ -407,6 +417,40 @@ class Container extends Di
     /**
      * @return Service
      */
+    private function getServiceFacadeUserUpdate(): Service
+    {
+        return new Service(
+            [
+                'className' => UserFacade::class,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => self::USER_SANITIZER,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::USER_VALIDATOR_UPDATE,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::USER_MAPPER,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::USER_REPOSITORY,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::SECURITY,
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * @return Service
+     */
     private function getServiceFilter(): Service
     {
         return new Service(
@@ -588,6 +632,44 @@ class Container extends Di
     /**
      * @return Service
      */
+    private function getServiceUserUpdate(): Service
+    {
+        return new Service(
+            [
+                'className' => UserPutService::class,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => self::USER_FACADE_UPDATE,
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * @param class-string $className
+     *
+     * @return Service
+     */
+    private function getServiceValidator(string $className): Service
+    {
+        return new Service(
+            [
+                'className' => $className,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => self::VALIDATION,
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * @return Service
+     */
     private function getServiceValidatorAuthToken(): Service
     {
         return new Service(
@@ -601,6 +683,10 @@ class Container extends Di
                     [
                         'type' => 'service',
                         'name' => self::USER_REPOSITORY,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::VALIDATION,
                     ],
                 ],
             ]
