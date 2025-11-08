@@ -13,19 +13,21 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\User;
 
+use Phalcon\Api\Domain\Components\DataSource\Interfaces\MapperInterface;
+
 /**
  * @phpstan-import-type TUser from UserTypes
  * @phpstan-import-type TUserDbRecord from UserTypes
  * @phpstan-import-type TUserDomainToDbRecord from UserTypes
  */
-final class UserMapper
+final class UserMapper implements MapperInterface
 {
     /**
      * Map Domain User -> DB row (usr_*)
      *
      * @return TUserDomainToDbRecord
      */
-    public function db(User $user): array
+    public function db(UserInput $user): array
     {
         return [
             'usr_id'             => $user->id,

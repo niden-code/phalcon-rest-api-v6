@@ -16,6 +16,7 @@ namespace Phalcon\Api\Tests\Unit\Domain\Components\DataSource\User;
 use Faker\Factory as FakerFactory;
 use Phalcon\Api\Domain\Components\Constants\Dates;
 use Phalcon\Api\Domain\Components\DataSource\User\User;
+use Phalcon\Api\Domain\Components\DataSource\User\UserInput;
 use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 
@@ -36,7 +37,7 @@ final class UserMapperTest extends AbstractUnitTestCase
         $createdDate = $faker->date(Dates::DATE_TIME_FORMAT);
         $updatedDate = $faker->date(Dates::DATE_TIME_FORMAT);
 
-        $user = new User(
+        $user = new UserInput(
             $faker->numberBetween(1, 1000),
             $faker->numberBetween(0, 9),
             $faker->safeEmail(),
