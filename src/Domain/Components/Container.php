@@ -13,14 +13,20 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components;
 
-use Phalcon\Api\Domain\Components\Cache\Cache;
+use Phalcon\Api\Domain\Components\Constants\Cache as CacheConstants;
+use Phalcon\Api\Domain\Components\DataSource\Auth\AuthFacade;
+use Phalcon\Api\Domain\Components\DataSource\Auth\AuthLoginValidator;
 use Phalcon\Api\Domain\Components\DataSource\Auth\AuthSanitizer;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
+use Phalcon\Api\Domain\Components\DataSource\Auth\AuthTokenValidator;
+use Phalcon\Api\Domain\Components\DataSource\User\UserFacade;
 use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
+use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
 use Phalcon\Api\Domain\Components\DataSource\User\UserSanitizer;
 use Phalcon\Api\Domain\Components\DataSource\User\UserValidator;
 use Phalcon\Api\Domain\Components\Encryption\JWTToken;
 use Phalcon\Api\Domain\Components\Encryption\Security;
+use Phalcon\Api\Domain\Components\Encryption\TokenCache;
+use Phalcon\Api\Domain\Components\Encryption\TokenManager;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
 use Phalcon\Api\Domain\Components\Middleware\HealthMiddleware;
 use Phalcon\Api\Domain\Components\Middleware\NotFoundMiddleware;
@@ -38,6 +44,7 @@ use Phalcon\Api\Domain\Services\User\UserPostService;
 use Phalcon\Api\Domain\Services\User\UserPutService;
 use Phalcon\Api\Responder\JsonResponder;
 use Phalcon\Cache\AdapterFactory;
+use Phalcon\Cache\Cache;
 use Phalcon\DataMapper\Pdo\Connection;
 use Phalcon\Di\Di;
 use Phalcon\Di\Service;
@@ -67,6 +74,10 @@ class Container extends Di
     public const FILTER = 'filter';
     /** @var string */
     public const JWT_TOKEN = 'jwt.token';
+    /** @var string */
+    public const JWT_TOKEN_CACHE = 'jwt.token.cache';
+    /** @var string */
+    public const JWT_TOKEN_MANAGER = 'jwt.token.manager';
     /** @var string */
     public const LOGGER = 'logger';
     /** @var string */
@@ -101,14 +112,32 @@ class Container extends Di
     public const MIDDLEWARE_VALIDATE_TOKEN_REVOKED   = ValidateTokenRevokedMiddleware::class;
     public const MIDDLEWARE_VALIDATE_TOKEN_STRUCTURE = ValidateTokenStructureMiddleware::class;
     public const MIDDLEWARE_VALIDATE_TOKEN_USER      = ValidateTokenUserMiddleware::class;
+
     /**
-     * Repositories/Sanitizers/Validators
+     * Facades
      */
-    public const REPOSITORY     = 'repository';
-    public const AUTH_SANITIZER = 'auth.sanitizer';
-    public const USER_MAPPER    = UserMapper::class;
-    public const USER_SANITIZER = 'user.sanitizer';
-    public const USER_VALIDATOR = UserValidator::class;
+    public const AUTH_FACADE     = 'auth.facade';
+    public const USER_FACADE     = 'user.facade';
+    /**
+     * Mappers
+     */
+    public const USER_MAPPER     = UserMapper::class;
+    /**
+     * Repositories
+     */
+    public const USER_REPOSITORY = 'user.repository';
+    /**
+     * Sanitizers
+     */
+    public const AUTH_SANITIZER  = 'auth.sanitizer';
+    public const USER_SANITIZER  = 'user.sanitizer';
+
+    /**
+     * Validators
+     */
+    public const AUTH_LOGIN_VALIDATOR  = AuthLoginValidator::class;
+    public const AUTH_TOKEN_VALIDATOR  = 'auth.validator.token';
+    public const USER_VALIDATOR        = UserValidator::class;
 
     /**
      * Responders
@@ -118,25 +147,32 @@ class Container extends Di
     public function __construct()
     {
         $this->services = [
-            self::CACHE          => $this->getServiceCache(),
-            self::CONNECTION     => $this->getServiceConnection(),
-            self::ENV            => $this->getServiceEnv(),
-            self::EVENTS_MANAGER => $this->getServiceEventsManger(),
-            self::FILTER         => $this->getServiceFilter(),
-            self::JWT_TOKEN      => $this->getServiceJWTToken(),
-            self::LOGGER         => $this->getServiceLogger(),
-            self::REGISTRY       => new Service(Registry::class, true),
-            self::REQUEST        => new Service(Request::class, true),
-            self::RESPONSE       => new Service(Response::class, true),
-            self::ROUTER         => $this->getServiceRouter(),
+            self::CACHE             => $this->getServiceCache(),
+            self::CONNECTION        => $this->getServiceConnection(),
+            self::ENV               => $this->getServiceEnv(),
+            self::EVENTS_MANAGER    => $this->getServiceEventsManger(),
+            self::FILTER            => $this->getServiceFilter(),
+            self::JWT_TOKEN         => $this->getServiceJWTToken(),
+            self::JWT_TOKEN_CACHE   => $this->getServiceJWTTokenCache(),
+            self::JWT_TOKEN_MANAGER => $this->getServiceJWTTokenManager(),
+            self::LOGGER            => $this->getServiceLogger(),
+            self::REGISTRY          => new Service(Registry::class, true),
+            self::REQUEST           => new Service(Request::class, true),
+            self::RESPONSE          => new Service(Response::class, true),
+            self::ROUTER            => $this->getServiceRouter(),
 
-            self::REPOSITORY     => $this->getServiceRepository(),
+            self::AUTH_FACADE     => $this->getServiceFacadeAuth(),
+            self::USER_FACADE     => $this->getServiceFacadeUser(),
+            self::USER_REPOSITORY => $this->getServiceRepositoryUser(),
+
             self::AUTH_SANITIZER => $this->getServiceSanitizer(AuthSanitizer::class),
             self::USER_SANITIZER => $this->getServiceSanitizer(UserSanitizer::class),
 
-            self::AUTH_LOGIN_POST_SERVICE   => $this->getServiceAuthPost(LoginPostService::class),
-            self::AUTH_LOGOUT_POST_SERVICE  => $this->getServiceAuthPost(LogoutPostService::class),
-            self::AUTH_REFRESH_POST_SERVICE => $this->getServiceAuthPost(RefreshPostService::class),
+            self::AUTH_TOKEN_VALIDATOR => $this->getServiceValidatorAuthToken(),
+
+            self::AUTH_LOGIN_POST_SERVICE   => $this->getServiceAuthLoginPost(),
+            self::AUTH_LOGOUT_POST_SERVICE  => $this->getServiceAuthTokenPost(LogoutPostService::class),
+            self::AUTH_REFRESH_POST_SERVICE => $this->getServiceAuthTokenPost(RefreshPostService::class),
             self::USER_DELETE_SERVICE       => $this->getServiceUser(UserDeleteService::class),
             self::USER_GET_SERVICE          => $this->getServiceUser(UserGetService::class),
             self::USER_POST_SERVICE         => $this->getServiceUser(UserPostService::class),
@@ -147,11 +183,33 @@ class Container extends Di
     }
 
     /**
+     * @return Service
+     */
+    private function getServiceAuthLoginPost(): Service
+    {
+        return new Service(
+            [
+                'className' => LoginPostService::class,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => self::AUTH_FACADE,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::AUTH_LOGIN_VALIDATOR,
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
      * @param class-string $className
      *
      * @return Service
      */
-    private function getServiceAuthPost(string $className): Service
+    private function getServiceAuthTokenPost(string $className): Service
     {
         return new Service(
             [
@@ -159,27 +217,11 @@ class Container extends Di
                 'arguments' => [
                     [
                         'type' => 'service',
-                        'name' => self::REPOSITORY,
+                        'name' => self::AUTH_FACADE,
                     ],
                     [
                         'type' => 'service',
-                        'name' => self::CACHE,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::ENV,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::JWT_TOKEN,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::AUTH_SANITIZER,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::SECURITY,
+                        'name' => self::AUTH_TOKEN_VALIDATOR,
                     ],
                 ],
             ]
@@ -201,7 +243,7 @@ class Container extends Di
                 /** @var string $host */
                 $host = $env->get('CACHE_HOST', 'localhost');
                 /** @var int $lifetime */
-                $lifetime = $env->get('CACHE_LIFETIME', Cache::CACHE_LIFETIME_DAY, 'int');
+                $lifetime = $env->get('CACHE_LIFETIME', CacheConstants::CACHE_LIFETIME_DAY, 'int');
                 /** @var int $index */
                 $index = $env->get('CACHE_INDEX', 0, 'int');
                 /** @var int $port */
@@ -304,6 +346,70 @@ class Container extends Di
     /**
      * @return Service
      */
+    private function getServiceFacadeAuth(): Service
+    {
+        return new Service(
+            [
+                'className' => AuthFacade::class,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => self::USER_REPOSITORY,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::AUTH_SANITIZER,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::JWT_TOKEN_MANAGER,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::SECURITY,
+                    ],
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @return Service
+     */
+    private function getServiceFacadeUser(): Service
+    {
+        return new Service(
+            [
+                'className' => UserFacade::class,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => self::USER_SANITIZER,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::USER_VALIDATOR,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::USER_MAPPER,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::USER_REPOSITORY,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::SECURITY,
+                    ],
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @return Service
+     */
     private function getServiceFilter(): Service
     {
         return new Service(
@@ -326,6 +432,50 @@ class Container extends Di
                     [
                         'type' => 'service',
                         'name' => self::ENV,
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * @return Service
+     */
+    private function getServiceJWTTokenCache(): Service
+    {
+        return new Service(
+            [
+                'className' => TokenCache::class,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => self::CACHE,
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * @return Service
+     */
+    private function getServiceJWTTokenManager(): Service
+    {
+        return new Service(
+            [
+                'className' => TokenManager::class,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => self::JWT_TOKEN_CACHE,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::ENV,
+                    ],
+                    [
+                        'type' => 'service',
+                        'name' => self::JWT_TOKEN,
                     ],
                 ],
             ]
@@ -361,11 +511,11 @@ class Container extends Di
     /**
      * @return Service
      */
-    private function getServiceRepository(): Service
+    private function getServiceRepositoryUser(): Service
     {
         return new Service(
             [
-                'className' => QueryRepository::class,
+                'className' => UserRepository::class,
                 'arguments' => [
                     [
                         'type' => 'service',
@@ -375,7 +525,7 @@ class Container extends Di
                         'type' => 'service',
                         'name' => self::USER_MAPPER,
                     ],
-                ],
+                ]
             ]
         );
     }
@@ -431,23 +581,29 @@ class Container extends Di
                 'arguments' => [
                     [
                         'type' => 'service',
-                        'name' => self::REPOSITORY,
+                        'name' => self::USER_FACADE,
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * @return Service
+     */
+    private function getServiceValidatorAuthToken(): Service
+    {
+        return new Service(
+            [
+                'className' => AuthTokenValidator::class,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => self::JWT_TOKEN_MANAGER,
                     ],
                     [
                         'type' => 'service',
-                        'name' => self::USER_MAPPER,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_VALIDATOR,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_SANITIZER,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::SECURITY,
+                        'name' => self::USER_REPOSITORY,
                     ],
                 ],
             ]
