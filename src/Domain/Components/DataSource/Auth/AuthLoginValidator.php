@@ -13,12 +13,15 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Components\DataSource\Auth;
 
+use Phalcon\Api\Domain\Components\DataSource\Validation\AbstractValidator;
 use Phalcon\Api\Domain\Components\DataSource\Validation\Result;
-use Phalcon\Api\Domain\Components\DataSource\Validation\ValidatorInterface;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Components\Enums\Input\AuthLoginInputEnum;
 
-final class AuthLoginValidator implements ValidatorInterface
+final class AuthLoginValidator extends AbstractValidator
 {
+    protected string $fields = AuthLoginInputEnum::class;
+
     /**
      * Validate a AuthInput and return an array of errors.
      * Empty array means valid.
@@ -29,8 +32,8 @@ final class AuthLoginValidator implements ValidatorInterface
      */
     public function validate(mixed $input): Result
     {
-        /** @var AuthInput $input */
-        if (true === empty($input->email) || true === empty($input->password)) {
+        $errors = $this->runValidations($input);
+        if (true !== empty($errors)) {
             return Result::error(
                 [HttpCodesEnum::AppIncorrectCredentials->error()]
             );

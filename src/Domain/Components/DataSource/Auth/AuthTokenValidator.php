@@ -14,19 +14,25 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Components\DataSource\Auth;
 
 use Phalcon\Api\Domain\Components\DataSource\User\UserRepositoryInterface;
+use Phalcon\Api\Domain\Components\DataSource\Validation\AbstractValidator;
 use Phalcon\Api\Domain\Components\DataSource\Validation\Result;
-use Phalcon\Api\Domain\Components\DataSource\Validation\ValidatorInterface;
 use Phalcon\Api\Domain\Components\Encryption\TokenManagerInterface;
 use Phalcon\Api\Domain\Components\Enums\Common\JWTEnum;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Components\Enums\Input\AuthTokenInputEnum;
 use Phalcon\Encryption\Security\JWT\Token\Token;
+use Phalcon\Filter\Validation\ValidationInterface;
 
-final class AuthTokenValidator implements ValidatorInterface
+final class AuthTokenValidator extends AbstractValidator
 {
+    protected string $fields = AuthTokenInputEnum::class;
+
     public function __construct(
         private TokenManagerInterface $tokenManager,
         private UserRepositoryInterface $userRepository,
+        ValidationInterface $validator,
     ) {
+        parent::__construct($validator);
     }
 
     /**
@@ -39,11 +45,12 @@ final class AuthTokenValidator implements ValidatorInterface
      */
     public function validate(mixed $input): Result
     {
-        /** @var AuthInput $input */
-        if (true === empty($input->token)) {
+        $errors = $this->runValidations($input);
+        if (true !== empty($errors)) {
             return Result::error([HttpCodesEnum::AppTokenNotPresent->error()]);
         }
 
+        /** @var string $token */
         $token       = $input->token;
         $tokenObject = $this->tokenManager->getObject($token);
         if (null === $tokenObject) {
