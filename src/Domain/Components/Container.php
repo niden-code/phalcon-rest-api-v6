@@ -33,7 +33,6 @@ use Phalcon\Cache\Cache;
 use Phalcon\DataMapper\Pdo\Connection;
 use Phalcon\Di\Di;
 use Phalcon\Di\Service;
-use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Filter\FilterFactory;
 use Phalcon\Filter\Validation;
 use Phalcon\Http\Request;
@@ -46,19 +45,25 @@ use Phalcon\Support\Registry;
 use function sprintf;
 
 /**
- * @phpstan-type TServiceService array{
- *     type: string,
- *     name: string
- * }
  *
  * @phpstan-type TServiceParameter array{
- *     type: string,
+ *     type: 'parameter',
  *     value: mixed
+ * }
+ * @phpstan-type TServiceService array{
+ *     type: 'service',
+ *     name: string
+ * }
+ * @phpstan-type TServiceArguments array<array-key, TServiceParameter|TServiceService>
+ * @phpstan-type TServiceCall array{
+ *     method: string,
+ *     arguments: TServiceArguments
  * }
  *
  * @phpstan-type TService array{
  *     className: string,
- *     arguments: array<array-key, TServiceService|TServiceParameter>
+ *     arguments?: TServiceArguments,
+ *     calls?: array<array-key, TServiceCall>
  * }
  */
 class Container extends Di
@@ -151,10 +156,13 @@ class Container extends Di
     public function __construct()
     {
         $this->services = [
+            /**
+             * Base services
+             */
             self::CACHE             => $this->getServiceCache(),
             self::CONNECTION        => $this->getServiceConnection(),
             self::ENV               => new Service(EnvManager::class, true),
-            self::EVENTS_MANAGER    => $this->getServiceEventsManger(),
+            self::EVENTS_MANAGER    => new Service(CommonDefinitionsEnum::EventsManager->definition(), true),
             self::FILTER            => $this->getServiceFilter(),
             self::JWT_TOKEN         => new Service(CommonDefinitionsEnum::JWTToken->definition(), true),
             self::JWT_TOKEN_CACHE   => new Service(CommonDefinitionsEnum::JWTTokenCache->definition(), true),
@@ -165,20 +173,35 @@ class Container extends Di
             self::RESPONSE          => new Service(Response::class, true),
             self::ROUTER            => new Service(CommonDefinitionsEnum::Router->definition(), true),
 
+            /**
+             * Facades
+             */
             self::AUTH_FACADE        => new Service(AuthDefinitionsEnum::AuthFacade->definition()),
             self::USER_FACADE        => new Service(UserDefinitionsEnum::UserFacade->definition()),
             self::USER_FACADE_UPDATE => new Service(UserDefinitionsEnum::UserFacadeUpdate->definition()),
 
+            /**
+             * Repositories
+             */
             self::USER_REPOSITORY    => new Service(UserDefinitionsEnum::UserRepository->definition()),
 
+            /**
+             * Sanitizers
+             */
             self::AUTH_SANITIZER => new Service(AuthDefinitionsEnum::AuthSanitizer->definition()),
             self::USER_SANITIZER => new Service(UserDefinitionsEnum::UserSanitizer->definition()),
 
+            /**
+             * Validators
+             */
             self::AUTH_LOGIN_VALIDATOR  => new Service(AuthDefinitionsEnum::AuthLoginValidator->definition()),
             self::AUTH_TOKEN_VALIDATOR  => new Service(AuthDefinitionsEnum::AuthTokenValidator->definition()),
             self::USER_VALIDATOR        => new Service(UserDefinitionsEnum::UserValidator->definition()),
             self::USER_VALIDATOR_UPDATE => new Service(UserDefinitionsEnum::UserValidatorUpdate->definition()),
 
+            /**
+             * Services
+             */
             self::AUTH_LOGIN_POST_SERVICE   => new Service(AuthDefinitionsEnum::AuthLoginPost->definition()),
             self::AUTH_LOGOUT_POST_SERVICE  => new Service(AuthDefinitionsEnum::AuthLogoutPost->definition()),
             self::AUTH_REFRESH_POST_SERVICE => new Service(AuthDefinitionsEnum::AuthRefreshPost->definition()),
@@ -272,22 +295,6 @@ class Container extends Di
                     [],
                     $queries
                 );
-            },
-            true
-        );
-    }
-
-    /**
-     * @return Service
-     */
-    private function getServiceEventsManger(): Service
-    {
-        return new Service(
-            function () {
-                $evm = new EventsManager();
-                $evm->enablePriorities(true);
-
-                return $evm;
             },
             true
         );

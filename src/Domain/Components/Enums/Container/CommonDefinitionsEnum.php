@@ -17,6 +17,7 @@ use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\Encryption\JWTToken;
 use Phalcon\Api\Domain\Components\Encryption\TokenCache;
 use Phalcon\Api\Domain\Components\Encryption\TokenManager;
+use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Mvc\Router;
 
 /**
@@ -24,6 +25,7 @@ use Phalcon\Mvc\Router;
  */
 enum CommonDefinitionsEnum
 {
+    case EventsManager;
     case JWTToken;
     case JWTTokenCache;
     case JWTTokenManager;
@@ -35,6 +37,20 @@ enum CommonDefinitionsEnum
     public function definition(): array
     {
         return match ($this) {
+            self::EventsManager        => [
+                'className' => EventsManager::class,
+                'calls'     => [
+                    [
+                        'method' => 'enablePriorities',
+                        'arguments' => [
+                            [
+                                'type' => 'parameter',
+                                'value' => true,
+                            ]
+                        ]
+                    ]
+                ]
+            ],
             self::JWTToken        => [
                 'className' => JWTToken::class,
                 'arguments' => [
