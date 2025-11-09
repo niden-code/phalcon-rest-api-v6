@@ -14,20 +14,11 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Components;
 
 use Phalcon\Api\Domain\Components\Constants\Cache as CacheConstants;
-use Phalcon\Api\Domain\Components\DataSource\Auth\AuthFacade;
-use Phalcon\Api\Domain\Components\DataSource\Auth\AuthLoginValidator;
-use Phalcon\Api\Domain\Components\DataSource\Auth\AuthSanitizer;
-use Phalcon\Api\Domain\Components\DataSource\Auth\AuthTokenValidator;
-use Phalcon\Api\Domain\Components\DataSource\User\UserFacade;
 use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
-use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
-use Phalcon\Api\Domain\Components\DataSource\User\UserSanitizer;
-use Phalcon\Api\Domain\Components\DataSource\User\UserValidator;
-use Phalcon\Api\Domain\Components\DataSource\User\UserValidatorUpdate;
-use Phalcon\Api\Domain\Components\Encryption\JWTToken;
 use Phalcon\Api\Domain\Components\Encryption\Security;
-use Phalcon\Api\Domain\Components\Encryption\TokenCache;
-use Phalcon\Api\Domain\Components\Encryption\TokenManager;
+use Phalcon\Api\Domain\Components\Enums\Container\AuthDefinitionsEnum;
+use Phalcon\Api\Domain\Components\Enums\Container\CommonDefinitionsEnum;
+use Phalcon\Api\Domain\Components\Enums\Container\UserDefinitionsEnum;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
 use Phalcon\Api\Domain\Components\Middleware\HealthMiddleware;
 use Phalcon\Api\Domain\Components\Middleware\NotFoundMiddleware;
@@ -36,13 +27,6 @@ use Phalcon\Api\Domain\Components\Middleware\ValidateTokenPresenceMiddleware;
 use Phalcon\Api\Domain\Components\Middleware\ValidateTokenRevokedMiddleware;
 use Phalcon\Api\Domain\Components\Middleware\ValidateTokenStructureMiddleware;
 use Phalcon\Api\Domain\Components\Middleware\ValidateTokenUserMiddleware;
-use Phalcon\Api\Domain\Services\Auth\LoginPostService;
-use Phalcon\Api\Domain\Services\Auth\LogoutPostService;
-use Phalcon\Api\Domain\Services\Auth\RefreshPostService;
-use Phalcon\Api\Domain\Services\User\UserDeleteService;
-use Phalcon\Api\Domain\Services\User\UserGetService;
-use Phalcon\Api\Domain\Services\User\UserPostService;
-use Phalcon\Api\Domain\Services\User\UserPutService;
 use Phalcon\Api\Responder\JsonResponder;
 use Phalcon\Cache\AdapterFactory;
 use Phalcon\Cache\Cache;
@@ -56,10 +40,27 @@ use Phalcon\Http\Request;
 use Phalcon\Http\Response;
 use Phalcon\Logger\Adapter\Stream;
 use Phalcon\Logger\Logger;
-use Phalcon\Mvc\Router;
 use Phalcon\Storage\SerializerFactory;
 use Phalcon\Support\Registry;
 
+use function sprintf;
+
+/**
+ * @phpstan-type TServiceService array{
+ *     type: string,
+ *     name: string
+ * }
+ *
+ * @phpstan-type TServiceParameter array{
+ *     type: string,
+ *     value: mixed
+ * }
+ *
+ * @phpstan-type TService array{
+ *     className: string,
+ *     arguments: array<array-key, TServiceService|TServiceParameter>
+ * }
+ */
 class Container extends Di
 {
     /** @var string */
@@ -152,87 +153,42 @@ class Container extends Di
         $this->services = [
             self::CACHE             => $this->getServiceCache(),
             self::CONNECTION        => $this->getServiceConnection(),
-            self::ENV               => $this->getServiceEnv(),
+            self::ENV               => new Service(EnvManager::class, true),
             self::EVENTS_MANAGER    => $this->getServiceEventsManger(),
             self::FILTER            => $this->getServiceFilter(),
-            self::JWT_TOKEN         => $this->getServiceJWTToken(),
-            self::JWT_TOKEN_CACHE   => $this->getServiceJWTTokenCache(),
-            self::JWT_TOKEN_MANAGER => $this->getServiceJWTTokenManager(),
+            self::JWT_TOKEN         => new Service(CommonDefinitionsEnum::JWTToken->definition(), true),
+            self::JWT_TOKEN_CACHE   => new Service(CommonDefinitionsEnum::JWTTokenCache->definition(), true),
+            self::JWT_TOKEN_MANAGER => new Service(CommonDefinitionsEnum::JWTTokenManager->definition(), true),
             self::LOGGER            => $this->getServiceLogger(),
             self::REGISTRY          => new Service(Registry::class, true),
             self::REQUEST           => new Service(Request::class, true),
             self::RESPONSE          => new Service(Response::class, true),
-            self::ROUTER            => $this->getServiceRouter(),
+            self::ROUTER            => new Service(CommonDefinitionsEnum::Router->definition(), true),
 
-            self::AUTH_FACADE        => $this->getServiceFacadeAuth(),
-            self::USER_FACADE        => $this->getServiceFacadeUser(),
-            self::USER_FACADE_UPDATE => $this->getServiceFacadeUserUpdate(),
-            self::USER_REPOSITORY    => $this->getServiceRepositoryUser(),
+            self::AUTH_FACADE        => new Service(AuthDefinitionsEnum::AuthFacade->definition()),
+            self::USER_FACADE        => new Service(UserDefinitionsEnum::UserFacade->definition()),
+            self::USER_FACADE_UPDATE => new Service(UserDefinitionsEnum::UserFacadeUpdate->definition()),
 
-            self::AUTH_SANITIZER => $this->getServiceSanitizer(AuthSanitizer::class),
-            self::USER_SANITIZER => $this->getServiceSanitizer(UserSanitizer::class),
+            self::USER_REPOSITORY    => new Service(UserDefinitionsEnum::UserRepository->definition()),
 
-            self::AUTH_LOGIN_VALIDATOR  => $this->getServiceValidator(AuthLoginValidator::class),
-            self::AUTH_TOKEN_VALIDATOR  => $this->getServiceValidatorAuthToken(),
-            self::USER_VALIDATOR        => $this->getServiceValidator(UserValidator::class),
-            self::USER_VALIDATOR_UPDATE => $this->getServiceValidator(UserValidatorUpdate::class),
+            self::AUTH_SANITIZER => new Service(AuthDefinitionsEnum::AuthSanitizer->definition()),
+            self::USER_SANITIZER => new Service(UserDefinitionsEnum::UserSanitizer->definition()),
 
-            self::AUTH_LOGIN_POST_SERVICE   => $this->getServiceAuthLoginPost(),
-            self::AUTH_LOGOUT_POST_SERVICE  => $this->getServiceAuthTokenPost(LogoutPostService::class),
-            self::AUTH_REFRESH_POST_SERVICE => $this->getServiceAuthTokenPost(RefreshPostService::class),
-            self::USER_DELETE_SERVICE       => $this->getServiceUser(UserDeleteService::class),
-            self::USER_GET_SERVICE          => $this->getServiceUser(UserGetService::class),
-            self::USER_POST_SERVICE         => $this->getServiceUser(UserPostService::class),
-            self::USER_PUT_SERVICE          => $this->getServiceUserUpdate(),
+            self::AUTH_LOGIN_VALIDATOR  => new Service(AuthDefinitionsEnum::AuthLoginValidator->definition()),
+            self::AUTH_TOKEN_VALIDATOR  => new Service(AuthDefinitionsEnum::AuthTokenValidator->definition()),
+            self::USER_VALIDATOR        => new Service(UserDefinitionsEnum::UserValidator->definition()),
+            self::USER_VALIDATOR_UPDATE => new Service(UserDefinitionsEnum::UserValidatorUpdate->definition()),
+
+            self::AUTH_LOGIN_POST_SERVICE   => new Service(AuthDefinitionsEnum::AuthLoginPost->definition()),
+            self::AUTH_LOGOUT_POST_SERVICE  => new Service(AuthDefinitionsEnum::AuthLogoutPost->definition()),
+            self::AUTH_REFRESH_POST_SERVICE => new Service(AuthDefinitionsEnum::AuthRefreshPost->definition()),
+            self::USER_DELETE_SERVICE       => new Service(UserDefinitionsEnum::UserDelete->definition()),
+            self::USER_GET_SERVICE          => new Service(UserDefinitionsEnum::UserGet->definition()),
+            self::USER_POST_SERVICE         => new Service(UserDefinitionsEnum::UserPost->definition()),
+            self::USER_PUT_SERVICE          => new Service(UserDefinitionsEnum::UserPut->definition()),
         ];
 
         parent::__construct();
-    }
-
-    /**
-     * @return Service
-     */
-    private function getServiceAuthLoginPost(): Service
-    {
-        return new Service(
-            [
-                'className' => LoginPostService::class,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::AUTH_FACADE,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::AUTH_LOGIN_VALIDATOR,
-                    ],
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @param class-string $className
-     *
-     * @return Service
-     */
-    private function getServiceAuthTokenPost(string $className): Service
-    {
-        return new Service(
-            [
-                'className' => $className,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::AUTH_FACADE,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::AUTH_TOKEN_VALIDATOR,
-                    ],
-                ],
-            ]
-        );
     }
 
     /**
@@ -324,19 +280,6 @@ class Container extends Di
     /**
      * @return Service
      */
-    private function getServiceEnv(): Service
-    {
-        return new Service(
-            function () {
-                return new EnvManager();
-            },
-            true
-        );
-    }
-
-    /**
-     * @return Service
-     */
     private function getServiceEventsManger(): Service
     {
         return new Service(
@@ -353,104 +296,6 @@ class Container extends Di
     /**
      * @return Service
      */
-    private function getServiceFacadeAuth(): Service
-    {
-        return new Service(
-            [
-                'className' => AuthFacade::class,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_REPOSITORY,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::AUTH_SANITIZER,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::JWT_TOKEN_MANAGER,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::SECURITY,
-                    ],
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @return Service
-     */
-    private function getServiceFacadeUser(): Service
-    {
-        return new Service(
-            [
-                'className' => UserFacade::class,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_SANITIZER,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_VALIDATOR,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_MAPPER,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_REPOSITORY,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::SECURITY,
-                    ],
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @return Service
-     */
-    private function getServiceFacadeUserUpdate(): Service
-    {
-        return new Service(
-            [
-                'className' => UserFacade::class,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_SANITIZER,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_VALIDATOR_UPDATE,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_MAPPER,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_REPOSITORY,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::SECURITY,
-                    ],
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @return Service
-     */
     private function getServiceFilter(): Service
     {
         return new Service(
@@ -458,68 +303,6 @@ class Container extends Di
                 return (new FilterFactory())->newInstance();
             },
             true
-        );
-    }
-
-    /**
-     * @return Service
-     */
-    private function getServiceJWTToken(): Service
-    {
-        return new Service(
-            [
-                'className' => JWTToken::class,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::ENV,
-                    ],
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @return Service
-     */
-    private function getServiceJWTTokenCache(): Service
-    {
-        return new Service(
-            [
-                'className' => TokenCache::class,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::CACHE,
-                    ],
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @return Service
-     */
-    private function getServiceJWTTokenManager(): Service
-    {
-        return new Service(
-            [
-                'className' => TokenManager::class,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::JWT_TOKEN_CACHE,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::ENV,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::JWT_TOKEN,
-                    ],
-                ],
-            ]
         );
     }
 
@@ -546,150 +329,6 @@ class Container extends Di
                     ]
                 );
             }
-        );
-    }
-
-    /**
-     * @return Service
-     */
-    private function getServiceRepositoryUser(): Service
-    {
-        return new Service(
-            [
-                'className' => UserRepository::class,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::CONNECTION,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_MAPPER,
-                    ],
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @return Service
-     */
-    private function getServiceRouter(): Service
-    {
-        return new Service(
-            [
-                'className' => Router::class,
-                'arguments' => [
-                    [
-                        'type'  => 'parameter',
-                        'value' => false,
-                    ],
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @param class-string $className
-     *
-     * @return Service
-     */
-    private function getServiceSanitizer(string $className): Service
-    {
-        return new Service(
-            [
-                'className' => $className,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::FILTER,
-                    ],
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @param class-string $className
-     *
-     * @return Service
-     */
-    private function getServiceUser(string $className): Service
-    {
-        return new Service(
-            [
-                'className' => $className,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_FACADE,
-                    ],
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @return Service
-     */
-    private function getServiceUserUpdate(): Service
-    {
-        return new Service(
-            [
-                'className' => UserPutService::class,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_FACADE_UPDATE,
-                    ],
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @param class-string $className
-     *
-     * @return Service
-     */
-    private function getServiceValidator(string $className): Service
-    {
-        return new Service(
-            [
-                'className' => $className,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::VALIDATION,
-                    ],
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @return Service
-     */
-    private function getServiceValidatorAuthToken(): Service
-    {
-        return new Service(
-            [
-                'className' => AuthTokenValidator::class,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => self::JWT_TOKEN_MANAGER,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::USER_REPOSITORY,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => self::VALIDATION,
-                    ],
-                ],
-            ]
         );
     }
 }

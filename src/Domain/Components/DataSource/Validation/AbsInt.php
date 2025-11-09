@@ -14,11 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Components\DataSource\Validation;
 
 use Phalcon\Filter\Validation;
-use Phalcon\Filter\Validation\AbstractValidator;
-
 use Phalcon\Filter\Validation\Validator\Numericality;
-
-use function preg_match;
 
 class AbsInt extends Numericality
 {
