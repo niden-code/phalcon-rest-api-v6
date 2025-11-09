@@ -18,10 +18,10 @@ use Phalcon\Api\Domain\Components\Container;
 use Phalcon\Api\Domain\Components\DataSource\User\User;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Components\Env\EnvManager;
-use Phalcon\Cache\Cache;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Mvc\Micro;
 use Phalcon\Support\Registry;
+use Psr\SimpleCache\CacheInterface;
 
 final class ValidateTokenRevokedMiddleware extends AbstractMiddleware
 {
@@ -34,7 +34,7 @@ final class ValidateTokenRevokedMiddleware extends AbstractMiddleware
     {
         /** @var RequestInterface $request */
         $request = $application->getSharedService(Container::REQUEST);
-        /** @var Cache $cache */
+        /** @var CacheInterface $cache */
         $cache = $application->getSharedService(Container::CACHE);
         /** @var EnvManager $env */
         $env = $application->getSharedService(Container::ENV);

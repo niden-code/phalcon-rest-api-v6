@@ -59,7 +59,12 @@ final class TokenCache implements TokenCacheInterface
          * keys will come back with the prefix defined in the adapter. In order
          * to delete them, we need to remove the prefix because `delete()` will
          * automatically prepend each key with it.
+         *
+         * NOTE: This code will work with other adapters also, since
+         * `getKeys()` returns the keys of the storage adapter. This method
+         * exists in the Cache/Storage AdapterInterface
          */
+
         /** @var Redis $redis */
         $redis   = $this->cache->getAdapter();
         $pattern = CacheConstants::getCacheTokenKey($domainUser, '');
@@ -69,7 +74,7 @@ final class TokenCache implements TokenCacheInterface
         $newKeys = [];
         /** @var string $key */
         foreach ($keys as $key) {
-            $newKeys[] = str_replace($prefix, '', $key);
+            $newKeys[] = substr($key, strlen($prefix));
         }
 
         return $this->cache->deleteMultiple($newKeys);

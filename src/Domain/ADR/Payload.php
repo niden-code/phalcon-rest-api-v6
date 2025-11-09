@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Components;
+namespace Phalcon\Api\Domain\ADR;
 
 use PayloadInterop\DomainStatus;
 use Phalcon\Api\Responder\ResponderTypes;

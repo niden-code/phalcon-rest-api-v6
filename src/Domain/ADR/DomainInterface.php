@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\ADR;
 
-use Phalcon\Api\Domain\Components\Payload;
-
 /**
  * @phpstan-import-type TAuthLoginInput from InputTypes
  * @phpstan-import-type TUserInput from InputTypes

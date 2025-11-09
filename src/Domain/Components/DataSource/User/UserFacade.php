@@ -15,13 +15,13 @@ namespace Phalcon\Api\Domain\Components\DataSource\User;
 
 use PDOException;
 use Phalcon\Api\Domain\ADR\InputTypes;
+use Phalcon\Api\Domain\ADR\Payload;
 use Phalcon\Api\Domain\Components\Constants\Dates;
 use Phalcon\Api\Domain\Components\DataSource\Interfaces\MapperInterface;
 use Phalcon\Api\Domain\Components\DataSource\Interfaces\SanitizerInterface;
 use Phalcon\Api\Domain\Components\DataSource\Validation\ValidatorInterface;
 use Phalcon\Api\Domain\Components\Encryption\Security;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
-use Phalcon\Api\Domain\Components\Payload;
 
 use function array_filter;
 

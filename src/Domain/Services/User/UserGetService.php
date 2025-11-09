@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Services\User;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Components\Payload;
+use Phalcon\Api\Domain\ADR\Payload;
 
 /**
  * @phpstan-import-type TUserInput from InputTypes

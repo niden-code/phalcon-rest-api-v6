@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Fixtures\Domain\Services;
 
 use Phalcon\Api\Domain\ADR\DomainInterface;
-use Phalcon\Api\Domain\Components\Payload;
+use Phalcon\Api\Domain\ADR\Payload;
 
 final readonly class ServiceFixture implements DomainInterface
 {

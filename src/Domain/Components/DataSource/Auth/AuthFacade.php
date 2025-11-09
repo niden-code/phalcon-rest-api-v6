@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Components\DataSource\Auth;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
+use Phalcon\Api\Domain\ADR\Payload;
 use Phalcon\Api\Domain\Components\DataSource\Interfaces\SanitizerInterface;
 use Phalcon\Api\Domain\Components\DataSource\User\User;
 use Phalcon\Api\Domain\Components\DataSource\User\UserRepositoryInterface;
@@ -21,7 +22,6 @@ use Phalcon\Api\Domain\Components\DataSource\Validation\ValidatorInterface;
 use Phalcon\Api\Domain\Components\Encryption\Security;
 use Phalcon\Api\Domain\Components\Encryption\TokenManagerInterface;
 use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
-use Phalcon\Api\Domain\Components\Payload;
 
 /**
  * @phpstan-import-type TAuthLoginInput from InputTypes
