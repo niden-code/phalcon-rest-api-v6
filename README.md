@@ -65,17 +65,41 @@ Contains a handler that translate HTTP requests into Domain calls. For example, 
 
 ### `Domain` layer
 
-#### `Components`
+#### `ADR`
 
-##### `Container`
+- `Payload`: A uniform result object used across Domain → Responder.
+- `Input`: Class collecting request input and used to pass it to the domain
+- Interfaces for domain and `Input`
 
-The application uses the `Phalcon\Di\Di` container with minimal components lazy loaded. Each non "core" component is also registered there (i.e. domain services, responder etc.) and all necessary dependencies are injected based on the service definitions.
+#### `Infrastructure`
 
-Additionally there are two `Providers` that are also registered in the DI container for further functionality. The `ErrorHandlerProvider` which caters for the starting up/shut down of the application and error logging, and the very important `RoutesProvider` which handles registering all the routes that the application serves.
+##### `Constants`
 
-##### `Payload`
+Classes with constants and helper methods used throughout the application 
 
-A uniform result object used across Domain → Responder.
+##### `DataSource`
+
+**`Auth`**
+
+Contains Data Transfer Objects (DTOs) to move data from input to domain and from database back to domain. A Facade is available for orchestration, sanitizer for input as well as validators.
+
+**`Interfaces`**
+
+Mapper and Sanitizer interfaces
+
+**`User`**
+
+Contains Data Transfer Objects (DTOs) to move data from input to domain and from database back to domain. A Facade is available for orchestration, a repository for database operations, sanitizer for input as well as validators.
+
+**`Validation`**
+
+Contains the `ValidatorInterface` for all validators, a `Result` object for returning back validation results/errors and the `AbsInt` validator to check the id for `Put` operations.
+
+##### `Encryption`
+
+Contains components for JWT handling and passwords. The `Security` component is a wrapper for the `password_*` PHP classes, which are used for password hashing and verification.
+
+The `TokenManager` offers methods to issue, refresh and revoke tokens. It works in conjunction with the `TokenCache` to store or invalidate tokens stored in Cache (Redis)
 
 ##### `Enums`
 
@@ -89,19 +113,15 @@ Finally, the `RoutesEnum` also holds the middleware array, which defines their e
 
 The environment manager and adapters. It reads environment variables using [DotEnv][dotenv] as the main adapter but can be extended if necessary.
 
-##### `Validation`
+##### `Exceptions`
 
-Contains the `ValidatorInterface` for all validators and a `Result` object for returning back validation results/errors.
+Exception classes used in the application.
 
-##### `Encryption`
+##### `Container`
 
-Contains components for JWT handling and passwords. The `Security` component is a wrapper for the `password_*` PHP classes, which are used for password hashing and verification. 
+The application uses the `Phalcon\Di\Di` container with minimal components lazy loaded. Each non "core" component is also registered there (i.e. domain services, responder etc.) and all necessary dependencies are injected based on the service definitions.
 
-The `TokenManager` offers methods to issue, refresh and revoke tokens. It works in conjunction with the `TokenCache` to store or invalidate tokens stored in Cache (Redis)
-
-##### `DataSource`:
-
-The `User` / `Auth` folders contain repositories, sanitizers, mappers, validators and facades for each area. 
+Additionally there are two `Providers` that are also registered in the DI container for further functionality. The `ErrorHandlerProvider` which caters for the starting up/shut down of the application and error logging, and the very important `RoutesProvider` which handles registering all the routes that the application serves.
 
 #### `Services`:
 
@@ -156,13 +176,13 @@ There are several middleware registered for this application and they are being 
 
 The middleware execution order is defined in the `RoutesEnum`. The available middleware is:
 
-- [NotFoundMiddleware.php](src/Domain/Components/Middleware/NotFoundMiddleware.php)
-- [HealthMiddleware.php](src/Domain/Components/Middleware/HealthMiddleware.php)
-- [ValidateTokenClaimsMiddleware.php](src/Domain/Components/Middleware/ValidateTokenClaimsMiddleware.php)
-- [ValidateTokenPresenceMiddleware.php](src/Domain/Components/Middleware/ValidateTokenPresenceMiddleware.php)
-- [ValidateTokenRevokedMiddleware.php](src/Domain/Components/Middleware/ValidateTokenRevokedMiddleware.php)
-- [ValidateTokenStructureMiddleware.php](src/Domain/Components/Middleware/ValidateTokenStructureMiddleware.php)
-- [ValidateTokenUserMiddleware.php](src/Domain/Components/Middleware/ValidateTokenUserMiddleware.php)
+- [NotFoundMiddleware.php](src/Domain/Infrastructure/Middleware/NotFoundMiddleware.php)
+- [HealthMiddleware.php](src/Domain/Infrastructure/Middleware/HealthMiddleware.php)
+- [ValidateTokenClaimsMiddleware.php](src/Domain/Infrastructure/Middleware/ValidateTokenClaimsMiddleware.php)
+- [ValidateTokenPresenceMiddleware.php](src/Domain/Infrastructure/Middleware/ValidateTokenPresenceMiddleware.php)
+- [ValidateTokenRevokedMiddleware.php](src/Domain/Infrastructure/Middleware/ValidateTokenRevokedMiddleware.php)
+- [ValidateTokenStructureMiddleware.php](src/Domain/Infrastructure/Middleware/ValidateTokenStructureMiddleware.php)
+- [ValidateTokenUserMiddleware.php](src/Domain/Infrastructure/Middleware/ValidateTokenUserMiddleware.php)
 
 **NotFoundMiddleware**
 
