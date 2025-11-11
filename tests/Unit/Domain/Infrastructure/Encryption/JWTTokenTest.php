@@ -11,13 +11,13 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Components\Encryption;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Encryption;
 
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
-use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
-use Phalcon\Api\Domain\Components\Encryption\JWTToken;
-use Phalcon\Api\Domain\Components\Exceptions\TokenValidationException;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repositories\UserRepository;
+use Phalcon\Api\Domain\Infrastructure\Encryption\JWTToken;
+use Phalcon\Api\Domain\Infrastructure\Exceptions\TokenValidationException;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Encryption\Security\JWT\Token\Token;
 

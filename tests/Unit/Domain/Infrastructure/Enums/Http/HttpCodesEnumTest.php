@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Components\Enums\Http;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Enums\Http;
 
-use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 

@@ -14,12 +14,12 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Services\User;
 
 use DateTimeImmutable;
-use Phalcon\Api\Domain\Components\Constants\Cache as CacheConstants;
-use Phalcon\Api\Domain\Components\Constants\Dates;
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
-use Phalcon\Api\Domain\Components\Enums\Http\RoutesEnum;
-use Phalcon\Api\Domain\Components\Env\EnvManager;
+use Phalcon\Api\Domain\Infrastructure\Constants\Cache as CacheConstants;
+use Phalcon\Api\Domain\Infrastructure\Constants\Dates;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\Enums\Http\RoutesEnum;
+use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 use Phalcon\Cache\Cache;

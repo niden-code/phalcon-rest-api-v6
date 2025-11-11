@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\DataSource\User;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\DataSource\User\DTO;
 
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\DTO\User;
 use Phalcon\Api\Tests\AbstractUnitTestCase;

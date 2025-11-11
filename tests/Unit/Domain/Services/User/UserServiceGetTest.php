@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Services\User;
 
 use PayloadInterop\DomainStatus;
-use Phalcon\Api\Domain\Components\Container;
+use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Services\User\UserGetService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;

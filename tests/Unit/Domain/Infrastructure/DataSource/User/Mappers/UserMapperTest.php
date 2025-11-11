@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\DataSource\User;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\DataSource\User\Mappers;
 
 use Faker\Factory as FakerFactory;
 use Phalcon\Api\Domain\Infrastructure\Constants\Dates;

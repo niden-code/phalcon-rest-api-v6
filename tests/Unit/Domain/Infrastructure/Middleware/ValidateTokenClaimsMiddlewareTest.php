@@ -11,10 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Components\Middleware;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Middleware;
 
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 use Phalcon\Mvc\Micro;

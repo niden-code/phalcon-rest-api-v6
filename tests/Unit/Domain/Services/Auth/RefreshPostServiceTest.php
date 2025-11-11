@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Services\Auth;
 
 use PayloadInterop\DomainStatus;
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\User\UserMapper;
-use Phalcon\Api\Domain\Components\Encryption\JWTToken;
-use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\Encryption\JWTToken;
+use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Services\Auth\LoginPostService;
 use Phalcon\Api\Domain\Services\Auth\RefreshPostService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;

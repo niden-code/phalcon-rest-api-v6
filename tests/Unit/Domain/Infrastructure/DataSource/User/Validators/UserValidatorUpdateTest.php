@@ -18,10 +18,11 @@ use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\DTO\UserInput;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\Sanitizers\UserSanitizer;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\Validators\UserValidator;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Validators\UserValidatorUpdate;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Filter\Validation\ValidationInterface;
 
-final class UserValidatorTest extends AbstractUnitTestCase
+final class UserValidatorUpdateTest extends AbstractUnitTestCase
 {
     public function testError(): void
     {
@@ -33,11 +34,12 @@ final class UserValidatorTest extends AbstractUnitTestCase
         $input     = [];
         $userInput = UserInput::new($sanitizer, $input);
 
-        $validator = new UserValidator($validation);
+        $validator = new UserValidatorUpdate($validation);
         $result    = $validator->validate($userInput);
         $actual    = $result->getErrors();
 
         $expected = [
+            ['Field id is not a valid absolute integer and greater than 0'],
             ['Field email is required'],
             ['Field email must be an email address'],
             ['Field password is required'],
@@ -58,6 +60,7 @@ final class UserValidatorTest extends AbstractUnitTestCase
         $faker     = FakerFactory::create();
 
         $input = [
+            'id'            => $faker->numberBetween(1, 100),
             'email'         => $faker->safeEmail(),
             'password'      => $faker->password(),
             'issuer'        => $faker->company(),
@@ -67,7 +70,7 @@ final class UserValidatorTest extends AbstractUnitTestCase
 
         $userInput = UserInput::new($sanitizer, $input);
 
-        $validator = new UserValidator($validation);
+        $validator = new UserValidatorUpdate($validation);
         $result    = $validator->validate($userInput);
         $actual    = $result->getErrors();
 

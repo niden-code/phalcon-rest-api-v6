@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Components\Middleware;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Middleware;
 
-use Phalcon\Api\Domain\Components\Middleware\HealthMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Middleware\HealthMiddleware;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Mvc\Micro;
 use PHPUnit\Framework\Attributes\BackupGlobals;

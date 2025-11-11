@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\DataSource\User;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\DataSource\User\Repositories;
 
 use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\DTO\User;

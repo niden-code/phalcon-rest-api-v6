@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Action;
 
 use Phalcon\Api\Action\ActionHandler;
-use Phalcon\Api\Domain\Components\Container;
+use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Responder\ResponderInterface;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Services\ServiceFixture;

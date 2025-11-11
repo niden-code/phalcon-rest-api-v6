@@ -11,10 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Components\Middleware;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Middleware;
 
-use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
-use Phalcon\Api\Domain\Components\Middleware\NotFoundMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Infrastructure\Middleware\NotFoundMiddleware;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Events\Event;
 use Phalcon\Mvc\Micro;

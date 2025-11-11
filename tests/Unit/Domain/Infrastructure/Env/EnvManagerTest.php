@@ -11,10 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Components\Env;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Env;
 
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\Env\EnvManager;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 

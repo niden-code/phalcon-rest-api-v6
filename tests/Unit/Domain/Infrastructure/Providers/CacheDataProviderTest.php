@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Components\Providers;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Providers;
 
-use Phalcon\Api\Domain\Components\Container;
+use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Cache\Cache;
 

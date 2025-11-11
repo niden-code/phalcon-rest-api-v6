@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Responder;
 
 use PayloadInterop\DomainStatus;
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Responder\ResponderInterface;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Domain\Payload;

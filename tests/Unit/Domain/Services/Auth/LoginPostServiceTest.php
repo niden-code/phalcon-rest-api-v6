@@ -15,8 +15,8 @@ namespace Phalcon\Api\Tests\Unit\Domain\Services\Auth;
 
 use Faker\Factory;
 use PayloadInterop\DomainStatus;
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Services\Auth\LoginPostService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;

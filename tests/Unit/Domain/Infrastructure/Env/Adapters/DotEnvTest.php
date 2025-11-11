@@ -11,12 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Components\Env\Adapters;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Env\Adapters;
 
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\Env\Adapters\DotEnv;
-use Phalcon\Api\Domain\Components\Env\EnvManager;
-use Phalcon\Api\Domain\Components\Exceptions\InvalidConfigurationArgumentException;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\Env\Adapters\DotEnv;
+use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
+use Phalcon\Api\Domain\Infrastructure\Exceptions\InvalidConfigurationArgumentException;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 
 final class DotEnvTest extends AbstractUnitTestCase

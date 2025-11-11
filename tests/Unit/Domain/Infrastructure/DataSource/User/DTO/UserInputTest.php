@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\DataSource\User;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\DataSource\User\DTO;
 
 use Faker\Factory as FakerFactory;
 use Phalcon\Api\Domain\Infrastructure\Container;
@@ -53,7 +53,6 @@ final class UserInputTest extends AbstractUnitTestCase
         $sanitized = $sanitizer->sanitize($input);
         $userInput = UserInput::new($sanitizer, $input);
 
-        // For each property use $expected and $actual then assertSame
         $expected = $sanitized['id'];
         $actual   = $userInput->id;
         $this->assertSame($expected, $actual);

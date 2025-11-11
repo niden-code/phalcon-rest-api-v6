@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Components\Enums\Common;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Enums\Common;
 
-use Phalcon\Api\Domain\Components\Enums\Common\FlagsEnum;
+use Phalcon\Api\Domain\Infrastructure\Enums\Common\FlagsEnum;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 
 final class FlagsEnumTest extends AbstractUnitTestCase

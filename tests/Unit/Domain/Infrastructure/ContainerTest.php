@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Components;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure;
 
-use Phalcon\Api\Domain\Components\Container;
+use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Filter\Filter;

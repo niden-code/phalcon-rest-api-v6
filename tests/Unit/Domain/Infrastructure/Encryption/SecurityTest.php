@@ -11,10 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Components\Encryption;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Encryption;
 
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\Encryption\Security;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\Encryption\Security;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 
 final class SecurityTest extends AbstractUnitTestCase
