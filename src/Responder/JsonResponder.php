@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Phalcon\Api\Responder;
 
 use Exception as BaseException;
-use Phalcon\Api\Domain\Components\Constants\Dates;
-use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Infrastructure\Constants\Dates;
+use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Domain\Payload;
 use Phalcon\Http\ResponseInterface;
 

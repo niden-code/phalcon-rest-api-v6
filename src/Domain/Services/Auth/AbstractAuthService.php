@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Services\Auth;
 
 use Phalcon\Api\Domain\ADR\DomainInterface;
-use Phalcon\Api\Domain\Components\DataSource\Auth\AuthFacade;
-use Phalcon\Api\Domain\Components\DataSource\Validation\ValidatorInterface;
+use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Facades\AuthFacade;
+use Phalcon\Api\Domain\Infrastructure\DataSource\Validation\ValidatorInterface;
 
 abstract class AbstractAuthService implements DomainInterface
 {

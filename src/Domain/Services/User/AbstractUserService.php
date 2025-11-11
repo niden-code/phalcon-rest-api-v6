@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Services\User;
 
 use Phalcon\Api\Domain\ADR\DomainInterface;
-use Phalcon\Api\Domain\Components\DataSource\User\UserFacade;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Facades\UserFacade;
 
 abstract class AbstractUserService implements DomainInterface
 {
