@@ -66,5 +66,4 @@ final class InputTest extends TestCase
         $actual = $input->__invoke($mockRequest);
         $this->assertSame($expected, $actual);
     }
-
 }

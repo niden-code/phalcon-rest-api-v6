@@ -100,7 +100,6 @@ final class Payload extends PhalconPayload
                 'data'    => [],
                 'errors'  => [['Record(s) not found']],
             ]
-
         );
     }
 
@@ -178,5 +177,4 @@ final class Payload extends PhalconPayload
 
         return $existing;
     }
-
 }

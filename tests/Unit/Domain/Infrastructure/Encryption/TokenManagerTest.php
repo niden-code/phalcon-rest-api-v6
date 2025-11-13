@@ -94,6 +94,5 @@ final class TokenManagerTest extends AbstractUnitTestCase
         $expected = Token::class;
         $actual = $manager->getObject($token);
         $this->assertInstanceOf($expected, $actual);
-
     }
 }
