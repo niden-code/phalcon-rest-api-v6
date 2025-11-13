@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Responder;
 
-use Phalcon\Domain\Payload;
+use Phalcon\Api\Domain\ADR\Payload;
 use Phalcon\Http\ResponseInterface;
 
 interface ResponderInterface
