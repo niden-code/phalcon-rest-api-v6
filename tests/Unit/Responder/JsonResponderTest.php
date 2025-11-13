@@ -13,12 +13,11 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Responder;
 
-use PayloadInterop\DomainStatus;
 use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Responder\ResponderInterface;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
-use Phalcon\Domain\Payload;
+use Phalcon\Api\Domain\ADR\Payload;
 use Phalcon\Http\ResponseInterface;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 
@@ -38,17 +37,7 @@ final class JsonResponderTest extends AbstractUnitTestCase
         $responder = $this->container->get(Container::RESPONDER_JSON);
 
         $errorContent = uniqid('error-');
-        $payload      = new Payload(
-            DomainStatus::UNAUTHORIZED,
-            [
-                'code'    => HttpCodesEnum::Unauthorized->value,
-                'message' => HttpCodesEnum::Unauthorized->text(),
-                'data'    => [],
-                'errors'  => [
-                    [1234 => $errorContent],
-                ],
-            ]
-        );
+        $payload      = Payload::unauthorized([[1234 => $errorContent]]);
 
         ob_start();
         $outputResponse = $responder->__invoke($response, $payload);
@@ -115,17 +104,7 @@ final class JsonResponderTest extends AbstractUnitTestCase
         $responder = $this->container->getShared(Container::RESPONDER_JSON);
 
         $dataContent = uniqid('data-');
-        $payload     = new Payload(
-            DomainStatus::SUCCESS,
-            [
-                'code'    => HttpCodesEnum::OK->value,
-                'message' => HttpCodesEnum::OK->text(),
-                'data'    => [
-                    $dataContent,
-                ],
-                'errors'  => [],
-            ]
-        );
+        $payload     = Payload::success([$dataContent]);
 
         ob_start();
         $outputResponse = $responder->__invoke($response, $payload);

@@ -13,12 +13,11 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Infrastructure\Middleware;
 
-use PayloadInterop\DomainStatus;
+use Phalcon\Api\Domain\ADR\Payload;
 use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
 use Phalcon\Api\Responder\ResponderInterface;
 use Phalcon\Api\Responder\ResponderTypes;
-use Phalcon\Domain\Payload;
 use Phalcon\Events\Exception as EventsException;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Http\Response\Exception as ResponseException;
@@ -100,7 +99,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
             'errors'  => $errors,
         ];
 
-        $payload = new Payload(DomainStatus::SUCCESS, $results);
+        $payload = Payload::success($results);
 
         $responder->__invoke($response, $payload);
     }

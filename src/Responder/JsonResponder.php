@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Phalcon\Api\Responder;
 
 use Exception as BaseException;
+use Phalcon\Api\Domain\ADR\Payload;
 use Phalcon\Api\Domain\Infrastructure\Constants\Dates;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
-use Phalcon\Domain\Payload;
 use Phalcon\Http\ResponseInterface;
 
 use function sha1;
