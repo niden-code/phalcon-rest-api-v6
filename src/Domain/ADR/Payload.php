@@ -14,19 +14,26 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\ADR;
 
 use PayloadInterop\DomainStatus;
+use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Responder\ResponderTypes;
 use Phalcon\Domain\Payload as PhalconPayload;
+
+use function array_key_exists;
+use function var_dump;
 
 /**
  * @phpstan-import-type TData from ResponderTypes
  * @phpstan-import-type TErrors from ResponderTypes
+ * @phpstan-import-type TResponsePayload from ResponderTypes
+ * @phpstan-type TPayloadDataInput TData|TResponsePayload
+ * @phpstan-type TPayloadErrorInput TErrors|TResponsePayload
  */
 final class Payload extends PhalconPayload
 {
     /**
-     * @param string  $status
-     * @param TData   $data
-     * @param TErrors $errors
+     * @param string             $status
+     * @param TPayloadDataInput  $data
+     * @param TPayloadDataInput $errors
      */
     private function __construct(
         string $status,
@@ -34,18 +41,8 @@ final class Payload extends PhalconPayload
         array $errors = []
     ) {
         $result = [];
-
-        if (true !== empty($data)) {
-            $result = [
-                'data' => $data,
-            ];
-        }
-
-        if (true !== empty($errors)) {
-            $result = [
-                'errors' => $errors,
-            ];
-        }
+        $result = $this->mergePart($result, $data, 'data');
+        $result = $this->mergePart($result, $errors, 'errors');
 
         parent::__construct($status, $result);
     }
@@ -97,7 +94,13 @@ final class Payload extends PhalconPayload
     {
         return new self(
             status: DomainStatus::NOT_FOUND,
-            errors: [['Record(s) not found']]
+            errors: [
+                'code'    => HttpCodesEnum::NotFound->value,
+                'message' => HttpCodesEnum::NotFound->text(),
+                'data'    => [],
+                'errors'  => [['Record(s) not found']],
+            ]
+
         );
     }
 
@@ -118,7 +121,15 @@ final class Payload extends PhalconPayload
      */
     public static function unauthorized(array $errors): self
     {
-        return new self(status: DomainStatus::UNAUTHORIZED, errors: $errors);
+        return new self(
+            status: DomainStatus::UNAUTHORIZED,
+            errors:[
+                'code'    => HttpCodesEnum::Unauthorized->value,
+                'message' => HttpCodesEnum::Unauthorized->text(),
+                'data'    => [],
+                'errors'  => $errors,
+            ]
+        );
     }
 
     /**
@@ -128,6 +139,44 @@ final class Payload extends PhalconPayload
      */
     public static function updated(array $data): self
     {
-        return new self(DomainStatus::UPDATED, $data);
+        return new self(
+            DomainStatus::UPDATED,
+            [
+                'data' => $data
+            ]
+        );
     }
+
+    /**
+     * Merge a part into the result. If the part already contains the
+     * $key, assume it's a preformatted payload and return it. Otherwise
+     * attach the part under the $key.
+     *
+     * @param TPayloadDataInput $existing
+     * @param TPayloadDataInput $element
+     * @param string $key
+     *
+     * @return TPayloadDataInput
+     */
+    private function mergePart(
+        array $existing,
+        array $element,
+        string $key
+    ): array {
+        if (empty($element)) {
+            return $existing;
+        }
+
+        if (array_key_exists($key, $element)) {
+            return $element;
+        }
+
+        /**
+         * preserve any existing keys in $existing and add the new named key
+         */
+        $existing[$key] = $element;
+
+        return $existing;
+    }
+
 }

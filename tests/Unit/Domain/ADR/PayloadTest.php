@@ -15,11 +15,12 @@ namespace Phalcon\Api\Tests\Unit\Domain\ADR;
 
 use PayloadInterop\DomainStatus;
 use Phalcon\Api\Domain\ADR\Payload;
+use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 
 final class PayloadTest extends AbstractUnitTestCase
 {
-    public function testCreatedContainsDataAndStatusCreated(): void
+    public function testCreated(): void
     {
         $data = ['id' => 1];
         $payload = Payload::created($data);
@@ -37,7 +38,7 @@ final class PayloadTest extends AbstractUnitTestCase
         $this->assertSame($expected, $actual);
     }
 
-    public function testDeletedContainsDataAndStatusDeleted(): void
+    public function testDeleted(): void
     {
         $data = ['deleted' => true];
         $payload = Payload::deleted($data);
@@ -51,7 +52,7 @@ final class PayloadTest extends AbstractUnitTestCase
         $this->assertSame($expected, $actual);
     }
 
-    public function testUpdatedContainsDataAndStatusUpdated(): void
+    public function testUpdated(): void
     {
         $data = ['updated' => true];
         $payload = Payload::updated($data);
@@ -65,7 +66,7 @@ final class PayloadTest extends AbstractUnitTestCase
         $this->assertSame($expected, $actual);
     }
 
-    public function testSuccessContainsDataAndStatusSuccess(): void
+    public function testSuccess(): void
     {
         $data = ['items' => [1, 2, 3]];
         $payload = Payload::success($data);
@@ -79,7 +80,7 @@ final class PayloadTest extends AbstractUnitTestCase
         $this->assertSame($expected, $actual);
     }
 
-    public function testErrorContainsErrorsAndStatusError(): void
+    public function testError(): void
     {
         $errors = [['something' => 'went wrong']];
         $payload = Payload::error($errors);
@@ -93,7 +94,7 @@ final class PayloadTest extends AbstractUnitTestCase
         $this->assertSame($expected, $actual);
     }
 
-    public function testInvalidContainsErrorsAndStatusInvalid(): void
+    public function testInvalid(): void
     {
         $errors = [['field' => 'invalid']];
         $payload = Payload::invalid($errors);
@@ -107,7 +108,7 @@ final class PayloadTest extends AbstractUnitTestCase
         $this->assertSame($expected, $actual);
     }
 
-    public function testUnauthorizedContainsErrorsAndStatusUnauthorized(): void
+    public function testUnauthorized(): void
     {
         $errors = [['reason' => 'no access']];
         $payload = Payload::unauthorized($errors);
@@ -116,12 +117,17 @@ final class PayloadTest extends AbstractUnitTestCase
         $actual = $payload->getStatus();
         $this->assertSame($expected, $actual);
 
-        $expected = ['errors' => $errors];
+        $expected = [
+            'code'    => HttpCodesEnum::Unauthorized->value,
+            'message' => HttpCodesEnum::Unauthorized->text(),
+            'data'    => [],
+            'errors' => $errors
+        ];
         $actual = $payload->getResult();
         $this->assertSame($expected, $actual);
     }
 
-    public function testNotFoundReturnsDefaultErrorAndStatusNotFound(): void
+    public function testNotFound(): void
     {
         $payload = Payload::notFound();
 
@@ -129,7 +135,12 @@ final class PayloadTest extends AbstractUnitTestCase
         $actual = $payload->getStatus();
         $this->assertSame($expected, $actual);
 
-        $expected = ['errors' => [['Record(s) not found']]];
+        $expected = [
+            'code'    => HttpCodesEnum::NotFound->value,
+            'message' => HttpCodesEnum::NotFound->text(),
+            'data'    => [],
+            'errors' => [['Record(s) not found']]
+        ];
         $actual = $payload->getResult();
         $this->assertSame($expected, $actual);
     }
