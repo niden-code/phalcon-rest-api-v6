@@ -37,19 +37,19 @@ enum CommonDefinitionsEnum
     public function definition(): array
     {
         return match ($this) {
-            self::EventsManager        => [
+            self::EventsManager   => [
                 'className' => EventsManager::class,
                 'calls'     => [
                     [
-                        'method' => 'enablePriorities',
+                        'method'    => 'enablePriorities',
                         'arguments' => [
                             [
-                                'type' => 'parameter',
+                                'type'  => 'parameter',
                                 'value' => true,
-                            ]
-                        ]
-                    ]
-                ]
+                            ],
+                        ],
+                    ],
+                ],
             ],
             self::JWTToken        => [
                 'className' => JWTToken::class,
