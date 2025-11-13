@@ -64,7 +64,7 @@ final class ValidateTokenUserMiddleware extends AbstractMiddleware
 
         /**
          * If we are here everything is fine and we need to keep the user
-         * as a "session" user in the transport
+         * as a "session" user in the registry
          */
         $registry->set('user', $domainUser);
 
