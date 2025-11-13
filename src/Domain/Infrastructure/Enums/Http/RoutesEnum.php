@@ -23,17 +23,18 @@ use function str_replace;
 enum RoutesEnum: int
 {
     /**
-     * Methods
-     */
-    public const DELETE = 'delete';
-    /**
      * Events
      */
     public const EVENT_BEFORE = 'before';
     public const EVENT_FINISH = 'finish';
-    public const GET          = 'get';
-    public const POST         = 'post';
-    public const PUT          = 'put';
+
+    /**
+     * Methods
+     */
+    public const DELETE = 'delete';
+    public const GET    = 'get';
+    public const POST   = 'post';
+    public const PUT    = 'put';
 
     case authLoginPost   = 11;
     case authLogoutPost  = 12;
