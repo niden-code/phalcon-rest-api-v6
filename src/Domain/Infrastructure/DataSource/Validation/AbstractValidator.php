@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Infrastructure\DataSource\Validation;
 
 use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\DTO\AuthInput;
-use Phalcon\Api\Domain\Infrastructure\Enums\Input\ValidatorEnumInterface;
+use Phalcon\Api\Domain\Infrastructure\Enums\Validators\ValidatorEnumInterface;
 use Phalcon\Filter\Validation\ValidationInterface;
 use Phalcon\Filter\Validation\ValidatorInterface as PhalconValidator;
 

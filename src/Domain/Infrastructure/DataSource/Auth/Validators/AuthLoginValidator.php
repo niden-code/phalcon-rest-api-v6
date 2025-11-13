@@ -17,11 +17,11 @@ use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\DTO\AuthInput;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Validation\AbstractValidator;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Validation\Result;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
-use Phalcon\Api\Domain\Infrastructure\Enums\Input\AuthLoginInputEnum;
+use Phalcon\Api\Domain\Infrastructure\Enums\Validators\AuthLoginValidatorEnum;
 
 final class AuthLoginValidator extends AbstractValidator
 {
-    protected string $fields = AuthLoginInputEnum::class;
+    protected string $fields = AuthLoginValidatorEnum::class;
 
     /**
      * Validate a AuthInput and return an array of errors.

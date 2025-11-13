@@ -20,13 +20,13 @@ use Phalcon\Api\Domain\Infrastructure\DataSource\Validation\Result;
 use Phalcon\Api\Domain\Infrastructure\Encryption\TokenManagerInterface;
 use Phalcon\Api\Domain\Infrastructure\Enums\Common\JWTEnum;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
-use Phalcon\Api\Domain\Infrastructure\Enums\Input\AuthTokenInputEnum;
+use Phalcon\Api\Domain\Infrastructure\Enums\Validators\AuthTokenValidatorEnum;
 use Phalcon\Encryption\Security\JWT\Token\Token;
 use Phalcon\Filter\Validation\ValidationInterface;
 
 final class AuthTokenValidator extends AbstractValidator
 {
-    protected string $fields = AuthTokenInputEnum::class;
+    protected string $fields = AuthTokenValidatorEnum::class;
 
     public function __construct(
         private TokenManagerInterface $tokenManager,

@@ -11,12 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Infrastructure\Enums\Input;
+namespace Phalcon\Api\Domain\Infrastructure\Enums\Validators;
 
 use Phalcon\Filter\Validation\Validator\Email;
 use Phalcon\Filter\Validation\Validator\PresenceOf;
 
-enum AuthLoginInputEnum implements ValidatorEnumInterface
+enum AuthLoginValidatorEnum implements ValidatorEnumInterface
 {
     case email;
     case password;

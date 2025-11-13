@@ -11,15 +11,13 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Infrastructure\Enums\Input;
+namespace Phalcon\Api\Domain\Infrastructure\Enums\Validators;
 
-use Phalcon\Api\Domain\Infrastructure\DataSource\Validation\AbsInt;
 use Phalcon\Filter\Validation\Validator\Email;
 use Phalcon\Filter\Validation\Validator\PresenceOf;
 
-enum UserInputUpdateEnum implements ValidatorEnumInterface
+enum UserInsertEnum implements ValidatorEnumInterface
 {
-    case id;
     case email;
     case password;
     case issuer;
@@ -29,10 +27,6 @@ enum UserInputUpdateEnum implements ValidatorEnumInterface
     public function validators(): array
     {
         return match ($this) {
-            self::id    => [
-                PresenceOf::class,
-                AbsInt::class
-            ],
             self::email    => [
                 PresenceOf::class,
                 Email::class

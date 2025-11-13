@@ -11,11 +11,11 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Infrastructure\Enums\Input;
+namespace Phalcon\Api\Domain\Infrastructure\Enums\Validators;
 
 use Phalcon\Filter\Validation\Validator\PresenceOf;
 
-enum AuthTokenInputEnum implements ValidatorEnumInterface
+enum AuthTokenValidatorEnum implements ValidatorEnumInterface
 {
     case token;
 
