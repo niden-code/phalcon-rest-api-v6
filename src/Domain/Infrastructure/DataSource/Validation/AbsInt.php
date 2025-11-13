@@ -16,7 +16,7 @@ namespace Phalcon\Api\Domain\Infrastructure\DataSource\Validation;
 use Phalcon\Filter\Validation;
 use Phalcon\Filter\Validation\Validator\Numericality;
 
-class AbsInt extends Numericality
+final class AbsInt extends Numericality
 {
     /**
      * @var string|null
