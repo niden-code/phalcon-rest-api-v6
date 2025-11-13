@@ -13,89 +13,10 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Infrastructure\DataSource\User\Sanitizers;
 
-use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Infrastructure\DataSource\Interfaces\SanitizerInterface;
-use Phalcon\Filter\Filter;
-use Phalcon\Filter\FilterInterface;
+use Phalcon\Api\Domain\Infrastructure\DataSource\AbstractSanitizer;
+use Phalcon\Api\Domain\Infrastructure\Enums\Sanitizers\UserSanitizersEnum;
 
-/**
- * @phpstan-import-type TUserInput from InputTypes
- */
-final class UserSanitizer implements SanitizerInterface
+final class UserSanitizer extends AbstractSanitizer
 {
-    public function __construct(
-        private readonly FilterInterface $filter,
-    ) {
-    }
-
-    /**
-     * Return a sanitized array of the input
-     *
-     * @param TUserInput $input
-     *
-     * @return TUserInput
-     */
-    public function sanitize(array $input): array
-    {
-        $fields = [
-            'id'            => 0,
-            'status'        => 0,
-            'email'         => null,
-            'password'      => null,
-            'namePrefix'    => null,
-            'nameFirst'     => null,
-            'nameLast'      => null,
-            'nameMiddle'    => null,
-            'nameSuffix'    => null,
-            'issuer'        => null,
-            'tokenPassword' => null,
-            'tokenId'       => null,
-            'preferences'   => null,
-            'createdDate'   => null,
-            'createdUserId' => 0,
-            'updatedDate'   => null,
-            'updatedUserId' => 0,
-        ];
-
-        /**
-         * Sanitize all the fields. The fields can be `null` meaning they
-         * were not defined with the input or a value. If the value exists
-         * we will sanitize it
-         */
-        $sanitized = [];
-        foreach ($fields as $name => $defaultValue) {
-            $value = $input[$name] ?? $defaultValue;
-
-            if (null !== $value) {
-                $sanitizer = $this->getSanitizer($name);
-                if (true !== empty($sanitizer)) {
-                    $value = $this->filter->sanitize($value, $sanitizer);
-                }
-            }
-            $sanitized[$name] = $value;
-        }
-
-        /** @var TUserInput $sanitized */
-        return $sanitized;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string
-     */
-    private function getSanitizer(string $name): string
-    {
-        return match ($name) {
-            'id',
-            'status',
-            'createdUserId',
-            'updatedUserId' => Filter::FILTER_ABSINT,
-            'email'         => Filter::FILTER_EMAIL,
-            'password',
-            'tokenId',
-            'tokenPassword' => '', // Password will be distorted
-            default         => Filter::FILTER_STRING,
-        };
-    }
+    protected string $enum = UserSanitizersEnum::class;
 }
