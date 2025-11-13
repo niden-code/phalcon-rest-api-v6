@@ -39,8 +39,8 @@ final class ActionHandlerTest extends AbstractUnitTestCase
         $responder = $this->container->getShared(Container::RESPONDER_JSON);
 
         $getData = [
-            'key'  => uniqid('key-'),
-            'data' => [
+            'key'   => uniqid('key-'),
+            'value' => [
                 uniqid('data-'),
             ],
         ];
