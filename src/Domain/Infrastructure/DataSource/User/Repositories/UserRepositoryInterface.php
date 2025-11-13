@@ -58,17 +58,17 @@ interface UserRepositoryInterface
     public function findOneBy(array $criteria): ?User;
 
     /**
-     * @param TUserDbRecordOptional $user
+     * @param TUserDbRecordOptional $columns
      *
      * @return int
      */
-    public function insert(array $user): int;
+    public function insert(array $columns): int;
 
     /**
-     * @param int                   $userId
-     * @param TUserDbRecordOptional $user
+     * @param int                   $recordId
+     * @param TUserDbRecordOptional $columns
      *
      * @return int
      */
-    public function update(int $userId, array $user): int;
+    public function update(int $recordId, array $columns): int;
 }

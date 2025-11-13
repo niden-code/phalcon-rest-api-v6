@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Infrastructure\DataSource\User\Repositories;
 
 use Phalcon\Api\Domain\Infrastructure\DataSource\AbstractRepository;
+use Phalcon\Api\Domain\Infrastructure\DataSource\Interfaces\MapperInterface;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\DTO\User;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\UserTypes;
 use Phalcon\Api\Domain\Infrastructure\Enums\Common\FlagsEnum;
 use Phalcon\DataMapper\Pdo\Connection;
@@ -41,7 +41,7 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
 
     public function __construct(
         Connection $connection,
-        private readonly UserMapper $mapper,
+        private readonly MapperInterface $mapper,
     ) {
         parent::__construct($connection);
     }
@@ -110,16 +110,17 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
 
 
     /**
-     * @param TUserDbRecordOptional $user
+     *
+     * @param TUserDbRecordOptional $columns
      *
      * @return int
      */
-    public function insert(array $user): int
+    public function insert(array $columns): int
     {
         $insert = Insert::new($this->connection);
         $insert
             ->into($this->table)
-            ->columns($user)
+            ->columns($columns)
             ->perform()
         ;
 
@@ -127,20 +128,21 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
     }
 
     /**
-     * @param TUserDbRecordOptional $user
+     * @param int                   $recordId
+     * @param TUserDbRecordOptional $columns
      *
      * @return int
      */
-    public function update(int $userId, array $user): int
+    public function update(int $recordId, array $columns): int
     {
         $update = Update::new($this->connection);
         $update
             ->table($this->table)
-            ->columns($user)
-            ->where('usr_id = ', $userId)
+            ->columns($columns)
+            ->where($this->idField . ' = ', $recordId)
             ->perform()
         ;
 
-        return $userId;
+        return $recordId;
     }
 }
