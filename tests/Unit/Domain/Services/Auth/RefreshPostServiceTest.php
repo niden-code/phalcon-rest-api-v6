@@ -14,9 +14,10 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Services\Auth;
 
 use PayloadInterop\DomainStatus;
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\Encryption\JWTToken;
-use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\Encryption\JWTToken;
+use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Services\Auth\LoginPostService;
 use Phalcon\Api\Domain\Services\Auth\RefreshPostService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
@@ -49,49 +50,56 @@ final class RefreshPostServiceTest extends AbstractUnitTestCase
 
     public function testServiceInvalidToken(): void
     {
-        $user   = $this->getNewUserData();
-        $errors = [
+        /** @var UserMapper $userMapper */
+        $userMapper     = $this->container->get(Container::USER_MAPPER);
+        $user           = $this->getNewUserData();
+        $user['usr_id'] = 1;
+        $domainUser     = $userMapper->domain($user);
+        $errors         = [
             ['Incorrect token data'],
         ];
 
         /**
          * Set up mock services
          */
-        $mockItem = $this->getMockBuilder(Item::class)
-                         ->disableOriginalConstructor()
-                         ->onlyMethods(
-                             [
-                                 'get',
-                             ]
-                         )
-                         ->getMock()
+        $mockItem = $this
+            ->getMockBuilder(Item::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'get',
+                ]
+            )
+            ->getMock()
         ;
         $mockItem->method('get')->willReturn(true);
 
-        $mockToken = $this->getMockBuilder(Token::class)
-                          ->disableOriginalConstructor()
-                          ->onlyMethods(
-                              [
-                                  'getClaims',
-                              ]
-                          )
-                          ->getMock()
+        $mockToken = $this
+            ->getMockBuilder(Token::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getClaims',
+                ]
+            )
+            ->getMock()
         ;
         $mockToken->method('getClaims')->willReturn($mockItem);
 
-        $mockJWT = $this->getMockBuilder(JWTToken::class)
-                        ->disableOriginalConstructor()
-                        ->onlyMethods(
-                            [
-                                'getObject',
-                                'getUser',
-                                'validate',
-                            ]
-                        )
-                        ->getMock()
+        $mockJWT = $this
+            ->getMockBuilder(JWTToken::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getObject',
+                    'getUser',
+                    'validate',
+                ]
+            )
+            ->getMock()
         ;
         $mockJWT->method('getObject')->willReturn($mockToken);
-        $mockJWT->method('getUser')->willReturn($user);
+        $mockJWT->method('getUser')->willReturn($domainUser);
         $mockJWT->method('validate')->willReturn($errors);
 
 
@@ -122,36 +130,39 @@ final class RefreshPostServiceTest extends AbstractUnitTestCase
         /**
          * Set up mock services
          */
-        $mockItem = $this->getMockBuilder(Item::class)
-                         ->disableOriginalConstructor()
-                         ->onlyMethods(
-                             [
-                                 'get',
-                             ]
-                         )
-                         ->getMock()
+        $mockItem = $this
+            ->getMockBuilder(Item::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'get',
+                ]
+            )
+            ->getMock()
         ;
         $mockItem->method('get')->willReturn(false);
 
-        $mockToken = $this->getMockBuilder(Token::class)
-                          ->disableOriginalConstructor()
-                          ->onlyMethods(
-                              [
-                                  'getClaims',
-                              ]
-                          )
-                          ->getMock()
+        $mockToken = $this
+            ->getMockBuilder(Token::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getClaims',
+                ]
+            )
+            ->getMock()
         ;
         $mockToken->method('getClaims')->willReturn($mockItem);
 
-        $mockJWT = $this->getMockBuilder(JWTToken::class)
-                        ->disableOriginalConstructor()
-                        ->onlyMethods(
-                            [
-                                'getObject',
-                            ]
-                        )
-                        ->getMock()
+        $mockJWT = $this
+            ->getMockBuilder(JWTToken::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getObject',
+                ]
+            )
+            ->getMock()
         ;
         $mockJWT->method('getObject')->willReturn($mockToken);
 
@@ -231,40 +242,43 @@ final class RefreshPostServiceTest extends AbstractUnitTestCase
         /**
          * Set up mock services
          */
-        $mockItem = $this->getMockBuilder(Item::class)
-                         ->disableOriginalConstructor()
-                         ->onlyMethods(
-                             [
-                                 'get',
-                             ]
-                         )
-                         ->getMock()
+        $mockItem = $this
+            ->getMockBuilder(Item::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'get',
+                ]
+            )
+            ->getMock()
         ;
         $mockItem->method('get')->willReturn(true);
 
-        $mockToken = $this->getMockBuilder(Token::class)
-                          ->disableOriginalConstructor()
-                          ->onlyMethods(
-                              [
-                                  'getClaims',
-                              ]
-                          )
-                          ->getMock()
+        $mockToken = $this
+            ->getMockBuilder(Token::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getClaims',
+                ]
+            )
+            ->getMock()
         ;
         $mockToken->method('getClaims')->willReturn($mockItem);
 
-        $mockJWT = $this->getMockBuilder(JWTToken::class)
-                        ->disableOriginalConstructor()
-                        ->onlyMethods(
-                            [
-                                'getObject',
-                                'getUser',
-                            ]
-                        )
-                        ->getMock()
+        $mockJWT = $this
+            ->getMockBuilder(JWTToken::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getObject',
+                    'getUser',
+                ]
+            )
+            ->getMock()
         ;
         $mockJWT->method('getObject')->willReturn($mockToken);
-        $mockJWT->method('getUser')->willReturn([]);
+        $mockJWT->method('getUser')->willReturn(null);
 
 
         /**

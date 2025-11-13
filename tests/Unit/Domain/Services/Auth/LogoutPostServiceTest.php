@@ -14,15 +14,16 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Services\Auth;
 
 use PayloadInterop\DomainStatus;
-use Phalcon\Api\Domain\Components\Cache\Cache;
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
-use Phalcon\Api\Domain\Components\Encryption\JWTToken;
-use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Infrastructure\Constants\Cache as CacheConstants;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\Encryption\JWTToken;
+use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Services\Auth\LoginPostService;
 use Phalcon\Api\Domain\Services\Auth\LogoutPostService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
+use Phalcon\Cache\Cache;
 use Phalcon\Encryption\Security\JWT\Token\Item;
 use Phalcon\Encryption\Security\JWT\Token\Token;
 use PHPUnit\Framework\Attributes\BackupGlobals;
@@ -51,49 +52,56 @@ final class LogoutPostServiceTest extends AbstractUnitTestCase
 
     public function testServiceInvalidToken(): void
     {
-        $user   = $this->getNewUserData();
-        $errors = [
+        /** @var UserMapper $userMapper */
+        $userMapper     = $this->container->get(Container::USER_MAPPER);
+        $user           = $this->getNewUserData();
+        $user['usr_id'] = 1;
+        $domainUser     = $userMapper->domain($user);
+        $errors         = [
             ['Incorrect token data'],
         ];
 
         /**
          * Set up mock services
          */
-        $mockItem = $this->getMockBuilder(Item::class)
-                         ->disableOriginalConstructor()
-                         ->onlyMethods(
-                             [
-                                 'get',
-                             ]
-                         )
-                         ->getMock()
+        $mockItem = $this
+            ->getMockBuilder(Item::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'get',
+                ]
+            )
+            ->getMock()
         ;
         $mockItem->method('get')->willReturn(true);
 
-        $mockToken = $this->getMockBuilder(Token::class)
-                          ->disableOriginalConstructor()
-                          ->onlyMethods(
-                              [
-                                  'getClaims',
-                              ]
-                          )
-                          ->getMock()
+        $mockToken = $this
+            ->getMockBuilder(Token::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getClaims',
+                ]
+            )
+            ->getMock()
         ;
         $mockToken->method('getClaims')->willReturn($mockItem);
 
-        $mockJWT = $this->getMockBuilder(JWTToken::class)
-                        ->disableOriginalConstructor()
-                        ->onlyMethods(
-                            [
-                                'getObject',
-                                'getUser',
-                                'validate',
-                            ]
-                        )
-                        ->getMock()
+        $mockJWT = $this
+            ->getMockBuilder(JWTToken::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getObject',
+                    'getUser',
+                    'validate',
+                ]
+            )
+            ->getMock()
         ;
         $mockJWT->method('getObject')->willReturn($mockToken);
-        $mockJWT->method('getUser')->willReturn($user);
+        $mockJWT->method('getUser')->willReturn($domainUser);
         $mockJWT->method('validate')->willReturn($errors);
 
 
@@ -124,36 +132,39 @@ final class LogoutPostServiceTest extends AbstractUnitTestCase
         /**
          * Set up mock services
          */
-        $mockItem = $this->getMockBuilder(Item::class)
-                         ->disableOriginalConstructor()
-                         ->onlyMethods(
-                             [
-                                 'get',
-                             ]
-                         )
-                         ->getMock()
+        $mockItem = $this
+            ->getMockBuilder(Item::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'get',
+                ]
+            )
+            ->getMock()
         ;
         $mockItem->method('get')->willReturn(false);
 
-        $mockToken = $this->getMockBuilder(Token::class)
-                          ->disableOriginalConstructor()
-                          ->onlyMethods(
-                              [
-                                  'getClaims',
-                              ]
-                          )
-                          ->getMock()
+        $mockToken = $this
+            ->getMockBuilder(Token::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getClaims',
+                ]
+            )
+            ->getMock()
         ;
         $mockToken->method('getClaims')->willReturn($mockItem);
 
-        $mockJWT = $this->getMockBuilder(JWTToken::class)
-                        ->disableOriginalConstructor()
-                        ->onlyMethods(
-                            [
-                                'getObject',
-                            ]
-                        )
-                        ->getMock()
+        $mockJWT = $this
+            ->getMockBuilder(JWTToken::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getObject',
+                ]
+            )
+            ->getMock()
         ;
         $mockJWT->method('getObject')->willReturn($mockToken);
 
@@ -185,14 +196,14 @@ final class LogoutPostServiceTest extends AbstractUnitTestCase
 
     public function testServiceSuccess(): void
     {
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
         /** @var LogoutPostService $service */
         $logoutService = $this->container->get(Container::AUTH_LOGOUT_POST_SERVICE);
         /** @var Cache $cache */
         $cache = $this->container->getShared(Container::CACHE);
         /** @var LoginPostService $service */
-        $service = $this->container->get(Container::AUTH_LOGIN_POST_SERVICE);
-        /** @var TransportRepository $transport */
-        $transport = $this->container->getShared(Container::REPOSITORY_TRANSPORT);
+        $service   = $this->container->get(Container::AUTH_LOGIN_POST_SERVICE);
         $migration = new UsersMigration($this->getConnection());
 
         /**
@@ -226,14 +237,14 @@ final class LogoutPostServiceTest extends AbstractUnitTestCase
         $this->assertTrue($actual);
 
         $token      = $data['jwt']['token'];
-        $domainUser = $transport->newUser($dbUser);
-        $tokenKey   = $cache->getCacheTokenKey($domainUser, $token);
+        $domainUser = $userMapper->domain($dbUser);
+        $tokenKey   = CacheConstants::getCacheTokenKey($domainUser, $token);
 
         $actual = $cache->has($tokenKey);
         $this->assertTrue($actual);
 
         $refreshToken = $data['jwt']['refreshToken'];
-        $tokenKey     = $cache->getCacheTokenKey($domainUser, $refreshToken);
+        $tokenKey     = CacheConstants::getCacheTokenKey($domainUser, $refreshToken);
 
         $actual = $cache->has($tokenKey);
         $this->assertTrue($actual);
@@ -271,43 +282,50 @@ final class LogoutPostServiceTest extends AbstractUnitTestCase
 
     public function testServiceWrongUser(): void
     {
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $domainUser = $userMapper->domain([]);
+
         /**
          * Set up mock services
          */
-        $mockItem = $this->getMockBuilder(Item::class)
-                         ->disableOriginalConstructor()
-                         ->onlyMethods(
-                             [
-                                 'get',
-                             ]
-                         )
-                         ->getMock()
+        $mockItem = $this
+            ->getMockBuilder(Item::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'get',
+                ]
+            )
+            ->getMock()
         ;
         $mockItem->method('get')->willReturn(true);
 
-        $mockToken = $this->getMockBuilder(Token::class)
-                          ->disableOriginalConstructor()
-                          ->onlyMethods(
-                              [
-                                  'getClaims',
-                              ]
-                          )
-                          ->getMock()
+        $mockToken = $this
+            ->getMockBuilder(Token::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getClaims',
+                ]
+            )
+            ->getMock()
         ;
         $mockToken->method('getClaims')->willReturn($mockItem);
 
-        $mockJWT = $this->getMockBuilder(JWTToken::class)
-                        ->disableOriginalConstructor()
-                        ->onlyMethods(
-                            [
-                                'getObject',
-                                'getUser',
-                            ]
-                        )
-                        ->getMock()
+        $mockJWT = $this
+            ->getMockBuilder(JWTToken::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(
+                [
+                    'getObject',
+                    'getUser',
+                ]
+            )
+            ->getMock()
         ;
         $mockJWT->method('getObject')->willReturn($mockToken);
-        $mockJWT->method('getUser')->willReturn([]);
+        $mockJWT->method('getUser')->willReturn(null);
 
 
         /**

@@ -13,9 +13,10 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Services\Auth;
 
+use Faker\Factory;
 use PayloadInterop\DomainStatus;
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Services\Auth\LoginPostService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
@@ -110,6 +111,34 @@ final class LoginPostServiceTest extends AbstractUnitTestCase
     }
 
     public function testServiceWrongCredentials(): void
+    {
+        $faker = Factory::create();
+        /** @var LoginPostService $service */
+        $service = $this->container->get(Container::AUTH_LOGIN_POST_SERVICE);
+
+        /**
+         * Issue a wrong password
+         */
+        $payload = [
+            'email'    => $faker->email(),
+            'password' => $faker->password(),
+        ];
+
+        $payload = $service->__invoke($payload);
+
+        $expected = DomainStatus::UNAUTHORIZED;
+        $actual   = $payload->getStatus();
+        $this->assertSame($expected, $actual);
+
+        $actual = $payload->getResult();
+        $this->assertArrayHasKey('errors', $actual);
+
+        $expected = HttpCodesEnum::AppIncorrectCredentials->error();
+        $actual   = $actual['errors'][0];
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testServiceWrongCredentialsForUser(): void
     {
         /** @var LoginPostService $service */
         $service   = $this->container->get(Container::AUTH_LOGIN_POST_SERVICE);

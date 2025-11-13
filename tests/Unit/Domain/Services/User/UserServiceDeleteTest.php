@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Services\User;
 
 use PayloadInterop\DomainStatus;
-use Phalcon\Api\Domain\Components\Container;
+use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Services\User\UserDeleteService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
@@ -76,9 +76,7 @@ final class UserServiceDeleteTest extends AbstractUnitTestCase
 
         $errors = $actual['errors'];
 
-        $expected = [
-            'Record(s) not found',
-        ];
+        $expected = [['Record(s) not found']];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
     }
@@ -103,9 +101,7 @@ final class UserServiceDeleteTest extends AbstractUnitTestCase
 
         $errors = $actual['errors'];
 
-        $expected = [
-            'Record(s) not found',
-        ];
+        $expected = [['Record(s) not found']];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
     }

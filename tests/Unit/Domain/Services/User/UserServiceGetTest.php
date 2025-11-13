@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Services\User;
 
 use PayloadInterop\DomainStatus;
-use Phalcon\Api\Domain\Components\Container;
+use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Services\User\UserGetService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
@@ -37,9 +37,11 @@ final class UserServiceGetTest extends AbstractUnitTestCase
         $actual = $payload->getResult();
         $this->assertArrayHasKey('errors', $actual);
 
-        $expected = 'Record(s) not found';
-        $actual   = $actual['errors'][0];
-        $this->assertStringContainsString($expected, $actual);
+        $errors = $actual['errors'];
+
+        $expected = [['Record(s) not found']];
+        $actual   = $errors;
+        $this->assertSame($expected, $actual);
     }
 
     public function testServiceWithUserId(): void
@@ -155,8 +157,10 @@ final class UserServiceGetTest extends AbstractUnitTestCase
         $actual = $payload->getResult();
         $this->assertArrayHasKey('errors', $actual);
 
-        $expected = 'Record(s) not found';
-        $actual   = $actual['errors'][0];
-        $this->assertStringContainsString($expected, $actual);
+        $errors = $actual['errors'];
+
+        $expected = [['Record(s) not found']];
+        $actual   = $errors;
+        $this->assertSame($expected, $actual);
     }
 }

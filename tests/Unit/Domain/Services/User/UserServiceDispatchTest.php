@@ -13,13 +13,16 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Services\User;
 
-use Phalcon\Api\Domain\Components\Cache\Cache;
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
-use Phalcon\Api\Domain\Components\Enums\Http\RoutesEnum;
-use Phalcon\Api\Domain\Components\Env\EnvManager;
+use DateTimeImmutable;
+use Phalcon\Api\Domain\Infrastructure\Constants\Cache as CacheConstants;
+use Phalcon\Api\Domain\Infrastructure\Constants\Dates;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\Enums\Http\RoutesEnum;
+use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
+use Phalcon\Cache\Cache;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 
 #[BackupGlobals(true)]
@@ -31,19 +34,36 @@ final class UserServiceDispatchTest extends AbstractUnitTestCase
         $env = $this->container->getShared(Container::ENV);
         /** @var Cache $cache */
         $cache = $this->container->getShared(Container::CACHE);
-        /** @var TransportRepository $transport */
-        $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
 
         $migration  = new UsersMigration($this->getConnection());
         $dbUser     = $this->getNewUser($migration);
         $userId     = $dbUser['usr_id'];
         $token      = $this->getUserToken($dbUser);
-        $domainUser = $transport->newUser($dbUser);
+        $domainUser = $userMapper->domain($dbUser);
 
         /**
          * Store the token in the cache
          */
-        $cache->storeTokenInCache($env, $domainUser, $token);
+        $cacheKey = CacheConstants::getCacheTokenKey($domainUser, $token);
+        /** @var int $expiration */
+        $expiration     = $env->get(
+            'TOKEN_EXPIRATION',
+            CacheConstants::CACHE_TOKEN_EXPIRY,
+            'int'
+        );
+        $expirationDate = (new DateTimeImmutable())
+            ->modify('+' . $expiration . ' seconds')
+            ->format(Dates::DATE_TIME_FORMAT)
+        ;
+
+        $payload = [
+            'token'  => $token,
+            'expiry' => $expirationDate,
+        ];
+
+        $cache->set($cacheKey, $payload, $expiration);
 
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
         $_SERVER = [
@@ -75,8 +95,8 @@ final class UserServiceDispatchTest extends AbstractUnitTestCase
         $actual   = $errors;
         $this->assertSame($expected, $actual);
 
-        $user     = $transport->newUser($dbUser);
-        $expected = $user->toArray();
+        $user     = $userMapper->domain($dbUser);
+        $expected = [$userId => $user->toArray()];
         $actual   = $data;
         $this->assertSame($expected, $actual);
     }

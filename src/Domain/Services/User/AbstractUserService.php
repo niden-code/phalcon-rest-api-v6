@@ -14,18 +14,15 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Services\User;
 
 use Phalcon\Api\Domain\ADR\DomainInterface;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
-use Phalcon\Api\Domain\Components\Encryption\Security;
-use Phalcon\Filter\Filter;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Facades\UserFacade;
 
 abstract class AbstractUserService implements DomainInterface
 {
+    /**
+     * @param UserFacade $facade
+     */
     public function __construct(
-        protected readonly QueryRepository $repository,
-        protected readonly TransportRepository $transport,
-        protected readonly Filter $filter,
-        protected readonly Security $security,
+        protected readonly UserFacade $facade,
     ) {
     }
 }

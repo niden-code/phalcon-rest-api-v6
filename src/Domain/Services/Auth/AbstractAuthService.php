@@ -13,49 +13,15 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Services\Auth;
 
-use PayloadInterop\DomainStatus;
 use Phalcon\Api\Domain\ADR\DomainInterface;
-use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Components\Cache\Cache;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
-use Phalcon\Api\Domain\Components\DataSource\User\UserTypes;
-use Phalcon\Api\Domain\Components\Encryption\JWTToken;
-use Phalcon\Api\Domain\Components\Encryption\Security;
-use Phalcon\Api\Domain\Components\Env\EnvManager;
-use Phalcon\Domain\Payload;
-use Phalcon\Filter\Filter;
+use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Facades\AuthFacade;
+use Phalcon\Api\Domain\Infrastructure\DataSource\Validation\ValidatorInterface;
 
-/**
- * @phpstan-import-type TUserDbRecord from UserTypes
- * @phpstan-import-type TLoginInput from InputTypes
- * @phpstan-import-type TValidationErrors from InputTypes
- */
 abstract class AbstractAuthService implements DomainInterface
 {
     public function __construct(
-        protected readonly QueryRepository $repository,
-        protected readonly TransportRepository $transport,
-        protected readonly Cache $cache,
-        protected readonly EnvManager $env,
-        protected readonly JWTToken $jwtToken,
-        protected readonly Filter $filter,
-        protected readonly Security $security,
+        protected readonly AuthFacade $facade,
+        protected readonly ValidatorInterface $validator
     ) {
-    }
-
-    /**
-     * @param TValidationErrors $errors
-     *
-     * @return Payload
-     */
-    protected function getUnauthorizedPayload(array $errors): Payload
-    {
-        return new Payload(
-            DomainStatus::UNAUTHORIZED,
-            [
-                'errors' => $errors,
-            ]
-        );
     }
 }

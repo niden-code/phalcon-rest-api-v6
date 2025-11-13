@@ -16,15 +16,14 @@ namespace Phalcon\Api\Tests\Unit\Domain\Services\User;
 use DateTimeImmutable;
 use PayloadInterop\DomainStatus;
 use PDOException;
-use Phalcon\Api\Domain\Components\Container;
-use Phalcon\Api\Domain\Components\DataSource\QueryRepository;
-use Phalcon\Api\Domain\Components\DataSource\TransportRepository;
-use Phalcon\Api\Domain\Components\DataSource\User\UserRepository;
-use Phalcon\Api\Domain\Components\Encryption\Security;
+use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repositories\UserRepository;
 use Phalcon\Api\Domain\Services\User\UserPostService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
-use Phalcon\Filter\Filter;
 use PHPUnit\Framework\Attributes\BackupGlobals;
+
+use function htmlspecialchars;
 
 #[BackupGlobals(true)]
 final class UserServicePostTest extends AbstractUnitTestCase
@@ -41,45 +40,23 @@ final class UserServicePostTest extends AbstractUnitTestCase
             )
             ->getMock()
         ;
-        $userRepository
-            ->method('insert')
-            ->willReturn(0)
-        ;
+        $userRepository->method('insert')->willReturn(0);
 
-        $repository = $this
-            ->getMockBuilder(QueryRepository::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(
-                [
-                    'user',
-                ]
-            )
-            ->getMock()
-        ;
-        $repository
-            ->method('user')
-            ->willReturn($userRepository)
-        ;
-
-        /**
-         * Difference of achieving the same thing - see test above on
-         * how the class is used without getting it from the DI container
-         */
-        $this->container->setShared(Container::REPOSITORY, $repository);
+        $this->container->setShared(Container::USER_REPOSITORY, $userRepository);
 
         /** @var UserPostService $service */
         $service = $this->container->get(Container::USER_POST_SERVICE);
-        /** @var TransportRepository $service */
-        $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
 
-        $userData = $this->getNewUserData();
+        $userData           = $this->getNewUserData();
+        $userData['usr_id'] = 1;
 
         /**
          * $userData is a db record. We need a domain object here
          */
-        $domainUser = $transport->newUser($userData);
+        $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = $domainData[0];
 
         $payload = $service->__invoke($domainData);
 
@@ -92,7 +69,7 @@ final class UserServicePostTest extends AbstractUnitTestCase
 
         $errors = $actual['errors'];
 
-        $expected = ['Cannot create database record: No id returned'];
+        $expected = [['Cannot create database record: No id returned']];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
     }
@@ -114,38 +91,21 @@ final class UserServicePostTest extends AbstractUnitTestCase
             ->willThrowException(new PDOException('abcde'))
         ;
 
-        $repository = $this
-            ->getMockBuilder(QueryRepository::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(
-                [
-                    'user',
-                ]
-            )
-            ->getMock()
-        ;
-        $repository
-            ->method('user')
-            ->willReturn($userRepository)
-        ;
+        $this->container->setShared(Container::USER_REPOSITORY, $userRepository);
 
-        /** @var Filter $filter */
-        $filter = $this->container->get(Container::FILTER);
-        /** @var Security $security */
-        $security = $this->container->get(Container::SECURITY);
-        /** @var TransportRepository $transport */
-        $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
+        /** @var UserPostService $service */
+        $service = $this->container->get(Container::USER_POST_SERVICE);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
 
-        $service = new UserPostService($repository, $transport, $filter, $security);
-
-        $userData = $this->getNewUserData();
+        $userData           = $this->getNewUserData();
+        $userData['usr_id'] = 1;
 
         /**
          * $userData is a db record. We need a domain object here
          */
-        $domainUser = $transport->newUser($userData);
+        $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = $domainData[0];
 
         $payload = $service->__invoke($domainData);
 
@@ -158,7 +118,7 @@ final class UserServicePostTest extends AbstractUnitTestCase
 
         $errors = $actual['errors'];
 
-        $expected = ['Cannot create database record: abcde'];
+        $expected = [['Cannot create database record: abcde']];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
     }
@@ -167,8 +127,8 @@ final class UserServicePostTest extends AbstractUnitTestCase
     {
         /** @var UserPostService $service */
         $service = $this->container->get(Container::USER_POST_SERVICE);
-        /** @var TransportRepository $transport */
-        $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
 
         $userData = $this->getNewUserData();
 
@@ -183,9 +143,8 @@ final class UserServicePostTest extends AbstractUnitTestCase
         /**
          * $userData is a db record. We need a domain object here
          */
-        $domainUser = $transport->newUser($userData);
+        $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = $domainData[0];
 
         $payload = $service->__invoke($domainData);
 
@@ -199,11 +158,12 @@ final class UserServicePostTest extends AbstractUnitTestCase
         $errors = $actual['errors'];
 
         $expected = [
-            ['Field email cannot be empty.'],
-            ['Field password cannot be empty.'],
-            ['Field issuer cannot be empty.'],
-            ['Field tokenPassword cannot be empty.'],
-            ['Field tokenId cannot be empty.'],
+            ['Field email is required'],
+            ['Field email must be an email address'],
+            ['Field password is required'],
+            ['Field issuer is required'],
+            ['Field tokenPassword is required'],
+            ['Field tokenId is required'],
         ];
         $actual   = $errors;
         $this->assertSame($expected, $actual);
@@ -213,8 +173,8 @@ final class UserServicePostTest extends AbstractUnitTestCase
     {
         /** @var UserPostService $service */
         $service = $this->container->get(Container::USER_POST_SERVICE);
-        /** @var TransportRepository $transport */
-        $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
 
         $userData                       = $this->getNewUserData();
         $userData['usr_created_usr_id'] = 4;
@@ -223,9 +183,8 @@ final class UserServicePostTest extends AbstractUnitTestCase
         /**
          * $userData is a db record. We need a domain object here
          */
-        $domainUser = $transport->newUser($userData);
+        $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = $domainData[0];
 
         $payload = $service->__invoke($domainData);
 
@@ -255,23 +214,23 @@ final class UserServicePostTest extends AbstractUnitTestCase
         $actual = str_starts_with($data['password'], '$argon2i$');
         $this->assertTrue($actual);
 
-        $expected = $domainData['namePrefix'];
+        $expected = htmlspecialchars($domainData['namePrefix']);
         $actual   = $data['namePrefix'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameFirst'];
+        $expected = htmlspecialchars($domainData['nameFirst']);
         $actual   = $data['nameFirst'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameMiddle'];
+        $expected = htmlspecialchars($domainData['nameMiddle']);
         $actual   = $data['nameMiddle'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameLast'];
+        $expected = htmlspecialchars($domainData['nameLast']);
         $actual   = $data['nameLast'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameSuffix'];
+        $expected = htmlspecialchars($domainData['nameSuffix']);
         $actual   = $data['nameSuffix'];
         $this->assertSame($expected, $actual);
 
@@ -287,9 +246,8 @@ final class UserServicePostTest extends AbstractUnitTestCase
         $actual   = $data['tokenId'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['preferences'];
-        $actual   = $data['preferences'];
-        $this->assertSame($expected, $actual);
+        $actual = $data['preferences'];
+        $this->assertNull($actual);
 
         $expected = $domainData['createdDate'];
         $actual   = $data['createdDate'];
@@ -314,8 +272,8 @@ final class UserServicePostTest extends AbstractUnitTestCase
         $today = $now->format('Y-m-d');
         /** @var UserPostService $service */
         $service = $this->container->get(Container::USER_POST_SERVICE);
-        /** @var TransportRepository $transport */
-        $transport = $this->container->get(Container::REPOSITORY_TRANSPORT);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(Container::USER_MAPPER);
 
         $userData = $this->getNewUserData();
         unset(
@@ -326,9 +284,8 @@ final class UserServicePostTest extends AbstractUnitTestCase
         /**
          * $userData is a db record. We need a domain object here
          */
-        $domainUser = $transport->newUser($userData);
+        $domainUser = $userMapper->domain($userData);
         $domainData = $domainUser->toArray();
-        $domainData = $domainData[0];
 
         $payload = $service->__invoke($domainData);
 
@@ -358,23 +315,23 @@ final class UserServicePostTest extends AbstractUnitTestCase
         $actual = str_starts_with($data['password'], '$argon2i$');
         $this->assertTrue($actual);
 
-        $expected = $domainData['namePrefix'];
+        $expected = htmlspecialchars($domainData['namePrefix']);
         $actual   = $data['namePrefix'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameFirst'];
+        $expected = htmlspecialchars($domainData['nameFirst']);
         $actual   = $data['nameFirst'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameMiddle'];
+        $expected = htmlspecialchars($domainData['nameMiddle']);
         $actual   = $data['nameMiddle'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameLast'];
+        $expected = htmlspecialchars($domainData['nameLast']);
         $actual   = $data['nameLast'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['nameSuffix'];
+        $expected = htmlspecialchars($domainData['nameSuffix']);
         $actual   = $data['nameSuffix'];
         $this->assertSame($expected, $actual);
 
@@ -390,9 +347,8 @@ final class UserServicePostTest extends AbstractUnitTestCase
         $actual   = $data['tokenId'];
         $this->assertSame($expected, $actual);
 
-        $expected = $domainData['preferences'];
-        $actual   = $data['preferences'];
-        $this->assertSame($expected, $actual);
+        $actual = $data['preferences'];
+        $this->assertNull($actual);
 
         $actual = $data['createdDate'];
         $this->assertStringContainsString($today, $actual);
