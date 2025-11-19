@@ -19,7 +19,6 @@ use Phalcon\Api\Responder\ResponderTypes;
 use Phalcon\Domain\Payload as PhalconPayload;
 
 use function array_key_exists;
-use function var_dump;
 
 /**
  * @phpstan-import-type TData from ResponderTypes

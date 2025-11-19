@@ -21,16 +21,19 @@ The main takeaways that we want to convey to developers are:
 - Components can be swapped out with others so the use of interfaces is essential
 - Static analysis tools (PHPStan) must not produce errors
 - Code coverage for tests must be at 100%
+                                                    
+### Videos on YouTube
 
-Part 1 https://youtu.be/f3wP_M_NFKc
-Part 2 https://youtu.be/VEZvUf_PdSY
-Part 3 https://youtu.be/LP64Doh0t4g
-Part 4 https://youtu.be/jCEZ2WMil8Q
-Part 5 https://youtu.be/syU_3cIXFMM
-Part 6 https://youtu.be/AgCbqW-leCM
-Part 7 https://youtu.be/tGV4pSyVLdI
-Part 8 https://youtu.be/GaJhNnw_1cE
-Part 9 https://youtu.be/CWofDyTdToI
+- Part 01 https://youtu.be/f3wP_M_NFKc
+- Part 02 https://youtu.be/VEZvUf_PdSY
+- Part 03 https://youtu.be/LP64Doh0t4g
+- Part 04 https://youtu.be/jCEZ2WMil8Q
+- Part 05 https://youtu.be/syU_3cIXFMM
+- Part 06 https://youtu.be/AgCbqW-leCM
+- Part 07 https://youtu.be/tGV4pSyVLdI
+- Part 08 https://youtu.be/GaJhNnw_1cE
+- Part 09 https://youtu.be/CWofDyTdToI
+- Part 10 https://youtu.be/8YUrGAbafaA
 
 ## Directory Structure
 

@@ -269,7 +269,8 @@ final class UserFacade
     }
 
     /**
-     * @param string $message
+     * @param HttpCodesEnum $item
+     * @param string        $message
      *
      * @return Payload
      */
