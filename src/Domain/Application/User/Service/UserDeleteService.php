@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Services\User;
+namespace Phalcon\Api\Domain\Application\User\Service;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\ADR\Payload;
