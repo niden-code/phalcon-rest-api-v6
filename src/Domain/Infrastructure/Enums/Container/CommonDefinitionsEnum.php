@@ -13,23 +13,37 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Infrastructure\Enums\Container;
 
+use Phalcon\Api\Domain\Infrastructure\CommandBus\CommandBus;
+use Phalcon\Api\Domain\Infrastructure\CommandBus\ContainerHandlerLocator;
 use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\Encryption\JWTToken;
 use Phalcon\Api\Domain\Infrastructure\Encryption\TokenCache;
 use Phalcon\Api\Domain\Infrastructure\Encryption\TokenManager;
+use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
+use Phalcon\Api\Responder\JsonResponder;
+use Phalcon\Cache\Cache;
 use Phalcon\Events\Manager as EventsManager;
+use Phalcon\Http\Request;
+use Phalcon\Http\Response;
 use Phalcon\Mvc\Router;
+use Phalcon\Support\Registry;
 
 /**
  * @phpstan-import-type TService from Container
  */
-enum CommonDefinitionsEnum
+enum CommonDefinitionsEnum: string implements DefinitionsEnumInterface
 {
-    case EventsManager;
-    case JWTToken;
-    case JWTTokenCache;
-    case JWTTokenManager;
-    case Router;
+    case CommandBus      = CommandBus::class;
+    case EventsManager   = Container::EVENTS_MANAGER;
+    case EnvManager      = EnvManager::class;
+    case JsonResponder   = JsonResponder::class;
+    case JWTToken        = JWTToken::class;
+    case JWTTokenCache   = TokenCache::class;
+    case JWTTokenManager = TokenManager::class;
+    case Registry        = Registry::class;
+    case Request         = Container::REQUEST;
+    case Response        = Container::RESPONSE;
+    case Router          = Container::ROUTER;
 
     /**
      * @return TService
@@ -37,6 +51,15 @@ enum CommonDefinitionsEnum
     public function definition(): array
     {
         return match ($this) {
+            self::CommandBus      => [
+                'className' => CommandBus::class,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => ContainerHandlerLocator::class,
+                    ],
+                ],
+            ],
             self::EventsManager   => [
                 'className' => EventsManager::class,
                 'calls'     => [
@@ -51,12 +74,18 @@ enum CommonDefinitionsEnum
                     ],
                 ],
             ],
+            self::EnvManager      => [
+                'className' => EnvManager::class,
+            ],
+            self::JsonResponder   => [
+                'className' => JsonResponder::class,
+            ],
             self::JWTToken        => [
                 'className' => JWTToken::class,
                 'arguments' => [
                     [
                         'type' => 'service',
-                        'name' => Container::ENV,
+                        'name' => EnvManager::class,
                     ],
                 ],
             ],
@@ -65,7 +94,7 @@ enum CommonDefinitionsEnum
                 'arguments' => [
                     [
                         'type' => 'service',
-                        'name' => Container::CACHE,
+                        'name' => Cache::class,
                     ],
                 ],
             ],
@@ -74,17 +103,26 @@ enum CommonDefinitionsEnum
                 'arguments' => [
                     [
                         'type' => 'service',
-                        'name' => Container::JWT_TOKEN_CACHE,
+                        'name' => TokenCache::class,
                     ],
                     [
                         'type' => 'service',
-                        'name' => Container::ENV,
+                        'name' => EnvManager::class,
                     ],
                     [
                         'type' => 'service',
-                        'name' => Container::JWT_TOKEN,
+                        'name' => JWTToken::class,
                     ],
                 ],
+            ],
+            self::Registry        => [
+                'className' => Registry::class,
+            ],
+            self::Request         => [
+                'className' => Request::class,
+            ],
+            self::Response        => [
+                'className' => Response::class,
             ],
             self::Router          => [
                 'className' => Router::class,
@@ -95,6 +133,15 @@ enum CommonDefinitionsEnum
                     ],
                 ],
             ]
+        };
+    }
+
+    public function isShared(): bool
+    {
+        return match ($this) {
+            self::JWTToken,
+            self::JWTTokenCache => false,
+            default             => true,
         };
     }
 }
