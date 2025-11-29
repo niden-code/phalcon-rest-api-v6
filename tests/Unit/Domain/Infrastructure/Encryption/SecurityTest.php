@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Encryption;
 
-use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\Encryption\Security;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 
@@ -22,7 +21,7 @@ final class SecurityTest extends AbstractUnitTestCase
     public function testSecurity(): void
     {
         /** @var Security $security */
-        $security = $this->container->get(Container::SECURITY);
+        $security = $this->container->get(Security::class);
         $password = $this->getStrongPassword();
 
         $hashed = $security->hash($password);

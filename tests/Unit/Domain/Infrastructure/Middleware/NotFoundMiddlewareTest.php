@@ -29,7 +29,7 @@ final class NotFoundMiddlewareTest extends AbstractUnitTestCase
     public function testBeforeNotFound(): void
     {
         $application = new Micro($this->container);
-        $middleware  = new NotFoundMiddleware();
+        $middleware  = $this->container->get(NotFoundMiddleware::class);
 
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
         $_SERVER = [
@@ -57,7 +57,7 @@ final class NotFoundMiddlewareTest extends AbstractUnitTestCase
     public function testCall(): void
     {
         $application = new Micro($this->container);
-        $middleware  = new NotFoundMiddleware();
+        $middleware  = $this->container->get(NotFoundMiddleware::class);
 
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
         $_SERVER = [

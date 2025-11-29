@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Providers;
 
-use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Cache\Cache;
 
@@ -22,7 +21,7 @@ final class CacheDataProviderTest extends AbstractUnitTestCase
     public function testCheckRegistration(): void
     {
         $expected = Cache::class;
-        $actual   = $this->container->get(Container::CACHE);
+        $actual   = $this->container->get(Cache::class);
         $this->assertInstanceOf($expected, $actual);
     }
 }

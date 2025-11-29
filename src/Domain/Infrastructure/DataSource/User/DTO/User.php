@@ -21,26 +21,26 @@ use function trim;
 /**
  * @phpstan-import-type TUser from UserTypes
  */
-final class User
+final readonly class User
 {
     public function __construct(
-        public readonly int $id,
-        public readonly int $status,
-        public readonly string $email,
-        public readonly string $password,
-        public readonly ?string $namePrefix,
-        public readonly ?string $nameFirst,
-        public readonly ?string $nameMiddle,
-        public readonly ?string $nameLast,
-        public readonly ?string $nameSuffix,
-        public readonly ?string $issuer,
-        public readonly ?string $tokenPassword,
-        public readonly ?string $tokenId,
-        public readonly ?string $preferences,
-        public readonly ?string $createdDate,
-        public readonly ?int $createdUserId,
-        public readonly ?string $updatedDate,
-        public readonly ?int $updatedUserId,
+        public int $id,
+        public int $status,
+        public string $email,
+        public string $password,
+        public ?string $namePrefix,
+        public ?string $nameFirst,
+        public ?string $nameMiddle,
+        public ?string $nameLast,
+        public ?string $nameSuffix,
+        public ?string $issuer,
+        public ?string $tokenPassword,
+        public ?string $tokenId,
+        public ?string $preferences,
+        public ?string $createdDate,
+        public ?int $createdUserId,
+        public ?string $updatedDate,
+        public ?int $updatedUserId,
     ) {
     }
 

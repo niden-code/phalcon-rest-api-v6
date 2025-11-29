@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Env\Adapters;
 
-use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\Env\Adapters\DotEnv;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
 use Phalcon\Api\Domain\Infrastructure\Exceptions\InvalidConfigurationArgumentException;
@@ -28,10 +27,10 @@ final class DotEnvTest extends AbstractUnitTestCase
         parent::setUp();
 
         /** @var EnvManager $env */
-        $env = $this->container->get(Container::ENV);
+        $env = $this->container->get(EnvManager::class);
 
         $this->envFile = $env->appPath()
-            . '/tests/Fixtures/Domain/Components/Env/';
+            . '/tests/Fixtures/Domain/Infrastructure/Env/';
     }
 
     public function testLoadExceptionForEmptyFilePath(): void

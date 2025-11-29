@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Env;
 
-use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use PHPUnit\Framework\Attributes\BackupGlobals;
@@ -24,7 +23,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
     public function testAppEnvReturnsDefault(): void
     {
         /** @var EnvManager $env */
-        $env = $this->container->getShared(Container::ENV);
+        $env = $this->container->getShared(EnvManager::class);
 
         $expected = 'development';
         $actual   = $env->appEnv();
@@ -36,7 +35,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
         $_ENV = ['APP_ENV' => 'production'];
 
         /** @var EnvManager $env */
-        $env = $this->container->getShared(Container::ENV);
+        $env = $this->container->getShared(EnvManager::class);
 
         $expected = 'production';
         $actual   = $env->appEnv();
@@ -46,7 +45,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
     public function testAppLogLevelReturnsDefault(): void
     {
         /** @var EnvManager $env */
-        $env = $this->container->getShared(Container::ENV);
+        $env = $this->container->getShared(EnvManager::class);
 
         $expected = 1;
         $actual   = $env->appLogLevel();
@@ -58,7 +57,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
         $_ENV = ['APP_LOG_LEVEL' => 5];
 
         /** @var EnvManager $env */
-        $env = $this->container->getShared(Container::ENV);
+        $env = $this->container->getShared(EnvManager::class);
 
         $expected = 5;
         $actual   = $env->appLogLevel();
@@ -68,7 +67,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
     public function testAppPathReturnsRoot(): void
     {
         /** @var EnvManager $env */
-        $env = $this->container->getShared(Container::ENV);
+        $env = $this->container->getShared(EnvManager::class);
 
         $expected = dirname(__DIR__, 5);
         $actual   = $env->appPath();
@@ -78,7 +77,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
     public function testAppTimezoneReturnsDefault(): void
     {
         /** @var EnvManager $env */
-        $env = $this->container->getShared(Container::ENV);
+        $env = $this->container->getShared(EnvManager::class);
 
         $expected = 'UTC';
         $actual   = $env->appTimezone();
@@ -90,7 +89,7 @@ final class EnvManagerTest extends AbstractUnitTestCase
         $_ENV = ['APP_TIMEZONE' => 'America/Los_Angeles'];
 
         /** @var EnvManager $env */
-        $env = $this->container->getShared(Container::ENV);
+        $env = $this->container->getShared(EnvManager::class);
 
         $expected = 'America/Los_Angeles';
         $actual   = $env->appTimezone();
@@ -100,12 +99,12 @@ final class EnvManagerTest extends AbstractUnitTestCase
     public function testGetFromDotEnvLoad(): void
     {
         /** @var EnvManager $env */
-        $env = $this->container->getShared(Container::ENV);
+        $env = $this->container->getShared(EnvManager::class);
 
         $_ENV = [
             'APP_ENV_ADAPTER'   => 'dotenv',
             'APP_ENV_FILE_PATH' => $env->appPath()
-                . '/tests/Fixtures/Domain/Components/Env/',
+                . '/tests/Fixtures/Domain/Infrastructure/Env/',
         ];
 
         $env->load();

@@ -41,7 +41,7 @@ final class DatesTest extends AbstractUnitTestCase
         $actual   = Dates::DATE_TIME_ZONE;
         $this->assertSame($expected, $actual);
 
-        $now = new DateTimeImmutable();
+        $now      = new DateTimeImmutable();
         $expected = $now->format('Y-m-d');
 
         $actual = Dates::toUTC(format: 'Y-m-d');

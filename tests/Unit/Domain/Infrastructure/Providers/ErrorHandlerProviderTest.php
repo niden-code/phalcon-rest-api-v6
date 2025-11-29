@@ -44,7 +44,7 @@ final class ErrorHandlerProviderTest extends AbstractUnitTestCase
         );
 
         /** @var EnvManager $env */
-        $env = $this->container->getShared(Container::ENV);
+        $env = $this->container->getShared(EnvManager::class);
 
         $provider = new ErrorHandlerProvider();
         $provider->register($this->container);
@@ -76,7 +76,7 @@ final class ErrorHandlerProviderTest extends AbstractUnitTestCase
         );
 
         /** @var EnvManager $env */
-        $env = $this->container->getShared(Container::ENV);
+        $env = $this->container->getShared(EnvManager::class);
 
         $provider = new ErrorHandlerProvider();
         $provider->register($this->container);
@@ -111,9 +111,9 @@ final class ErrorHandlerProviderTest extends AbstractUnitTestCase
         $_ENV['APP_LOG_LEVEL'] = 2;
 
         /** @var Logger $logger */
-        $logger = $this->container->getShared(Container::LOGGER);
+        $logger = $this->container->getShared(Logger::class);
         /** @var EnvManager $env */
-        $env = $this->container->getShared(Container::ENV);
+        $env = $this->container->getShared(EnvManager::class);
 
         /** @var string $logName */
         $logName = $env->get('LOG_FILENAME', 'rest-api');

@@ -14,9 +14,8 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\DataSource\User\DTO;
 
 use Faker\Factory as FakerFactory;
-use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\DTO\UserInput;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Sanitizers\UserSanitizer;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Sanitizer\UserSanitizer;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 
 use function json_encode;
@@ -26,10 +25,9 @@ final class UserInputTest extends AbstractUnitTestCase
     public function testToArray(): void
     {
         /** @var UserSanitizer $sanitizer */
-        $sanitizer = $this->container->get(Container::USER_SANITIZER);
+        $sanitizer = $this->container->get(UserSanitizer::class);
         $faker     = FakerFactory::create();
 
-        // Build an input with many fields present
         $input = [
             'id'            => $faker->numberBetween(1, 1000),
             'status'        => $faker->numberBetween(0, 9),
@@ -44,9 +42,9 @@ final class UserInputTest extends AbstractUnitTestCase
             'tokenPassword' => $faker->password(),
             'tokenId'       => $faker->uuid(),
             'preferences'   => json_encode(['k' => $faker->word()]),
-            'createdDate'   => $faker->date('Y-m-d'),
+            'createdDate'   => $faker->date(),
             'createdUserId' => (string)$faker->numberBetween(1, 1000), // string to ensure ABSINT cast
-            'updatedDate'   => $faker->date('Y-m-d'),
+            'updatedDate'   => $faker->date(),
             'updatedUserId' => (string)$faker->numberBetween(1, 1000), // string to ensure ABSINT cast
         ];
 

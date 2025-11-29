@@ -24,16 +24,16 @@ final class InputTest extends TestCase
 {
     public function testInvoke(): void
     {
-        $faker = Factory::create();
+        $faker    = Factory::create();
         $postData = [
             'post1' => $faker->word(),
             'post2' => $faker->word(),
         ];
-        $getData = [
+        $getData  = [
             'get1' => $faker->word(),
             'get2' => $faker->word(),
         ];
-        $putData = [
+        $putData  = [
             'put1' => $faker->word(),
             'put2' => $faker->word(),
         ];
@@ -63,7 +63,7 @@ final class InputTest extends TestCase
             'put1'  => $putData['put1'],
             'put2'  => $putData['put2'],
         ];
-        $actual = $input->__invoke($mockRequest);
+        $actual   = $input->__invoke($mockRequest);
         $this->assertSame($expected, $actual);
     }
 }

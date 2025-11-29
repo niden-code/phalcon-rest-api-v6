@@ -17,6 +17,7 @@ use Phalcon\Api\Action\ActionHandler;
 use Phalcon\Api\Domain\ADR\DomainInterface;
 use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\RoutesEnum;
+use Phalcon\Api\Responder\JsonResponder;
 use Phalcon\Api\Responder\ResponderInterface;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
@@ -82,7 +83,7 @@ class RouterProvider implements ServiceProviderInterface
         /** @var ResponseInterface $response */
         $response = $application->getService(Container::RESPONSE);
         /** @var ResponderInterface $responder */
-        $responder = $application->getService(Container::RESPONDER_JSON);
+        $responder = $application->getService(JsonResponder::class);
 
         $routes = RoutesEnum::cases();
         foreach ($routes as $route) {

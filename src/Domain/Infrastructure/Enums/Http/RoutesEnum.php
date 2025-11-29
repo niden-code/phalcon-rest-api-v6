@@ -13,7 +13,20 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Infrastructure\Enums\Http;
 
-use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Application\Auth\Service\AuthLoginPostService;
+use Phalcon\Api\Domain\Application\Auth\Service\AuthLogoutPostService;
+use Phalcon\Api\Domain\Application\Auth\Service\AuthRefreshPostService;
+use Phalcon\Api\Domain\Application\User\Service\UserDeleteService;
+use Phalcon\Api\Domain\Application\User\Service\UserGetService;
+use Phalcon\Api\Domain\Application\User\Service\UserPostService;
+use Phalcon\Api\Domain\Application\User\Service\UserPutService;
+use Phalcon\Api\Domain\Infrastructure\Middleware\HealthMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Middleware\NotFoundMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenClaimsMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenPresenceMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenRevokedMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenStructureMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenUserMiddleware;
 
 use function str_replace;
 
@@ -23,15 +36,14 @@ use function str_replace;
 enum RoutesEnum: int
 {
     /**
+     * Methods
+     */
+    public const DELETE = 'delete';
+    /**
      * Events
      */
     public const EVENT_BEFORE = 'before';
     public const EVENT_FINISH = 'finish';
-
-    /**
-     * Methods
-     */
-    public const DELETE = 'delete';
     public const GET    = 'get';
     public const POST   = 'post';
     public const PUT    = 'put';
@@ -75,13 +87,13 @@ enum RoutesEnum: int
     public static function middleware(): array
     {
         return [
-            Container::MIDDLEWARE_NOT_FOUND                => self::EVENT_BEFORE,
-            Container::MIDDLEWARE_HEALTH                   => self::EVENT_BEFORE,
-            Container::MIDDLEWARE_VALIDATE_TOKEN_PRESENCE  => self::EVENT_BEFORE,
-            Container::MIDDLEWARE_VALIDATE_TOKEN_STRUCTURE => self::EVENT_BEFORE,
-            Container::MIDDLEWARE_VALIDATE_TOKEN_USER      => self::EVENT_BEFORE,
-            Container::MIDDLEWARE_VALIDATE_TOKEN_CLAIMS    => self::EVENT_BEFORE,
-            Container::MIDDLEWARE_VALIDATE_TOKEN_REVOKED   => self::EVENT_BEFORE,
+            NotFoundMiddleware::class               => self::EVENT_BEFORE,
+            HealthMiddleware::class                 => self::EVENT_BEFORE,
+            ValidateTokenPresenceMiddleware::class  => self::EVENT_BEFORE,
+            ValidateTokenStructureMiddleware::class => self::EVENT_BEFORE,
+            ValidateTokenUserMiddleware::class      => self::EVENT_BEFORE,
+            ValidateTokenClaimsMiddleware::class    => self::EVENT_BEFORE,
+            ValidateTokenRevokedMiddleware::class   => self::EVENT_BEFORE,
         ];
     }
 
@@ -106,13 +118,13 @@ enum RoutesEnum: int
     public function service(): string
     {
         return match ($this) {
-            self::authLoginPost   => Container::AUTH_LOGIN_POST_SERVICE,
-            self::authLogoutPost  => Container::AUTH_LOGOUT_POST_SERVICE,
-            self::authRefreshPost => Container::AUTH_REFRESH_POST_SERVICE,
-            self::userDelete      => Container::USER_DELETE_SERVICE,
-            self::userGet         => Container::USER_GET_SERVICE,
-            self::userPost        => Container::USER_POST_SERVICE,
-            self::userPut         => Container::USER_PUT_SERVICE,
+            self::authLoginPost   => AuthLoginPostService::class,
+            self::authLogoutPost  => AuthLogoutPostService::class,
+            self::authRefreshPost => AuthRefreshPostService::class,
+            self::userDelete      => UserDeleteService::class,
+            self::userGet         => UserGetService::class,
+            self::userPost        => UserPostService::class,
+            self::userPut         => UserPutService::class,
         };
     }
 
