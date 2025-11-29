@@ -18,6 +18,8 @@ use Phalcon\Api\Domain\Application\User\Service\UserGetService;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 
+use function array_key_first;
+
 final class UserServiceGetTest extends AbstractUnitTestCase
 {
     public function testServiceEmptyUserId(): void

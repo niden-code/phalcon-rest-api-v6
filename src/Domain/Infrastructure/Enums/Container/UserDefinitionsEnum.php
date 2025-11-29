@@ -106,56 +106,14 @@ enum UserDefinitionsEnum: string implements DefinitionsEnumInterface
                     ],
                 ],
             ],
-            self::UserPostHandler     => [
-                'className' => UserPostHandler::class,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => UserValidator::class,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => UserMapper::class,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => UserRepository::class,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => Registry::class,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => Security::class,
-                    ],
-                ],
-            ],
-            self::UserPutHandler      => [
-                'className' => UserPutHandler::class,
-                'arguments' => [
-                    [
-                        'type' => 'service',
-                        'name' => UserValidatorUpdate::class,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => UserMapper::class,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => UserRepository::class,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => Registry::class,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => Security::class,
-                    ],
-                ],
-            ],
+            self::UserPostHandler     => $this->getServicePutPost(
+                UserPostHandler::class,
+                UserValidator::class
+            ),
+            self::UserPutHandler      => $this->getServicePutPost(
+                UserPutHandler::class,
+                UserValidatorUpdate::class
+            ),
             self::UserMapper          => [
                 'className' => UserMapper::class,
             ],
@@ -204,6 +162,41 @@ enum UserDefinitionsEnum: string implements DefinitionsEnumInterface
                 [
                     'type' => 'service',
                     'name' => UserFacade::class,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param class-string $className
+     * @param class-string $validatorName
+     *
+     * @return TService
+     */
+    private function getServicePutPost(string $className, string $validatorName): array
+    {
+        return [
+            'className' => $className,
+            'arguments' => [
+                [
+                    'type' => 'service',
+                    'name' => $validatorName,
+                ],
+                [
+                    'type' => 'service',
+                    'name' => UserMapper::class,
+                ],
+                [
+                    'type' => 'service',
+                    'name' => UserRepository::class,
+                ],
+                [
+                    'type' => 'service',
+                    'name' => Registry::class,
+                ],
+                [
+                    'type' => 'service',
+                    'name' => Security::class,
                 ],
             ],
         ];

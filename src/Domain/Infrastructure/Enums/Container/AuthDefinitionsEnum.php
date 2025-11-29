@@ -146,7 +146,7 @@ enum AuthDefinitionsEnum: string implements DefinitionsEnumInterface
     }
 
     /**
-     * @param string $className
+     * @param class-string $className
      *
      * @return TService
      */

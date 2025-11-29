@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Infrastructure\Middleware;
 
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repository\UserRepository;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repository\UserRepositoryInterface;
 use Phalcon\Api\Domain\Infrastructure\Encryption\TokenManager;
 use Phalcon\Api\Domain\Infrastructure\Encryption\TokenManagerInterface;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
@@ -36,7 +37,7 @@ final class ValidateTokenUserMiddleware extends AbstractMiddleware
      */
     public function call(Micro $application): bool
     {
-        /** @var UserRepository $repository */
+        /** @var UserRepositoryInterface $repository */
         $repository = $application->getSharedService(UserRepository::class);
         /** @var Registry $registry */
         $registry = $application->getSharedService(Registry::class);

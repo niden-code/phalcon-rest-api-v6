@@ -23,6 +23,10 @@ use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 use Phalcon\Support\Registry;
 
+use function date;
+use function str_starts_with;
+use function strip_tags;
+
 final class UserServicePutTest extends AbstractUnitTestCase
 {
     public function testServiceFailureNoIdReturned(): void
@@ -313,23 +317,23 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $actual = str_starts_with($data['password'], '$argon2i$');
         $this->assertTrue($actual);
 
-        $expected = htmlspecialchars($domainData['namePrefix']);
+        $expected = strip_tags($domainData['namePrefix']);
         $actual   = $data['namePrefix'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameFirst']);
+        $expected = strip_tags($domainData['nameFirst']);
         $actual   = $data['nameFirst'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameMiddle']);
+        $expected = strip_tags($domainData['nameMiddle']);
         $actual   = $data['nameMiddle'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameLast']);
+        $expected = strip_tags($domainData['nameLast']);
         $actual   = $data['nameLast'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameSuffix']);
+        $expected = strip_tags($domainData['nameSuffix']);
         $actual   = $data['nameSuffix'];
         $this->assertSame($expected, $actual);
 
@@ -436,23 +440,23 @@ final class UserServicePutTest extends AbstractUnitTestCase
         $actual = str_starts_with($data['password'], '$argon2i$');
         $this->assertTrue($actual);
 
-        $expected = htmlspecialchars($domainData['namePrefix']);
+        $expected = strip_tags($domainData['namePrefix']);
         $actual   = $data['namePrefix'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameFirst']);
+        $expected = strip_tags($domainData['nameFirst']);
         $actual   = $data['nameFirst'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameMiddle']);
+        $expected = strip_tags($domainData['nameMiddle']);
         $actual   = $data['nameMiddle'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameLast']);
+        $expected = strip_tags($domainData['nameLast']);
         $actual   = $data['nameLast'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameSuffix']);
+        $expected = strip_tags($domainData['nameSuffix']);
         $actual   = $data['nameSuffix'];
         $this->assertSame($expected, $actual);
 

@@ -324,23 +324,23 @@ final class UserHandlerPutTest extends AbstractUnitTestCase
         $actual = str_starts_with($data['password'], '$argon2i$');
         $this->assertTrue($actual);
 
-        $expected = htmlspecialchars($domainData['namePrefix']);
+        $expected = strip_tags($domainData['namePrefix']);
         $actual   = $data['namePrefix'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameFirst']);
+        $expected = strip_tags($domainData['nameFirst']);
         $actual   = $data['nameFirst'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameMiddle']);
+        $expected = strip_tags($domainData['nameMiddle']);
         $actual   = $data['nameMiddle'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameLast']);
+        $expected = strip_tags($domainData['nameLast']);
         $actual   = $data['nameLast'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameSuffix']);
+        $expected = strip_tags($domainData['nameSuffix']);
         $actual   = $data['nameSuffix'];
         $this->assertSame($expected, $actual);
 
@@ -449,23 +449,23 @@ final class UserHandlerPutTest extends AbstractUnitTestCase
         $actual = str_starts_with($data['password'], '$argon2i$');
         $this->assertTrue($actual);
 
-        $expected = htmlspecialchars($domainData['namePrefix']);
+        $expected = strip_tags($domainData['namePrefix']);
         $actual   = $data['namePrefix'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameFirst']);
+        $expected = strip_tags($domainData['nameFirst']);
         $actual   = $data['nameFirst'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameMiddle']);
+        $expected = strip_tags($domainData['nameMiddle']);
         $actual   = $data['nameMiddle'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameLast']);
+        $expected = strip_tags($domainData['nameLast']);
         $actual   = $data['nameLast'];
         $this->assertSame($expected, $actual);
 
-        $expected = htmlspecialchars($domainData['nameSuffix']);
+        $expected = strip_tags($domainData['nameSuffix']);
         $actual   = $data['nameSuffix'];
         $this->assertSame($expected, $actual);
 

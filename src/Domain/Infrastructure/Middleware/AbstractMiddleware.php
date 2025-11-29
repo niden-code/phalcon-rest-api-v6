@@ -89,7 +89,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
         /** @var ResponseInterface $response */
         $response = $application->getSharedService(Container::RESPONSE);
         /** @var ResponderInterface $responder */
-        $responder = $application->getService(JsonResponder::class);
+        $responder = $application->getSharedService(JsonResponder::class);
 
         $application->stop();
 

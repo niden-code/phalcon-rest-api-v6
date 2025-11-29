@@ -19,7 +19,7 @@ use Phalcon\Api\Domain\Infrastructure\Encryption\TokenManagerInterface;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
 use Phalcon\Events\Exception as EventsException;
-use Phalcon\Http\Request;
+use Phalcon\Http\RequestInterface;
 use Phalcon\Http\Response\Exception;
 use Phalcon\Mvc\Micro;
 use Phalcon\Support\Registry;
@@ -35,7 +35,7 @@ final class ValidateTokenStructureMiddleware extends AbstractMiddleware
      */
     public function call(Micro $application): bool
     {
-        /** @var Request $request */
+        /** @var RequestInterface $request */
         $request = $application->getSharedService(Container::REQUEST);
         /** @var EnvManager $env */
         $env = $application->getSharedService(EnvManager::class);

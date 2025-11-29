@@ -24,6 +24,12 @@ use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 use Phalcon\Cache\Cache;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 
+use function json_decode;
+use function ob_get_clean;
+use function ob_start;
+use function restore_error_handler;
+use function time;
+
 #[BackupGlobals(true)]
 final class UserServiceDispatchTest extends AbstractUnitTestCase
 {

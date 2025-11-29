@@ -35,6 +35,15 @@ final readonly class ContainerHandlerLocator implements HandlerLocatorInterface
     {
         $commandClass = get_class($command);
 
+        /**
+         * Phalcon\Api\Domain\Application\User\Command\UserGetCommand
+         *
+         * becomes
+         *
+         * Phalcon\Api\Domain\Application\User\Handler\UserGetHandler
+         *
+         * The location of files DOES matter
+         */
         $handlerClass = str_replace(
             'Command',
             'Handler',

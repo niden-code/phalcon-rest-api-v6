@@ -16,14 +16,14 @@ namespace Phalcon\Api\Domain\Infrastructure\DataSource\Validation;
 use Phalcon\Api\Domain\Infrastructure\CommandBus\CommandInterface;
 
 /**
- * Validator contract. Accepts a DTO or input and returns a Result.
+ * Validator contract. Accepts a Command and returns a Result.
  */
 interface ValidatorInterface
 {
     /**
-     * Validate a DTO or input structure.
+     * Validate a Command object
      *
-     * @param CommandInterface $command DTO or array
+     * @param CommandInterface $command
      *
      * @return Result
      */

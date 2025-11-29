@@ -22,6 +22,8 @@ use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repository\UserRepository;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Support\Registry;
 
+use function array_key_first;
+use function str_starts_with;
 use function strip_tags;
 
 final class UserServicePostTest extends AbstractUnitTestCase

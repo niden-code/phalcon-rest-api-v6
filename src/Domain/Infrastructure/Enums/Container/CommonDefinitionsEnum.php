@@ -138,10 +138,6 @@ enum CommonDefinitionsEnum: string implements DefinitionsEnumInterface
 
     public function isShared(): bool
     {
-        return match ($this) {
-            self::JWTToken,
-            self::JWTTokenCache => false,
-            default             => true,
-        };
+        return true;
     }
 }
