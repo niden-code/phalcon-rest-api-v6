@@ -18,7 +18,7 @@ use InvalidArgumentException;
 use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Infrastructure\Constants\Cache as CacheConstants;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\DTO\User;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repositories\UserRepositoryInterface;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repository\UserRepositoryInterface;
 use Phalcon\Api\Domain\Infrastructure\Enums\Common\FlagsEnum;
 use Phalcon\Api\Domain\Infrastructure\Enums\Common\JWTEnum;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;

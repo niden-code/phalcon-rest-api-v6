@@ -13,9 +13,8 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Encryption;
 
-use Phalcon\Api\Domain\Infrastructure\Container;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repositories\UserRepository;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mapper\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repository\UserRepository;
 use Phalcon\Api\Domain\Infrastructure\Encryption\JWTToken;
 use Phalcon\Api\Domain\Infrastructure\Exceptions\TokenValidationException;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
@@ -29,13 +28,13 @@ final class JWTTokenTest extends AbstractUnitTestCase
     {
         parent::setUp();
 
-        $this->jwtToken = $this->container->get(Container::JWT_TOKEN);
+        $this->jwtToken = $this->container->get(JWTToken::class);
     }
 
     public function testGetForUserReturnsTokenString(): void
     {
         /** @var UserMapper $userMapper */
-        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userMapper = $this->container->get(UserMapper::class);
         $userData   = $this->getUserData();
         $domainUser = $userMapper->domain($userData);
 
@@ -47,7 +46,7 @@ final class JWTTokenTest extends AbstractUnitTestCase
     public function testGetObjectReturnsPlainToken(): void
     {
         /** @var UserMapper $userMapper */
-        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userMapper = $this->container->get(UserMapper::class);
         $userData   = $this->getUserData();
         $domainUser = $userMapper->domain($userData);
 
@@ -77,7 +76,7 @@ final class JWTTokenTest extends AbstractUnitTestCase
     public function testGetUserReturnsUserArray(): void
     {
         /** @var UserMapper $userMapper */
-        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userMapper = $this->container->get(UserMapper::class);
         $userData   = $this->getUserData();
         $domainUser = $userMapper->domain($userData);
 
@@ -107,7 +106,7 @@ final class JWTTokenTest extends AbstractUnitTestCase
     public function testValidateSuccess(): void
     {
         /** @var UserMapper $userMapper */
-        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userMapper = $this->container->get(UserMapper::class);
         $userData   = $this->getUserData();
         $domainUser = $userMapper->domain($userData);
 
