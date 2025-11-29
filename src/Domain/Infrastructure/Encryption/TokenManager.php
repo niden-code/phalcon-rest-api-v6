@@ -15,7 +15,7 @@ namespace Phalcon\Api\Domain\Infrastructure\Encryption;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\DTO\User;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repositories\UserRepositoryInterface;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repository\UserRepositoryInterface;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
 use Phalcon\Encryption\Security\JWT\Token\Token;
 use Throwable;
@@ -29,11 +29,26 @@ use Throwable;
  */
 final class TokenManager implements TokenManagerInterface
 {
+    private string $errorMessage = '';
+
+    /**
+     * @param TokenCacheInterface $tokenCache
+     * @param EnvManager          $env
+     * @param JWTToken            $jwtToken
+     */
     public function __construct(
         private readonly TokenCacheInterface $tokenCache,
         private readonly EnvManager $env,
         private readonly JWTToken $jwtToken,
     ) {
+    }
+
+    /**
+     * @return string
+     */
+    public function getErrorMessage(): string
+    {
+        return $this->errorMessage;
     }
 
     /**
@@ -50,8 +65,10 @@ final class TokenManager implements TokenManagerInterface
         }
 
         try {
+            $this->errorMessage = '';
             return $this->jwtToken->getObject($token);
-        } catch (Throwable) {
+        } catch (Throwable $ex) {
+            $this->errorMessage = $ex->getMessage();
             return null;
         }
     }
