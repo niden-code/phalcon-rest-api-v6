@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Infrastructure\Middleware;
 
 use Phalcon\Api\Domain\Infrastructure\Container;
-use Phalcon\Api\Domain\Infrastructure\Encryption\JWTToken;
+use Phalcon\Api\Domain\Infrastructure\Encryption\TokenManager;
+use Phalcon\Api\Domain\Infrastructure\Encryption\TokenManagerInterface;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
-use Phalcon\Api\Domain\Infrastructure\Exceptions\TokenValidationException;
 use Phalcon\Events\Exception as EventsException;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response\Exception;
@@ -38,22 +38,21 @@ final class ValidateTokenStructureMiddleware extends AbstractMiddleware
         /** @var Request $request */
         $request = $application->getSharedService(Container::REQUEST);
         /** @var EnvManager $env */
-        $env = $application->getSharedService(Container::ENV);
-        /** @var JWTToken $jwtToken */
-        $jwtToken = $application->getSharedService(Container::JWT_TOKEN);
+        $env = $application->getSharedService(EnvManager::class);
+        /** @var TokenManagerInterface $tokenManager */
+        $tokenManager = $application->getSharedService(TokenManager::class);
 
-        try {
-            $token = $jwtToken->getObject(
-                $this->getBearerTokenFromHeader($request, $env)
-            );
-        } catch (TokenValidationException $ex) {
+        $hederToken = $this->getBearerTokenFromHeader($request, $env);
+        $tokenObject = $tokenManager->getObject($hederToken);
+
+        if (null === $tokenObject) {
             $this->halt(
                 $application,
                 HttpCodesEnum::Unauthorized->value,
                 HttpCodesEnum::Unauthorized->text(),
                 [],
                 [
-                    [$ex->getCode() => $ex->getMessage()],
+                    [$tokenManager->getErrorMessage()],
                 ]
             );
 
@@ -64,8 +63,8 @@ final class ValidateTokenStructureMiddleware extends AbstractMiddleware
          * If we are down here the token is an object and is valid
          */
         /** @var Registry $registry */
-        $registry = $application->getSharedService(Container::REGISTRY);
-        $registry->set('token', $token);
+        $registry = $application->getSharedService(Registry::class);
+        $registry->set('token', $tokenObject);
 
         return true;
     }

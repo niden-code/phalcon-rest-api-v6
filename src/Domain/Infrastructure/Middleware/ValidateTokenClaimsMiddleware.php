@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Infrastructure\Middleware;
 
-use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\DTO\User;
-use Phalcon\Api\Domain\Infrastructure\Encryption\JWTToken;
+use Phalcon\Api\Domain\Infrastructure\Encryption\TokenManager;
+use Phalcon\Api\Domain\Infrastructure\Encryption\TokenManagerInterface;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Encryption\Security\JWT\Token\Token;
 use Phalcon\Events\Exception as EventsException;
@@ -37,10 +37,10 @@ final class ValidateTokenClaimsMiddleware extends AbstractMiddleware
      */
     public function call(Micro $application): bool
     {
-        /** @var JWTToken $jwtToken */
-        $jwtToken = $application->getSharedService(Container::JWT_TOKEN);
         /** @var Registry $registry */
-        $registry = $application->getSharedService(Container::REGISTRY);
+        $registry = $application->getSharedService(Registry::class);
+        /** @var TokenManagerInterface $tokenManager */
+        $tokenManager = $application->getSharedService(TokenManager::class);
 
         /**
          * Get the token object
@@ -61,7 +61,7 @@ final class ValidateTokenClaimsMiddleware extends AbstractMiddleware
          * user stored in the session
          */
         /** @var array<int, string> $errors */
-        $errors = $jwtToken->validate($tokenObject, $sessionUser);
+        $errors = $tokenManager->validate($tokenObject, $sessionUser);
 
         if (true !== empty($errors)) {
             $this->halt(

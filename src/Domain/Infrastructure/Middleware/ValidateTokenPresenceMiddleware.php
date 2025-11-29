@@ -35,7 +35,7 @@ final class ValidateTokenPresenceMiddleware extends AbstractMiddleware
         /** @var Request $request */
         $request = $application->getSharedService(Container::REQUEST);
         /** @var EnvManager $env */
-        $env = $application->getSharedService(Container::ENV);
+        $env = $application->getSharedService(EnvManager::class);
 
         if (true === $this->isEmptyBearerToken($request, $env)) {
             $this->halt(

@@ -13,8 +13,9 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Middleware;
 
-use Phalcon\Api\Domain\Infrastructure\Container;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mapper\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\Encryption\TokenManager;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenClaimsMiddleware;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 use Phalcon\Mvc\Micro;
@@ -69,25 +70,25 @@ final class ValidateTokenClaimsMiddlewareTest extends AbstractUnitTestCase
         array $expectedErrors
     ): void {
         /** @var UserMapper $userMapper */
-        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userMapper = $this->container->get(UserMapper::class);
         $migration  = new UsersMigration($this->getConnection());
         $user       = $this->getNewUser($migration);
 
-        [$micro, $middleware, $jwtToken] = $this->setupTest();
+        [$micro, $middleware, $tokenManager] = $this->setupTest();
 
         /**
          * Make the signature non valid
          */
         $tokenUser   = array_replace($user, $userData);
         $token       = $this->getUserToken($tokenUser);
-        $tokenObject = $jwtToken->getObject($token);
+        $tokenObject = $tokenManager->getObject($token);
         $domainUser  = $userMapper->domain($user);
 
         /**
          * Store the user in the registry
          */
         /** @var Registry $registry */
-        $registry = $this->container->get(Container::REGISTRY);
+        $registry = $this->container->get(Registry::class);
         $registry->set('user', $domainUser);
         $registry->set('token', $tokenObject);
 
@@ -117,21 +118,21 @@ final class ValidateTokenClaimsMiddlewareTest extends AbstractUnitTestCase
     public function testValidateTokenClaimsSuccess(): void
     {
         /** @var UserMapper $userMapper */
-        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userMapper = $this->container->get(UserMapper::class);
         $migration  = new UsersMigration($this->getConnection());
         $user       = $this->getNewUser($migration);
         $tokenUser  = $userMapper->domain($user);
 
-        [$micro, $middleware, $jwtToken] = $this->setupTest();
+        [$micro, $middleware, $tokenManager] = $this->setupTest();
 
         $token       = $this->getUserToken($user);
-        $tokenObject = $jwtToken->getObject($token);
+        $tokenObject = $tokenManager->getObject($token);
 
         /**
          * Store the user in the registry
          */
         /** @var Registry $registry */
-        $registry = $this->container->get(Container::REGISTRY);
+        $registry = $this->container->get(Registry::class);
         $registry->set('user', $tokenUser);
         $registry->set('token', $tokenObject);
 
@@ -155,10 +156,10 @@ final class ValidateTokenClaimsMiddlewareTest extends AbstractUnitTestCase
      */
     private function setupTest(): array
     {
-        $micro      = new Micro($this->container);
-        $middleware = $this->container->get(Container::MIDDLEWARE_VALIDATE_TOKEN_CLAIMS);
-        $jwtToken   = $this->container->getShared(Container::JWT_TOKEN);
+        $micro        = new Micro($this->container);
+        $middleware   = $this->container->get(ValidateTokenClaimsMiddleware::class);
+        $tokenManager = $this->container->getShared(TokenManager::class);
 
-        return [$micro, $middleware, $jwtToken];
+        return [$micro, $middleware, $tokenManager];
     }
 }

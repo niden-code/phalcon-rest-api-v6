@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Middleware;
 
-use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenPresenceMiddleware;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Mvc\Micro;
 use PHPUnit\Framework\Attributes\BackupGlobals;
@@ -25,7 +25,7 @@ final class ValidateTokenPresenceMiddlewareTest extends AbstractUnitTestCase
     public function testValidateTokenPresenceFailure(): void
     {
         $micro      = new Micro($this->container);
-        $middleware = $this->container->get(Container::MIDDLEWARE_VALIDATE_TOKEN_PRESENCE);
+        $middleware = $this->container->get(ValidateTokenPresenceMiddleware::class);
 
         /**
          * No token exception
@@ -54,7 +54,7 @@ final class ValidateTokenPresenceMiddlewareTest extends AbstractUnitTestCase
     public function testValidateTokenPresenceSuccess(): void
     {
         $micro      = new Micro($this->container);
-        $middleware = $this->container->get(Container::MIDDLEWARE_VALIDATE_TOKEN_PRESENCE);
+        $middleware = $this->container->get(ValidateTokenPresenceMiddleware::class);
 
         /**
          * No token return
