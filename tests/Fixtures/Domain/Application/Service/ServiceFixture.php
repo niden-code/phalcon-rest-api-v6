@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Fixtures\Domain\Services;
+namespace Phalcon\Api\Tests\Fixtures\Domain\Application\Service;
 
 use Phalcon\Api\Domain\ADR\DomainInterface;
 use Phalcon\Api\Domain\ADR\Payload;

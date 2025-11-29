@@ -11,18 +11,17 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Services\User;
+namespace Phalcon\Api\Tests\Fixtures\Domain\Application\Command;
 
-use Phalcon\Api\Domain\ADR\DomainInterface;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Facades\UserFacade;
+use Phalcon\Api\Domain\Infrastructure\CommandBus\CommandInterface;
 
-abstract class AbstractUserService implements DomainInterface
+final readonly class CommandFixture implements CommandInterface
 {
     /**
-     * @param UserFacade $facade
+     * @param string|null $name
      */
     public function __construct(
-        protected readonly UserFacade $facade,
+        public ?string $name,
     ) {
     }
 }
