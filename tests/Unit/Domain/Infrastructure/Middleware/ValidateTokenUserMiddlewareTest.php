@@ -13,9 +13,10 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Middleware;
 
-use Phalcon\Api\Domain\Infrastructure\Container;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mapper\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\Encryption\JWTToken;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenUserMiddleware;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 use Phalcon\Mvc\Micro;
@@ -33,7 +34,7 @@ final class ValidateTokenUserMiddlewareTest extends AbstractUnitTestCase
         $token              = $this->getUserToken($userData);
         $tokenObject        = $jwtToken->getObject($token);
         /** @var Registry $registry */
-        $registry = $this->container->get(Container::REGISTRY);
+        $registry = $this->container->get(Registry::class);
         $registry->set('token', $tokenObject);
 
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
@@ -62,7 +63,7 @@ final class ValidateTokenUserMiddlewareTest extends AbstractUnitTestCase
     public function testValidateTokenUserSuccess(): void
     {
         /** @var UserMapper $userMapper */
-        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userMapper = $this->container->get(UserMapper::class);
         $migration  = new UsersMigration($this->getConnection());
         $user       = $this->getNewUser($migration);
         $domainUser = $userMapper->domain($user);
@@ -72,7 +73,7 @@ final class ValidateTokenUserMiddlewareTest extends AbstractUnitTestCase
         $token       = $jwtToken->getForUser($domainUser);
         $tokenObject = $jwtToken->getObject($token);
         /** @var Registry $registry */
-        $registry = $this->container->get(Container::REGISTRY);
+        $registry = $this->container->get(Registry::class);
         $registry->set('token', $tokenObject);
 
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
@@ -96,8 +97,8 @@ final class ValidateTokenUserMiddlewareTest extends AbstractUnitTestCase
     private function setupTest(): array
     {
         $micro      = new Micro($this->container);
-        $middleware = $this->container->get(Container::MIDDLEWARE_VALIDATE_TOKEN_USER);
-        $jwtToken   = $this->container->get(Container::JWT_TOKEN);
+        $middleware = $this->container->get(ValidateTokenUserMiddleware::class);
+        $jwtToken   = $this->container->get(JWTToken::class);
 
         return [$micro, $middleware, $jwtToken];
     }

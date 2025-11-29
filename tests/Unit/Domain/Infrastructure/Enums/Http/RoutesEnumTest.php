@@ -13,8 +13,21 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Enums\Http;
 
-use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Application\Auth\Service\AuthLoginPostService;
+use Phalcon\Api\Domain\Application\Auth\Service\AuthLogoutPostService;
+use Phalcon\Api\Domain\Application\Auth\Service\AuthRefreshPostService;
+use Phalcon\Api\Domain\Application\User\Service\UserDeleteService;
+use Phalcon\Api\Domain\Application\User\Service\UserGetService;
+use Phalcon\Api\Domain\Application\User\Service\UserPostService;
+use Phalcon\Api\Domain\Application\User\Service\UserPutService;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\RoutesEnum;
+use Phalcon\Api\Domain\Infrastructure\Middleware\HealthMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Middleware\NotFoundMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenClaimsMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenPresenceMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenRevokedMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenStructureMiddleware;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenUserMiddleware;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -29,7 +42,7 @@ final class RoutesEnumTest extends AbstractUnitTestCase
                 '/login',
                 '/auth/login',
                 RoutesEnum::POST,
-                Container::AUTH_LOGIN_POST_SERVICE,
+                AuthLoginPostService::class,
             ],
             [
                 RoutesEnum::authLogoutPost,
@@ -37,7 +50,7 @@ final class RoutesEnumTest extends AbstractUnitTestCase
                 '/logout',
                 '/auth/logout',
                 RoutesEnum::POST,
-                Container::AUTH_LOGOUT_POST_SERVICE,
+                AuthLogoutPostService::class,
             ],
             [
                 RoutesEnum::authRefreshPost,
@@ -45,7 +58,7 @@ final class RoutesEnumTest extends AbstractUnitTestCase
                 '/refresh',
                 '/auth/refresh',
                 RoutesEnum::POST,
-                Container::AUTH_REFRESH_POST_SERVICE,
+                AuthRefreshPostService::class,
             ],
             [
                 RoutesEnum::userDelete,
@@ -53,7 +66,7 @@ final class RoutesEnumTest extends AbstractUnitTestCase
                 '',
                 '/user',
                 RoutesEnum::DELETE,
-                Container::USER_DELETE_SERVICE,
+                UserDeleteService::class,
             ],
             [
                 RoutesEnum::userGet,
@@ -61,7 +74,7 @@ final class RoutesEnumTest extends AbstractUnitTestCase
                 '',
                 '/user',
                 RoutesEnum::GET,
-                Container::USER_GET_SERVICE,
+                UserGetService::class,
             ],
             [
                 RoutesEnum::userPost,
@@ -69,7 +82,7 @@ final class RoutesEnumTest extends AbstractUnitTestCase
                 '',
                 '/user',
                 RoutesEnum::POST,
-                Container::USER_POST_SERVICE,
+                UserPostService::class,
             ],
             [
                 RoutesEnum::userPut,
@@ -77,7 +90,7 @@ final class RoutesEnumTest extends AbstractUnitTestCase
                 '',
                 '/user',
                 RoutesEnum::PUT,
-                Container::USER_PUT_SERVICE,
+                UserPutService::class,
             ],
         ];
     }
@@ -122,13 +135,13 @@ final class RoutesEnumTest extends AbstractUnitTestCase
     public function testMiddleware(): void
     {
         $expected = [
-            Container::MIDDLEWARE_NOT_FOUND                => RoutesEnum::EVENT_BEFORE,
-            Container::MIDDLEWARE_HEALTH                   => RoutesEnum::EVENT_BEFORE,
-            Container::MIDDLEWARE_VALIDATE_TOKEN_PRESENCE  => RoutesEnum::EVENT_BEFORE,
-            Container::MIDDLEWARE_VALIDATE_TOKEN_STRUCTURE => RoutesEnum::EVENT_BEFORE,
-            Container::MIDDLEWARE_VALIDATE_TOKEN_USER      => RoutesEnum::EVENT_BEFORE,
-            Container::MIDDLEWARE_VALIDATE_TOKEN_CLAIMS    => RoutesEnum::EVENT_BEFORE,
-            Container::MIDDLEWARE_VALIDATE_TOKEN_REVOKED   => RoutesEnum::EVENT_BEFORE,
+            NotFoundMiddleware::class               => RoutesEnum::EVENT_BEFORE,
+            HealthMiddleware::class                 => RoutesEnum::EVENT_BEFORE,
+            ValidateTokenPresenceMiddleware::class  => RoutesEnum::EVENT_BEFORE,
+            ValidateTokenStructureMiddleware::class => RoutesEnum::EVENT_BEFORE,
+            ValidateTokenUserMiddleware::class      => RoutesEnum::EVENT_BEFORE,
+            ValidateTokenClaimsMiddleware::class    => RoutesEnum::EVENT_BEFORE,
+            ValidateTokenRevokedMiddleware::class   => RoutesEnum::EVENT_BEFORE,
         ];
         $actual   = RoutesEnum::middleware();
         $this->assertSame($expected, $actual);

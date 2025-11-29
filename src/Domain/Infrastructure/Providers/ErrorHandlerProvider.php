@@ -32,9 +32,9 @@ class ErrorHandlerProvider implements ServiceProviderInterface
     public function register(DiInterface $container): void
     {
         /** @var EnvManager $env */
-        $env = $container->getShared(Container::ENV);
+        $env = $container->getShared(EnvManager::class);
         /** @var Logger $logger */
-        $logger = $container->getShared(Container::LOGGER);
+        $logger = $container->getShared(Logger::class);
         /** @var int $time */
         $time = $container->getShared(Container::TIME);
 

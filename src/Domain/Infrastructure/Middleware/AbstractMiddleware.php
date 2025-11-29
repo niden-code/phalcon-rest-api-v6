@@ -16,6 +16,7 @@ namespace Phalcon\Api\Domain\Infrastructure\Middleware;
 use Phalcon\Api\Domain\ADR\Payload;
 use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
+use Phalcon\Api\Responder\JsonResponder;
 use Phalcon\Api\Responder\ResponderInterface;
 use Phalcon\Api\Responder\ResponderTypes;
 use Phalcon\Events\Exception as EventsException;
@@ -88,7 +89,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
         /** @var ResponseInterface $response */
         $response = $application->getSharedService(Container::RESPONSE);
         /** @var ResponderInterface $responder */
-        $responder = $application->getService(Container::RESPONDER_JSON);
+        $responder = $application->getSharedService(JsonResponder::class);
 
         $application->stop();
 

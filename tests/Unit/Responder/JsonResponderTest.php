@@ -13,11 +13,12 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Responder;
 
+use Phalcon\Api\Domain\ADR\Payload;
 use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Responder\JsonResponder;
 use Phalcon\Api\Responder\ResponderInterface;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
-use Phalcon\Api\Domain\ADR\Payload;
 use Phalcon\Http\ResponseInterface;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 
@@ -34,7 +35,7 @@ final class JsonResponderTest extends AbstractUnitTestCase
         /** @var ResponseInterface $response */
         $response = $this->container->getShared(Container::RESPONSE);
         /** @var ResponderInterface $responder */
-        $responder = $this->container->get(Container::RESPONDER_JSON);
+        $responder = $this->container->get(JsonResponder::class);
 
         $errorContent = uniqid('error-');
         $payload      = Payload::unauthorized([[1234 => $errorContent]]);
@@ -101,7 +102,7 @@ final class JsonResponderTest extends AbstractUnitTestCase
         /** @var ResponseInterface $response */
         $response = $this->container->getShared(Container::RESPONSE);
         /** @var ResponderInterface $responder */
-        $responder = $this->container->getShared(Container::RESPONDER_JSON);
+        $responder = $this->container->getShared(JsonResponder::class);
 
         $dataContent = uniqid('data-');
         $payload     = Payload::success([$dataContent]);

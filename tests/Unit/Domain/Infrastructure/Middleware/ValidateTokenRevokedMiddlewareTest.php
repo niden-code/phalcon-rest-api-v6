@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Middleware;
 
 use Phalcon\Api\Domain\Infrastructure\Constants\Cache as CacheConstants;
-use Phalcon\Api\Domain\Infrastructure\Container;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mapper\UserMapper;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenRevokedMiddleware;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Api\Tests\Fixtures\Domain\Migrations\UsersMigration;
 use Phalcon\Cache\Cache;
@@ -30,7 +30,7 @@ final class ValidateTokenRevokedMiddlewareTest extends AbstractUnitTestCase
     public function testValidateTokenRevokedFailureInvalidToken(): void
     {
         /** @var UserMapper $userMapper */
-        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userMapper = $this->container->get(UserMapper::class);
         $migration  = new UsersMigration($this->getConnection());
         $user       = $this->getNewUser($migration);
         $tokenUser  = $userMapper->domain($user);
@@ -43,7 +43,7 @@ final class ValidateTokenRevokedMiddlewareTest extends AbstractUnitTestCase
          * Store the user in the registry
          */
         /** @var Registry $registry */
-        $registry = $this->container->get(Container::REGISTRY);
+        $registry = $this->container->get(Registry::class);
         $registry->set('user', $tokenUser);
 
         // There is no entry in the cache for this token, so this should fail.
@@ -73,7 +73,7 @@ final class ValidateTokenRevokedMiddlewareTest extends AbstractUnitTestCase
     public function testValidateTokenRevokedSuccess(): void
     {
         /** @var UserMapper $userMapper */
-        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userMapper = $this->container->get(UserMapper::class);
         $migration  = new UsersMigration($this->getConnection());
         $user       = $this->getNewUser($migration);
         $tokenUser  = $userMapper->domain($user);
@@ -86,11 +86,11 @@ final class ValidateTokenRevokedMiddlewareTest extends AbstractUnitTestCase
          * Store the user in the registry
          */
         /** @var Registry $registry */
-        $registry = $this->container->get(Container::REGISTRY);
+        $registry = $this->container->get(Registry::class);
         $registry->set('user', $tokenUser);
 
         /** @var Cache $cache */
-        $cache       = $micro->getSharedService(Container::CACHE);
+        $cache       = $micro->getSharedService(Cache::class);
         $sessionUser = $registry->get('user');
         $cacheKey    = CacheConstants::getCacheTokenKey($sessionUser, $token);
         $payload     = [
@@ -119,7 +119,7 @@ final class ValidateTokenRevokedMiddlewareTest extends AbstractUnitTestCase
     private function setupTest(): array
     {
         $micro      = new Micro($this->container);
-        $middleware = $this->container->get(Container::MIDDLEWARE_VALIDATE_TOKEN_REVOKED);
+        $middleware = $this->container->get(ValidateTokenRevokedMiddleware::class);
 
         return [$micro, $middleware];
     }

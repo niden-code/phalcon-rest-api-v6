@@ -44,12 +44,12 @@ final class CacheTest extends AbstractUnitTestCase
         $actual   = Cache::CACHE_TOKEN_EXPIRY;
         $this->assertSame($expected, $actual);
 
-        $token = uniqid('tok-');
+        $token    = uniqid('tok-');
         $shaToken = sha1($token);
 
-        $newUser = $this->getNewUserData();
+        $newUser           = $this->getNewUserData();
         $newUser['usr_id'] = 1;
-        $domainUser = new User(
+        $domainUser        = new User(
             $newUser['usr_id'],
             $newUser['usr_status_flag'],
             $newUser['usr_email'],
@@ -70,7 +70,7 @@ final class CacheTest extends AbstractUnitTestCase
         );
 
         $expected = 'tk-' . $domainUser->id . '-' . $shaToken;
-        $actual = Cache::getCacheTokenKey($domainUser, $token);
+        $actual   = Cache::getCacheTokenKey($domainUser, $token);
         $this->assertSame($expected, $actual);
     }
 }

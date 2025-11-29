@@ -18,6 +18,7 @@ use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\DTO\User;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
+use Phalcon\Cache\Cache;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Mvc\Micro;
 use Phalcon\Support\Registry;
@@ -35,11 +36,11 @@ final class ValidateTokenRevokedMiddleware extends AbstractMiddleware
         /** @var RequestInterface $request */
         $request = $application->getSharedService(Container::REQUEST);
         /** @var CacheInterface $cache */
-        $cache = $application->getSharedService(Container::CACHE);
+        $cache = $application->getSharedService(Cache::class);
         /** @var EnvManager $env */
-        $env = $application->getSharedService(Container::ENV);
+        $env = $application->getSharedService(EnvManager::class);
         /** @var Registry $registry */
-        $registry = $application->getSharedService(Container::REGISTRY);
+        $registry = $application->getSharedService(Registry::class);
 
         /** @var User $domainUser */
         $domainUser = $registry->get('user');

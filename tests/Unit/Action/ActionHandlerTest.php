@@ -15,9 +15,10 @@ namespace Phalcon\Api\Tests\Unit\Action;
 
 use Phalcon\Api\Action\ActionHandler;
 use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Responder\JsonResponder;
 use Phalcon\Api\Responder\ResponderInterface;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
-use Phalcon\Api\Tests\Fixtures\Domain\Services\ServiceFixture;
+use Phalcon\Api\Tests\Fixtures\Domain\Application\Service\ServiceFixture;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Http\ResponseInterface;
 use PHPUnit\Framework\Attributes\BackupGlobals;
@@ -36,7 +37,7 @@ final class ActionHandlerTest extends AbstractUnitTestCase
         /** @var ResponseInterface $response */
         $response = $this->container->getShared(Container::RESPONSE);
         /** @var ResponderInterface $responder */
-        $responder = $this->container->getShared(Container::RESPONDER_JSON);
+        $responder = $this->container->getShared(JsonResponder::class);
 
         $getData = [
             'key'   => uniqid('key-'),

@@ -30,8 +30,8 @@ use function array_key_exists;
 final class Payload extends PhalconPayload
 {
     /**
-     * @param string             $status
-     * @param TPayloadDataInput  $data
+     * @param string            $status
+     * @param TPayloadDataInput $data
      * @param TPayloadDataInput $errors
      */
     private function __construct(
@@ -121,7 +121,7 @@ final class Payload extends PhalconPayload
     {
         return new self(
             status: DomainStatus::UNAUTHORIZED,
-            errors:[
+            errors: [
                 'code'    => HttpCodesEnum::Unauthorized->value,
                 'message' => HttpCodesEnum::Unauthorized->text(),
                 'data'    => [],
@@ -140,7 +140,7 @@ final class Payload extends PhalconPayload
         return new self(
             DomainStatus::UPDATED,
             [
-                'data' => $data
+                'data' => $data,
             ]
         );
     }
@@ -152,7 +152,7 @@ final class Payload extends PhalconPayload
      *
      * @param TPayloadDataInput $existing
      * @param TPayloadDataInput $element
-     * @param string $key
+     * @param string            $key
      *
      * @return TPayloadDataInput
      */

@@ -14,9 +14,8 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\DataSource\Auth\DTO;
 
 use Faker\Factory as FakerFactory;
-use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\DTO\AuthInput;
-use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Sanitizers\AuthSanitizer;
+use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Sanitizer\AuthSanitizer;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 
 final class AuthInputTest extends AbstractUnitTestCase
@@ -24,7 +23,7 @@ final class AuthInputTest extends AbstractUnitTestCase
     public function testObject(): void
     {
         /** @var AuthSanitizer $sanitizer */
-        $sanitizer = $this->container->get(Container::AUTH_SANITIZER);
+        $sanitizer = $this->container->get(AuthSanitizer::class);
         $faker     = FakerFactory::create();
 
         // Build an input with many fields present

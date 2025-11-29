@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Infrastructure\DataSource;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Infrastructure\DataSource\Interfaces\SanitizerInterface;
-use Phalcon\Api\Domain\Infrastructure\Enums\Sanitizers\SanitizersEnumInterface;
+use Phalcon\Api\Domain\Infrastructure\DataSource\Interface\SanitizerInterface;
+use Phalcon\Api\Domain\Infrastructure\Enums\Sanitizer\SanitizersEnumInterface;
 use Phalcon\Filter\FilterInterface;
 
 /**

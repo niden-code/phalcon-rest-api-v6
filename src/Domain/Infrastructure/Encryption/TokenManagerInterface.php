@@ -15,7 +15,7 @@ namespace Phalcon\Api\Domain\Infrastructure\Encryption;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\DTO\User;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repositories\UserRepositoryInterface;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repository\UserRepositoryInterface;
 use Phalcon\Encryption\Security\JWT\Token\Token;
 
 /**
@@ -28,6 +28,13 @@ use Phalcon\Encryption\Security\JWT\Token\Token;
  */
 interface TokenManagerInterface
 {
+    /**
+     * Returns the last error message
+     *
+     * @return string
+     */
+    public function getErrorMessage(): string;
+
     /**
      * Parse a token and return either null or a Token object
      *

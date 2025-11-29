@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Api\Domain\Infrastructure\DataSource;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
-use Phalcon\Api\Domain\Infrastructure\DataSource\Interfaces\SanitizerInterface;
+use Phalcon\Api\Domain\Infrastructure\DataSource\Interface\SanitizerInterface;
 
 /**
  * Base factory for value objects such as input DTOs.

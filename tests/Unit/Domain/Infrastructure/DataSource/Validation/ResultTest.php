@@ -18,18 +18,6 @@ use Phalcon\Api\Tests\AbstractUnitTestCase;
 
 final class ResultTest extends AbstractUnitTestCase
 {
-    public function testSuccessIsValidAndHasNoErrors(): void
-    {
-        $result = Result::success();
-
-        $actual = $result->isValid();
-        $this->assertTrue($actual);
-
-        $expected = [];
-        $actual   = $result->getErrors();
-        $this->assertSame($expected, $actual);
-    }
-
     public function testErrorIsInvalidAndReturnsErrors(): void
     {
         $errors = ['field' => ['must not be empty']];
@@ -48,7 +36,7 @@ final class ResultTest extends AbstractUnitTestCase
         $actual   = $result->getMeta('present');
         $this->assertSame($expected, $actual);
 
-        $actual   = $result->getMeta('uknown');
+        $actual = $result->getMeta('uknown');
         $this->assertNull($actual);
 
         $expected = 'default';
@@ -60,7 +48,7 @@ final class ResultTest extends AbstractUnitTestCase
     {
         $result = new Result();
 
-        $actual   = $result->getMeta('key');
+        $actual = $result->getMeta('key');
         $this->assertNull($actual);
 
         $result->setMeta('key', 'value');
@@ -73,6 +61,18 @@ final class ResultTest extends AbstractUnitTestCase
 
         $expected = 42;
         $actual   = $result->getMeta('key');
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testSuccessIsValidAndHasNoErrors(): void
+    {
+        $result = Result::success();
+
+        $actual = $result->isValid();
+        $this->assertTrue($actual);
+
+        $expected = [];
+        $actual   = $result->getErrors();
         $this->assertSame($expected, $actual);
     }
 }

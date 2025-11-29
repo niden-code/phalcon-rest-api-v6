@@ -89,7 +89,7 @@ abstract class AbstractUnitTestCase extends TestCase
     {
         if (null === $this->connection) {
             /** @var Connection $connection */
-            $connection = $this->container->getShared(Container::CONNECTION);
+            $connection = $this->container->getShared(Connection::class);
 
             $this->connection = $connection;
         }
@@ -146,7 +146,7 @@ abstract class AbstractUnitTestCase extends TestCase
         $faker    = Factory::create();
         $password = $fields['usr_password'] ?? $this->getStrongPassword();
         /** @var Security $security */
-        $security = $this->container->getShared(Container::SECURITY);
+        $security = $this->container->getShared(Security::class);
 
         $password = $security->hash($password);
 

@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Middleware;
 
-use Phalcon\Api\Domain\Infrastructure\Container;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mappers\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mapper\UserMapper;
 use Phalcon\Api\Domain\Infrastructure\Encryption\JWTToken;
+use Phalcon\Api\Domain\Infrastructure\Middleware\ValidateTokenStructureMiddleware;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Mvc\Micro;
 use PHPUnit\Framework\Attributes\BackupGlobals;
@@ -84,13 +84,13 @@ final class ValidateTokenStructureMiddlewareTest extends AbstractUnitTestCase
     public function testValidateTokenStructureSuccess(): void
     {
         /** @var UserMapper $userMapper */
-        $userMapper = $this->container->get(Container::USER_MAPPER);
+        $userMapper = $this->container->get(UserMapper::class);
         $userData   = $this->getNewUserData();
         $domainUser = $userMapper->domain($userData);
 
         [$micro, $middleware] = $this->setupTest();
         /** @var JWTToken $jwtToken */
-        $jwtToken = $micro->getSharedService(Container::JWT_TOKEN);
+        $jwtToken = $micro->getSharedService(JWTToken::class);
 
         $token   = $jwtToken->getForUser($domainUser);
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
@@ -114,7 +114,7 @@ final class ValidateTokenStructureMiddlewareTest extends AbstractUnitTestCase
     private function setupTest(): array
     {
         $micro      = new Micro($this->container);
-        $middleware = $this->container->get(Container::MIDDLEWARE_VALIDATE_TOKEN_STRUCTURE);
+        $middleware = $this->container->get(ValidateTokenStructureMiddleware::class);
 
         return [$micro, $middleware];
     }

@@ -16,7 +16,7 @@ namespace Phalcon\Api\Domain\Infrastructure\Middleware;
 use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Events\Exception as EventsException;
-use Phalcon\Http\Request;
+use Phalcon\Http\RequestInterface;
 use Phalcon\Http\Response\Exception;
 use Phalcon\Mvc\Micro;
 
@@ -31,7 +31,7 @@ final class HealthMiddleware extends AbstractMiddleware
      */
     public function call(Micro $application): bool
     {
-        /** @var Request $request */
+        /** @var RequestInterface $request */
         $request = $application->getSharedService(Container::REQUEST);
 
         if (

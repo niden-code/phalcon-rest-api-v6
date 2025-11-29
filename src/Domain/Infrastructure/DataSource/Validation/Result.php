@@ -26,7 +26,7 @@ final class Result
      * @param TResultMeta      $meta
      */
     public function __construct(
-        private array $errors = [],
+        private readonly array $errors = [],
         private array $meta = [],
     ) {
     }

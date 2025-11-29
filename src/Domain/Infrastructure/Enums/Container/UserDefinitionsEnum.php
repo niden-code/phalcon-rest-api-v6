@@ -13,32 +13,48 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Infrastructure\Enums\Container;
 
+use Phalcon\Api\Domain\Application\User\Command\UserCommandFactory;
+use Phalcon\Api\Domain\Application\User\Facade\UserFacade;
+use Phalcon\Api\Domain\Application\User\Handler\UserDeleteHandler;
+use Phalcon\Api\Domain\Application\User\Handler\UserGetHandler;
+use Phalcon\Api\Domain\Application\User\Handler\UserPostHandler;
+use Phalcon\Api\Domain\Application\User\Handler\UserPutHandler;
+use Phalcon\Api\Domain\Application\User\Service\UserDeleteService;
+use Phalcon\Api\Domain\Application\User\Service\UserGetService;
+use Phalcon\Api\Domain\Application\User\Service\UserPostService;
+use Phalcon\Api\Domain\Application\User\Service\UserPutService;
+use Phalcon\Api\Domain\Infrastructure\CommandBus\CommandBus;
 use Phalcon\Api\Domain\Infrastructure\Container;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Facades\UserFacade;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repositories\UserRepository;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Sanitizers\UserSanitizer;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Validators\UserValidator;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Validators\UserValidatorUpdate;
-use Phalcon\Api\Domain\Services\User\UserDeleteService;
-use Phalcon\Api\Domain\Services\User\UserGetService;
-use Phalcon\Api\Domain\Services\User\UserPostService;
-use Phalcon\Api\Domain\Services\User\UserPutService;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mapper\UserMapper;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repository\UserRepository;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Sanitizer\UserSanitizer;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Validator\UserValidator;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Validator\UserValidatorUpdate;
+use Phalcon\Api\Domain\Infrastructure\Encryption\Security;
+use Phalcon\DataMapper\Pdo\Connection;
+use Phalcon\Filter\Validation;
+use Phalcon\Support\Registry;
 
 /**
  * @phpstan-import-type TService from Container
  */
-enum UserDefinitionsEnum
+enum UserDefinitionsEnum: string implements DefinitionsEnumInterface
 {
-    case UserDelete;
-    case UserGet;
-    case UserPost;
-    case UserPut;
-    case UserFacade;
-    case UserFacadeUpdate;
-    case UserRepository;
-    case UserSanitizer;
-    case UserValidator;
-    case UserValidatorUpdate;
+    case UserCommandFactory  = UserCommandFactory::class;
+    case UserDelete          = UserDeleteService::class;
+    case UserGet             = UserGetService::class;
+    case UserPost            = UserPostService::class;
+    case UserPut             = UserPutService::class;
+    case UserFacade          = UserFacade::class;
+    case UserDeleteHandler   = UserDeleteHandler::class;
+    case UserGetHandler      = UserGetHandler::class;
+    case UserPostHandler     = UserPostHandler::class;
+    case UserPutHandler      = UserPutHandler::class;
+    case UserMapper          = UserMapper::class;
+    case UserRepository      = UserRepository::class;
+    case UserSanitizer       = UserSanitizer::class;
+    case UserValidator       = UserValidator::class;
+    case UserValidatorUpdate = UserValidatorUpdate::class;
 
     /**
      * @return TService
@@ -46,78 +62,71 @@ enum UserDefinitionsEnum
     public function definition(): array
     {
         return match ($this) {
-            self::UserDelete          => $this->getService(UserDeleteService::class),
-            self::UserGet             => $this->getService(UserGetService::class),
-            self::UserPost            => $this->getService(UserPostService::class),
-            self::UserPut             => [
-                'className' => UserPutService::class,
+            self::UserCommandFactory  => [
+                'className' => UserCommandFactory::class,
                 'arguments' => [
                     [
                         'type' => 'service',
-                        'name' => Container::USER_FACADE_UPDATE,
+                        'name' => UserSanitizer::class,
                     ],
                 ],
             ],
+            self::UserDelete          => $this->getService(UserDeleteService::class),
+            self::UserGet             => $this->getService(UserGetService::class),
+            self::UserPost            => $this->getService(UserPostService::class),
+            self::UserPut             => $this->getService(UserPutService::class),
             self::UserFacade          => [
                 'className' => UserFacade::class,
                 'arguments' => [
                     [
                         'type' => 'service',
-                        'name' => Container::USER_SANITIZER,
+                        'name' => CommandBus::class,
                     ],
                     [
                         'type' => 'service',
-                        'name' => Container::USER_VALIDATOR,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => Container::USER_MAPPER,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => Container::USER_REPOSITORY,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => Container::SECURITY,
+                        'name' => UserCommandFactory::class,
                     ],
                 ],
             ],
-            self::UserFacadeUpdate    => [
-                'className' => UserFacade::class,
+            self::UserDeleteHandler   => [
+                'className' => UserDeleteHandler::class,
                 'arguments' => [
                     [
                         'type' => 'service',
-                        'name' => Container::USER_SANITIZER,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => Container::USER_VALIDATOR_UPDATE,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => Container::USER_MAPPER,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => Container::USER_REPOSITORY,
-                    ],
-                    [
-                        'type' => 'service',
-                        'name' => Container::SECURITY,
+                        'name' => UserRepository::class,
                     ],
                 ],
+            ],
+            self::UserGetHandler      => [
+                'className' => UserGetHandler::class,
+                'arguments' => [
+                    [
+                        'type' => 'service',
+                        'name' => UserRepository::class,
+                    ],
+                ],
+            ],
+            self::UserPostHandler     => $this->getServicePutPost(
+                UserPostHandler::class,
+                UserValidator::class
+            ),
+            self::UserPutHandler      => $this->getServicePutPost(
+                UserPutHandler::class,
+                UserValidatorUpdate::class
+            ),
+            self::UserMapper          => [
+                'className' => UserMapper::class,
             ],
             self::UserRepository      => [
                 'className' => UserRepository::class,
                 'arguments' => [
                     [
                         'type' => 'service',
-                        'name' => Container::CONNECTION,
+                        'name' => Connection::class,
                     ],
                     [
                         'type' => 'service',
-                        'name' => Container::USER_MAPPER,
+                        'name' => UserMapper::class,
                     ],
                 ],
             ],
@@ -135,6 +144,11 @@ enum UserDefinitionsEnum
         };
     }
 
+    public function isShared(): bool
+    {
+        return false;
+    }
+
     /**
      * @param class-string $className
      *
@@ -147,7 +161,42 @@ enum UserDefinitionsEnum
             'arguments' => [
                 [
                     'type' => 'service',
-                    'name' => Container::USER_FACADE,
+                    'name' => UserFacade::class,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param class-string $className
+     * @param class-string $validatorName
+     *
+     * @return TService
+     */
+    private function getServicePutPost(string $className, string $validatorName): array
+    {
+        return [
+            'className' => $className,
+            'arguments' => [
+                [
+                    'type' => 'service',
+                    'name' => $validatorName,
+                ],
+                [
+                    'type' => 'service',
+                    'name' => UserMapper::class,
+                ],
+                [
+                    'type' => 'service',
+                    'name' => UserRepository::class,
+                ],
+                [
+                    'type' => 'service',
+                    'name' => Registry::class,
+                ],
+                [
+                    'type' => 'service',
+                    'name' => Security::class,
                 ],
             ],
         ];
@@ -165,7 +214,7 @@ enum UserDefinitionsEnum
             'arguments' => [
                 [
                     'type' => 'service',
-                    'name' => Container::VALIDATION,
+                    'name' => Validation::class,
                 ],
             ],
         ];

@@ -27,7 +27,7 @@ final class HealthMiddlewareTest extends AbstractUnitTestCase
     public function testCall(): void
     {
         $application = new Micro($this->container);
-        $middleware  = new HealthMiddleware();
+        $middleware  = $this->container->get(HealthMiddleware::class);
 
         $time    = $_SERVER['REQUEST_TIME_FLOAT'] ?? time();
         $_SERVER = [

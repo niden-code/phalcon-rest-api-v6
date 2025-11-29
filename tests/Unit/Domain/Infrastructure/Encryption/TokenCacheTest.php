@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\Encryption;
 
 use Phalcon\Api\Domain\Infrastructure\Constants\Cache as CacheConstants;
-use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\DTO\User;
 use Phalcon\Api\Domain\Infrastructure\Encryption\TokenCache;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
@@ -29,11 +28,11 @@ final class TokenCacheTest extends AbstractUnitTestCase
     public function testStoreAndInvalidateForUser(): void
     {
         /** @var EnvManager $env */
-        $env = $this->container->get(Container::ENV);
+        $env = $this->container->get(EnvManager::class);
         /** @var Cache $cache */
-        $cache = $this->container->get(Container::CACHE);
+        $cache = $this->container->get(Cache::class);
         /** @var TokenCache $tokenCache */
-        $tokenCache = $this->container->get(Container::JWT_TOKEN_CACHE);
+        $tokenCache = $this->container->get(TokenCache::class);
 
         /**
          * Empty cache
