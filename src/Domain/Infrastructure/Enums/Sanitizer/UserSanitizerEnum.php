@@ -57,7 +57,7 @@ enum UserSanitizerEnum implements SanitizersEnumInterface
             self::password,
             self::tokenId,
             self::tokenPassword => '', // Password will be distorted
-            default             => Filter::FILTER_STRING
+            default             => Filter::FILTER_STRIPTAGS
         };
     }
 }
