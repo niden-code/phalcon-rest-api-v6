@@ -11,23 +11,23 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Services\Auth;
+namespace Phalcon\Api\Domain\Application\Auth\Service;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\ADR\Payload;
 
 /**
- * @phpstan-import-type TAuthLogoutInput from InputTypes
+ * @phpstan-import-type TAuthRefreshInput from InputTypes
  */
-final class LogoutPostService extends AbstractAuthService
+final class AuthRefreshPostService extends AbstractAuthService
 {
     /**
-     * @param TAuthLogoutInput $input
+     * @param TAuthRefreshInput $input
      *
      * @return Payload
      */
     public function __invoke(array $input): Payload
     {
-        return $this->facade->logout($input, $this->validator);
+        return $this->facade->refresh($input);
     }
 }

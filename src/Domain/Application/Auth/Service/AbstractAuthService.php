@@ -11,17 +11,15 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Services\Auth;
+namespace Phalcon\Api\Domain\Application\Auth\Service;
 
 use Phalcon\Api\Domain\ADR\DomainInterface;
-use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Facades\AuthFacade;
-use Phalcon\Api\Domain\Infrastructure\DataSource\Validation\ValidatorInterface;
+use Phalcon\Api\Domain\Application\Auth\Facade\AuthFacade;
 
 abstract class AbstractAuthService implements DomainInterface
 {
     public function __construct(
         protected readonly AuthFacade $facade,
-        protected readonly ValidatorInterface $validator
     ) {
     }
 }

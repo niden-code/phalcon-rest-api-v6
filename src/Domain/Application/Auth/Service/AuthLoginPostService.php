@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Services\Auth;
+namespace Phalcon\Api\Domain\Application\Auth\Service;
 
 use Phalcon\Api\Domain\ADR\InputTypes;
 use Phalcon\Api\Domain\ADR\Payload;
@@ -19,7 +19,7 @@ use Phalcon\Api\Domain\ADR\Payload;
 /**
  * @phpstan-import-type TAuthLoginInput from InputTypes
  */
-final class LoginPostService extends AbstractAuthService
+final class AuthLoginPostService extends AbstractAuthService
 {
     /**
      * @param TAuthLoginInput $input
@@ -28,6 +28,6 @@ final class LoginPostService extends AbstractAuthService
      */
     public function __invoke(array $input): Payload
     {
-        return $this->facade->authenticate($input, $this->validator);
+        return $this->facade->authenticate($input);
     }
 }
