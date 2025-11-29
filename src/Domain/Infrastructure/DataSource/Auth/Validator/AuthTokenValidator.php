@@ -11,16 +11,18 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Validators;
+namespace Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Validator;
 
-use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\DTO\AuthInput;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repositories\UserRepositoryInterface;
+use Phalcon\Api\Domain\Application\Auth\Command\AuthLogoutPostCommand;
+use Phalcon\Api\Domain\Application\Auth\Command\AuthRefreshPostCommand;
+use Phalcon\Api\Domain\Infrastructure\CommandBus\CommandInterface;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repository\UserRepositoryInterface;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Validation\AbstractValidator;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Validation\Result;
 use Phalcon\Api\Domain\Infrastructure\Encryption\TokenManagerInterface;
 use Phalcon\Api\Domain\Infrastructure\Enums\Common\JWTEnum;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
-use Phalcon\Api\Domain\Infrastructure\Enums\Validators\AuthTokenValidatorEnum;
+use Phalcon\Api\Domain\Infrastructure\Enums\Validator\AuthTokenValidatorEnum;
 use Phalcon\Encryption\Security\JWT\Token\Token;
 use Phalcon\Filter\Validation\ValidationInterface;
 
@@ -40,19 +42,23 @@ final class AuthTokenValidator extends AbstractValidator
      * Validate a AuthInput and return an array of errors.
      * Empty array means valid.
      *
-     * @param AuthInput $input
+     * @param CommandInterface $command
      *
      * @return Result
      */
-    public function validate(mixed $input): Result
+    public function validate(CommandInterface $command): Result
     {
-        $errors = $this->runValidations($input);
+        $errors = $this->runValidations($command);
         if (true !== empty($errors)) {
             return Result::error([HttpCodesEnum::AppTokenNotPresent->error()]);
         }
 
+        /**
+         * @todo add the docblock for $command here
+         */
+        /** @var AuthLogoutPostCommand|AuthRefreshPostCommand $command */
         /** @var string $token */
-        $token       = $input->token;
+        $token       = $command->token;
         $tokenObject = $this->tokenManager->getObject($token);
         if (null === $tokenObject) {
             return Result::error([HttpCodesEnum::AppTokenNotValid->error()]);

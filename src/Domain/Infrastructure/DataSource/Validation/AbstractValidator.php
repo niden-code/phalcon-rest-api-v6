@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Infrastructure\DataSource\Validation;
 
-use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\DTO\AuthInput;
-use Phalcon\Api\Domain\Infrastructure\Enums\Validators\ValidatorEnumInterface;
+use Phalcon\Api\Domain\Infrastructure\CommandBus\CommandInterface;
+use Phalcon\Api\Domain\Infrastructure\Enums\Validator\ValidatorEnumInterface;
 use Phalcon\Filter\Validation\ValidationInterface;
 use Phalcon\Filter\Validation\ValidatorInterface as PhalconValidator;
 
@@ -23,18 +23,18 @@ abstract class AbstractValidator implements ValidatorInterface
     protected string $fields = '';
 
     public function __construct(
-        private ValidationInterface $validation
+        private readonly ValidationInterface $validation
     ) {
     }
 
     /**
-     * @param AuthInput $input
+     * @param CommandInterface $command
      *
      * @return list<array<int, string>>
      */
-    protected function runValidations(mixed $input): array
+    protected function runValidations(CommandInterface $command): array
     {
-        $enum     = $this->fields;
+        $enum = $this->fields;
         /** @var ValidatorEnumInterface[] $elements */
         $elements = $enum::cases();
 
@@ -43,12 +43,16 @@ abstract class AbstractValidator implements ValidatorInterface
             $validators = $element->validators();
             foreach ($validators as $validator) {
                 /** @var PhalconValidator $validatorObject */
-                $validatorObject = new $validator();
+                $validatorObject = new $validator(
+                    [
+                        'allowEmpty' => $element->allowEmpty(),
+                    ]
+                );
                 $this->validation->add($element->name, $validatorObject);
             }
         }
 
-        $this->validation->validate($input);
+        $this->validation->validate($command);
         $messages = $this->validation->getMessages();
 
         $results = [];

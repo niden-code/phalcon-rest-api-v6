@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Phalcon\Api\Domain\Infrastructure\DataSource\Validation;
 
+use Phalcon\Api\Domain\Infrastructure\CommandBus\CommandInterface;
+
 /**
  * Validator contract. Accepts a DTO or input and returns a Result.
  */
@@ -21,9 +23,9 @@ interface ValidatorInterface
     /**
      * Validate a DTO or input structure.
      *
-     * @param mixed $input DTO or array
+     * @param CommandInterface $command DTO or array
      *
      * @return Result
      */
-    public function validate(mixed $input): Result;
+    public function validate(CommandInterface $command): Result;
 }

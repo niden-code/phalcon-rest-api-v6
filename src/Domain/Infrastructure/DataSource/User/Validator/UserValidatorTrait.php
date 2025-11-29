@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Infrastructure\DataSource\User\Validators;
+namespace Phalcon\Api\Domain\Infrastructure\DataSource\User\Validator;
 
-use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\DTO\AuthInput;
+use Phalcon\Api\Domain\Infrastructure\CommandBus\CommandInterface;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Validation\Result;
 
 trait UserValidatorTrait
@@ -22,13 +22,13 @@ trait UserValidatorTrait
      * Validate a AuthInput and return an array of errors.
      * Empty array means valid.
      *
-     * @param AuthInput $input
+     * @param CommandInterface $command
      *
      * @return Result
      */
-    public function validate(mixed $input): Result
+    public function validate(CommandInterface $command): Result
     {
-        $errors = $this->runValidations($input);
+        $errors = $this->runValidations($command);
         if (true !== empty($errors)) {
             return Result::error($errors);
         }
@@ -37,9 +37,9 @@ trait UserValidatorTrait
     }
 
     /**
-     * @param AuthInput $input
+     * @param CommandInterface $command
      *
      * @return array<array-key, string>
      */
-    abstract protected function runValidations(mixed $input): array;
+    abstract protected function runValidations(CommandInterface $command): array;
 }

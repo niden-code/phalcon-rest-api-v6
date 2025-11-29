@@ -11,42 +11,36 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\DataSource\Auth\Validators;
+namespace Phalcon\Api\Tests\Unit\Domain\Infrastructure\DataSource\Auth\Validator;
 
 use Exception;
-use Faker\Factory;
-use Phalcon\Api\Domain\Infrastructure\Container;
-use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\DTO\AuthInput;
-use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Sanitizers\AuthSanitizer;
-use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Validators\AuthTokenValidator;
-use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repositories\UserRepository;
+use Phalcon\Api\Domain\Application\Auth\Command\AuthCommandFactory;
+use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Sanitizer\AuthSanitizer;
+use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Validator\AuthTokenValidator;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repository\UserRepository;
 use Phalcon\Api\Domain\Infrastructure\Encryption\JWTToken;
+use Phalcon\Api\Domain\Infrastructure\Encryption\TokenCache;
 use Phalcon\Api\Domain\Infrastructure\Encryption\TokenCacheInterface;
 use Phalcon\Api\Domain\Infrastructure\Encryption\TokenManager;
 use Phalcon\Api\Domain\Infrastructure\Enums\Http\HttpCodesEnum;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
-use Phalcon\Filter\Validation\ValidationInterface;
+use Phalcon\Filter\Validation;
 
 final class AuthTokenValidatorTest extends AbstractUnitTestCase
 {
     public function testFailureTokenNotPresent(): void
     {
-        /** @var AuthSanitizer $sanitizer */
-        $sanitizer = $this->container->get(Container::AUTH_SANITIZER);
-        /** @var TokenManager $tokenManager */
-        $tokenManager = $this->container->get(Container::JWT_TOKEN_MANAGER);
-        /** @var UserRepository $repository */
-        $repository = $this->container->get(Container::USER_REPOSITORY);
-        /** @var ValidationInterface $validation */
-        $validation = $this->container->get(Container::VALIDATION);
+        /** @var AuthTokenValidator $validator */
+        $validator = $this->container->get(AuthTokenValidator::class);
+        /** @var AuthCommandFactory $factory */
+        $factory = $this->container->get(AuthCommandFactory::class);
 
-        $input     = [];
-        $userInput = AuthInput::new($sanitizer, $input);
+        $input       = [];
+        $authCommand = $factory->logout($input);
 
-        $validator = new AuthTokenValidator($tokenManager, $repository, $validation);
-        $result    = $validator->validate($userInput);
-        $actual    = $result->getErrors();
+        $result = $validator->validate($authCommand);
+        $actual = $result->getErrors();
 
         $expected = [
             HttpCodesEnum::AppTokenNotPresent->error(),
@@ -58,22 +52,24 @@ final class AuthTokenValidatorTest extends AbstractUnitTestCase
     public function testFailureTokenNotValid(): void
     {
         /** @var EnvManager $env */
-        $env = $this->container->get(Container::ENV);
+        $env = $this->container->get(EnvManager::class);
         /** @var TokenCacheInterface $tokenCache */
-        $tokenCache = $this->container->get(Container::JWT_TOKEN_CACHE);
+        $tokenCache = $this->container->get(TokenCache::class);
         /** @var AuthSanitizer $sanitizer */
-        $sanitizer = $this->container->get(Container::AUTH_SANITIZER);
+        $sanitizer = $this->container->get(AuthSanitizer::class);
         /** @var UserRepository $repository */
-        $repository = $this->container->get(Container::USER_REPOSITORY);
-        /** @var ValidationInterface $validation */
-        $validation = $this->container->get(Container::VALIDATION);
+        $repository = $this->container->get(UserRepository::class);
+        /** @var Validation $validator */
+        $validation = $this->container->get(Validation::class);
+        /** @var AuthCommandFactory $factory */
+        $factory = $this->container->get(AuthCommandFactory::class);
 
         $mockJWTToken = $this
             ->getMockBuilder(JWTToken::class)
             ->disableOriginalConstructor()
             ->onlyMethods(
                 [
-                    'getObject'
+                    'getObject',
                 ]
             )
             ->getMock()
@@ -83,19 +79,19 @@ final class AuthTokenValidatorTest extends AbstractUnitTestCase
             ->willThrowException(new Exception('error'))
         ;
 
-        $userData = $this->getNewUserData();
+        $userData           = $this->getNewUserData();
         $userData['usr_id'] = rand(1, 100);
-        $token = $this->getUserToken($userData);
+        $token              = $this->getUserToken($userData);
 
         $tokenManager = new TokenManager($tokenCache, $env, $mockJWTToken);
 
-        $input     = [
+        $input       = [
             'token' => $token,
         ];
-        $userInput = AuthInput::new($sanitizer, $input);
+        $authCommand = $factory->logout($input);
 
         $validator = new AuthTokenValidator($tokenManager, $repository, $validation);
-        $result    = $validator->validate($userInput);
+        $result    = $validator->validate($authCommand);
         $actual    = $result->getErrors();
 
         $expected = [
