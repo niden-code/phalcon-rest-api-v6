@@ -11,12 +11,17 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Infrastructure\Enums\Validators;
+namespace Phalcon\Api\Domain\Infrastructure\Enums\Validator;
 
 use UnitEnum;
 
 interface ValidatorEnumInterface extends UnitEnum
 {
+    /**
+     * @return bool
+     */
+    public function allowEmpty(): bool;
+
     /**
      * @return array<array-key, class-string>
      */

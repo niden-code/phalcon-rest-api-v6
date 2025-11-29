@@ -11,13 +11,18 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Infrastructure\Enums\Validators;
+namespace Phalcon\Api\Domain\Infrastructure\Enums\Validator;
 
 use Phalcon\Filter\Validation\Validator\PresenceOf;
 
 enum AuthTokenValidatorEnum implements ValidatorEnumInterface
 {
     case token;
+
+    public function allowEmpty(): bool
+    {
+        return false;
+    }
 
     public function validators(): array
     {

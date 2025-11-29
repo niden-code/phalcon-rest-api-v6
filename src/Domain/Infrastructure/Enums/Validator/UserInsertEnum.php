@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Infrastructure\Enums\Validators;
+namespace Phalcon\Api\Domain\Infrastructure\Enums\Validator;
 
 use Phalcon\Filter\Validation\Validator\Email;
 use Phalcon\Filter\Validation\Validator\PresenceOf;
@@ -24,14 +24,19 @@ enum UserInsertEnum implements ValidatorEnumInterface
     case tokenPassword;
     case tokenId;
 
+    public function allowEmpty(): bool
+    {
+        return false;
+    }
+
     public function validators(): array
     {
         return match ($this) {
-            self::email    => [
+            self::email => [
                 PresenceOf::class,
-                Email::class
+                Email::class,
             ],
-            default => [PresenceOf::class],
+            default     => [PresenceOf::class],
         };
     }
 }
