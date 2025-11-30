@@ -142,7 +142,10 @@ enum AuthDefinitionsEnum: string implements DefinitionsEnumInterface
 
     public function isShared(): bool
     {
-        return false;
+        return match ($this) {
+            self::AuthSanitizer => true,
+            default => false,
+        };
     }
 
     /**

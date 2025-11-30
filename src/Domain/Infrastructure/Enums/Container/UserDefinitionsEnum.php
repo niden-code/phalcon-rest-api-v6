@@ -146,7 +146,12 @@ enum UserDefinitionsEnum: string implements DefinitionsEnumInterface
 
     public function isShared(): bool
     {
-        return false;
+        return match ($this) {
+            self::UserMapper,
+            self::UserRepository,
+            self::UserSanitizer => true,
+            default => false,
+        };
     }
 
     /**
@@ -189,6 +194,10 @@ enum UserDefinitionsEnum: string implements DefinitionsEnumInterface
                 [
                     'type' => 'service',
                     'name' => UserRepository::class,
+                ],
+                [
+                    'type' => 'service',
+                    'name' => Container::EVENTS_MANAGER,
                 ],
                 [
                     'type' => 'service',
