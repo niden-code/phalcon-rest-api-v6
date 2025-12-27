@@ -24,7 +24,6 @@ use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
 use Phalcon\Api\Responder\JsonResponder;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Cache\Cache;
-use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response;
 use Phalcon\Mvc\Router;
@@ -44,23 +43,6 @@ final class CommonDefinitionsEnumTest extends AbstractUnitTestCase
             ],
         ];
         $actual   = CommonDefinitionsEnum::CommandBus->definition();
-        $this->assertSame($expected, $actual);
-
-        $expected = [
-            'className' => EventsManager::class,
-            'calls'     => [
-                [
-                    'method'    => 'enablePriorities',
-                    'arguments' => [
-                        [
-                            'type'  => 'parameter',
-                            'value' => true,
-                        ],
-                    ],
-                ],
-            ],
-        ];
-        $actual   = CommonDefinitionsEnum::EventsManager->definition();
         $this->assertSame($expected, $actual);
 
         $expected = [
@@ -155,9 +137,6 @@ final class CommonDefinitionsEnumTest extends AbstractUnitTestCase
         $actual = CommonDefinitionsEnum::CommandBus->isShared();
         $this->assertTrue($actual);
 
-        $actual = CommonDefinitionsEnum::EventsManager->isShared();
-        $this->assertTrue($actual);
-
         $actual = CommonDefinitionsEnum::EnvManager->isShared();
         $this->assertTrue($actual);
 
@@ -190,10 +169,6 @@ final class CommonDefinitionsEnumTest extends AbstractUnitTestCase
     {
         $expected = CommandBus::class;
         $actual   = CommonDefinitionsEnum::CommandBus->value;
-        $this->assertSame($expected, $actual);
-
-        $expected = Container::EVENTS_MANAGER;
-        $actual   = CommonDefinitionsEnum::EventsManager->value;
         $this->assertSame($expected, $actual);
 
         $expected = EnvManager::class;
