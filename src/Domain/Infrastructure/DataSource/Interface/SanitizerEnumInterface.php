@@ -11,11 +11,11 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Infrastructure\Enums\Sanitizer;
+namespace Phalcon\Api\Domain\Infrastructure\DataSource\Interface;
 
 use UnitEnum;
 
-interface SanitizersEnumInterface extends UnitEnum
+interface SanitizerEnumInterface extends UnitEnum
 {
     public function default(): mixed;
 

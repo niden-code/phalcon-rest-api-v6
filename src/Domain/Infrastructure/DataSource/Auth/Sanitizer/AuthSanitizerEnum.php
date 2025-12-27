@@ -11,11 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Infrastructure\Enums\Sanitizer;
+namespace Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Sanitizer;
 
+use Phalcon\Api\Domain\Infrastructure\DataSource\Interface\SanitizerEnumInterface;
 use Phalcon\Filter\Filter;
 
-enum AuthSanitizerEnum implements SanitizersEnumInterface
+enum AuthSanitizerEnum implements SanitizerEnumInterface
 {
     case email;
     case password;

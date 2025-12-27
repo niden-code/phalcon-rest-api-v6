@@ -11,40 +11,30 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Infrastructure\Enums\Validator;
+namespace Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Validator;
 
-use Phalcon\Api\Domain\Infrastructure\DataSource\Validation\AbsInt;
+use Phalcon\Api\Domain\Infrastructure\DataSource\Interface\ValidatorEnumInterface;
 use Phalcon\Filter\Validation\Validator\Email;
 use Phalcon\Filter\Validation\Validator\PresenceOf;
 
-enum UserUpdateEnum implements ValidatorEnumInterface
+enum AuthLoginValidatorEnum implements ValidatorEnumInterface
 {
-    case id;
     case email;
     case password;
-    case issuer;
-    case tokenPassword;
-    case tokenId;
 
     public function allowEmpty(): bool
     {
-        return match ($this) {
-            self::id => false,
-            default  => true,
-        };
+        return false;
     }
 
     public function validators(): array
     {
         return match ($this) {
-            self::id    => [
+            self::email    => [
                 PresenceOf::class,
-                AbsInt::class,
-            ],
-            self::email => [
                 Email::class,
             ],
-            default     => [],
+            self::password => [PresenceOf::class],
         };
     }
 }
