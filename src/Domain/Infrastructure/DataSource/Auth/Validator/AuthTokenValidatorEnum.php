@@ -11,8 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phalcon\Api\Domain\Infrastructure\Enums\Validator;
+namespace Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Validator;
 
+use Phalcon\Api\Domain\Infrastructure\DataSource\Interface\ValidatorEnumInterface;
 use Phalcon\Filter\Validation\Validator\PresenceOf;
 
 enum AuthTokenValidatorEnum implements ValidatorEnumInterface
