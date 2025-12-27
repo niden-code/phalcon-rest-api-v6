@@ -25,6 +25,7 @@ use Phalcon\Api\Domain\Application\User\Service\UserPostService;
 use Phalcon\Api\Domain\Application\User\Service\UserPutService;
 use Phalcon\Api\Domain\Infrastructure\CommandBus\CommandBus;
 use Phalcon\Api\Domain\Infrastructure\Container;
+use Phalcon\Api\Domain\Infrastructure\DataSource\Transformer\Transformer;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mapper\UserMapper;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repository\UserRepository;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\Sanitizer\UserSanitizer;
@@ -124,6 +125,10 @@ final class UserDefinitionsEnumTest extends AbstractUnitTestCase
                     'type' => 'service',
                     'name' => UserRepository::class,
                 ],
+                [
+                    'type' => 'service',
+                    'name' => Transformer::class,
+                ],
             ],
         ];
         $actual   = UserDefinitionsEnum::UserDeleteHandler->definition();
@@ -138,7 +143,7 @@ final class UserDefinitionsEnumTest extends AbstractUnitTestCase
                 ],
                 [
                     'type' => 'service',
-                    'name' => Container::EVENTS_MANAGER,
+                    'name' => Transformer::class,
                 ],
             ],
         ];
@@ -163,6 +168,10 @@ final class UserDefinitionsEnumTest extends AbstractUnitTestCase
                 [
                     'type' => 'service',
                     'name' => Container::EVENTS_MANAGER,
+                ],
+                [
+                    'type' => 'service',
+                    'name' => Transformer::class,
                 ],
                 [
                     'type' => 'service',
@@ -195,6 +204,10 @@ final class UserDefinitionsEnumTest extends AbstractUnitTestCase
                 [
                     'type' => 'service',
                     'name' => Container::EVENTS_MANAGER,
+                ],
+                [
+                    'type' => 'service',
+                    'name' => Transformer::class,
                 ],
                 [
                     'type' => 'service',
