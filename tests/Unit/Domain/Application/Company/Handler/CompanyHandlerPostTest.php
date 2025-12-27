@@ -21,6 +21,7 @@ use Phalcon\Api\Domain\Application\Company\Handler\CompanyPostHandler;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Company\Mapper\CompanyMapper;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Company\Mapper\CompanyMapperInterface;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Company\Repository\CompanyRepository;
+use Phalcon\Api\Domain\Infrastructure\DataSource\User\Mapper\UserMapper;
 use Phalcon\Api\Tests\AbstractUnitTestCase;
 use Phalcon\Support\Registry;
 
@@ -49,11 +50,15 @@ final class CompanyHandlerPostTest extends AbstractUnitTestCase
         $handler = $this->container->get(CompanyPostHandler::class);
         /** @var CompanyMapper $companyMapper */
         $companyMapper = $this->container->get(CompanyMapper::class);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(UserMapper::class);
         /** @var Registry $registry */
         $registry = $this->container->get(Registry::class);
         /** @var CompanyCommandFactory $factory */
         $factory = $this->container->get(CompanyCommandFactory::class);
 
+        $userData              = $this->getNewUserData();
+        $userData['usr_id']    = 1;
         $companyData           = $this->getNewCompanyData();
         $companyData['com_id'] = 1;
 
@@ -61,11 +66,12 @@ final class CompanyHandlerPostTest extends AbstractUnitTestCase
          * $companyData is a db record. We need a domain object here
          */
         $domainCompany = $companyMapper->domain($companyData);
+        $domainUser = $userMapper->domain($userData);
         /**
          * Store the domain user in the registry - to be used for *_com_id
          * field updates
          */
-        $registry->set('user', $domainCompany);
+        $registry->set('user', $domainUser);
 
         $domainData = $domainCompany->toArray();
         $command    = $factory->insert($domainData);
@@ -109,11 +115,15 @@ final class CompanyHandlerPostTest extends AbstractUnitTestCase
         $handler = $this->container->get(CompanyPostHandler::class);
         /** @var CompanyMapper $companyMapper */
         $companyMapper = $this->container->get(CompanyMapper::class);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(UserMapper::class);
         /** @var Registry $registry */
         $registry = $this->container->get(Registry::class);
         /** @var CompanyCommandFactory $factory */
         $factory = $this->container->get(CompanyCommandFactory::class);
 
+        $userData              = $this->getNewUserData();
+        $userData['usr_id']    = 1;
         $companyData           = $this->getNewCompanyData();
         $companyData['com_id'] = 1;
 
@@ -121,11 +131,12 @@ final class CompanyHandlerPostTest extends AbstractUnitTestCase
          * $companyData is a db record. We need a domain object here
          */
         $domainCompany = $companyMapper->domain($companyData);
+        $domainUser = $userMapper->domain($userData);
         /**
          * Store the domain user in the registry - to be used for *_com_id
          * field updates
          */
-        $registry->set('user', $domainCompany);
+        $registry->set('user', $domainUser);
 
         $domainData = $domainCompany->toArray();
         $command    = $factory->insert($domainData);
@@ -193,17 +204,23 @@ final class CompanyHandlerPostTest extends AbstractUnitTestCase
         $handler = $this->container->get(CompanyPostHandler::class);
         /** @var CompanyMapperInterface $companyMapper */
         $companyMapper = $this->container->get(CompanyMapper::class);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(UserMapper::class);
         /** @var Registry $registry */
         $registry = $this->container->get(Registry::class);
         /** @var CompanyCommandFactory $factory */
         $factory = $this->container->get(CompanyCommandFactory::class);
+
+        $userData              = $this->getNewUserData();
+        $userData['usr_id']    = 1;
 
         $companyData = $this->getNewCompanyData();
 
         /**
          * $companyData is a db record. We need a domain object here
          */
-        $domainUser = $companyMapper->domain($companyData);
+        $domainCompany = $companyMapper->domain($companyData);
+        $domainUser = $userMapper->domain($userData);
 
         /**
          * Store the domain user in the registry - to be used for *_com_id
@@ -211,7 +228,7 @@ final class CompanyHandlerPostTest extends AbstractUnitTestCase
          */
         $registry->set('user', $domainUser);
 
-        $domainData = $domainUser->toArray();
+        $domainData = $domainCompany->toArray();
         $command    = $factory->insert($domainData);
         $payload    = $handler->__invoke($command);
 
@@ -295,17 +312,23 @@ final class CompanyHandlerPostTest extends AbstractUnitTestCase
         $handler = $this->container->get(CompanyPostHandler::class);
         /** @var CompanyMapperInterface $companyMapper */
         $companyMapper = $this->container->get(CompanyMapper::class);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(UserMapper::class);
         /** @var Registry $registry */
         $registry = $this->container->get(Registry::class);
         /** @var CompanyCommandFactory $factory */
         $factory = $this->container->get(CompanyCommandFactory::class);
+
+        $userData              = $this->getNewUserData();
+        $userData['usr_id']    = 1;
 
         $companyData = $this->getNewCompanyData();
 
         /**
          * $companyData is a db record. We need a domain object here
          */
-        $domainUser = $companyMapper->domain($companyData);
+        $domainCompany = $companyMapper->domain($companyData);
+        $domainUser = $userMapper->domain($userData);
 
         /**
          * Store the domain user in the registry - to be used for *_com_id
@@ -384,14 +407,14 @@ final class CompanyHandlerPostTest extends AbstractUnitTestCase
         $actual = $data['createdDate'];
         $this->assertStringContainsString($today, $actual);
 
-        $expected = 0;
+        $expected = 1;
         $actual   = $data['createdUserId'];
         $this->assertSame($expected, $actual);
 
         $actual = $data['updatedDate'];
         $this->assertStringContainsString($today, $actual);
 
-        $expected = 0;
+        $expected = 1;
         $actual   = $data['updatedUserId'];
         $this->assertSame($expected, $actual);
     }

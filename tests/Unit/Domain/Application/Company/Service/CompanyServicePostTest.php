@@ -50,9 +50,13 @@ final class CompanyServicePostTest extends AbstractUnitTestCase
         $service = $this->container->get(CompanyPostService::class);
         /** @var CompanyMapper $companyMapper */
         $companyMapper = $this->container->get(CompanyMapper::class);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(UserMapper::class);
         /** @var Registry $registry */
         $registry = $this->container->get(Registry::class);
 
+        $userData              = $this->getNewUserData();
+        $userData['usr_id']    = 1;
         $companyData           = $this->getNewCompanyData();
         $companyData['com_id'] = 1;
 
@@ -60,11 +64,12 @@ final class CompanyServicePostTest extends AbstractUnitTestCase
          * $companyData is a db record. We need a domain object here
          */
         $domainCompany = $companyMapper->domain($companyData);
+        $domainUser = $userMapper->domain($userData);
         /**
          * Store the domain user in the registry - to be used for *_com_id
          * field updates
          */
-        $registry->set('user', $domainCompany);
+        $registry->set('user', $domainUser);
 
         $domainData = $domainCompany->toArray();
 
@@ -108,9 +113,13 @@ final class CompanyServicePostTest extends AbstractUnitTestCase
         $service = $this->container->get(CompanyPostService::class);
         /** @var CompanyMapper $companyMapper */
         $companyMapper = $this->container->get(CompanyMapper::class);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(UserMapper::class);
         /** @var Registry $registry */
         $registry = $this->container->get(Registry::class);
 
+        $userData              = $this->getNewUserData();
+        $userData['usr_id']    = 1;
         $companyData           = $this->getNewCompanyData();
         $companyData['com_id'] = 1;
 
@@ -118,11 +127,12 @@ final class CompanyServicePostTest extends AbstractUnitTestCase
          * $companyData is a db record. We need a domain object here
          */
         $domainCompany = $companyMapper->domain($companyData);
+        $domainUser = $userMapper->domain($userData);
         /**
          * Store the domain user in the registry - to be used for *_com_id
          * field updates
          */
-        $registry->set('user', $domainCompany);
+        $registry->set('user', $domainUser);
 
         $domainData = $domainCompany->toArray();
 
@@ -187,20 +197,22 @@ final class CompanyServicePostTest extends AbstractUnitTestCase
         /** @var CompanyPostService $service */
         $service = $this->container->get(CompanyPostService::class);
         /** @var UserMapperInterface $companyMapper */
-        $companyMapper = $this->container->get(UserMapper::class);
+        $userMapper = $this->container->get(UserMapper::class);
         /** @var CompanyMapperInterface $companyMapper */
         $companyMapper = $this->container->get(CompanyMapper::class);
         /** @var Registry $registry */
         $registry = $this->container->get(Registry::class);
 
-        $companyData = $this->getNewUserData();
-        $companyData = $this->getNewCompanyData();
+        $userData              = $this->getNewUserData();
+        $userData['usr_id']    = 1;
+        $companyData           = $this->getNewCompanyData();
+        $companyData['com_id'] = 1;
 
         /**
          * $companyData is a db record. We need a domain object here
          */
-        $domainUser = $companyMapper->domain($companyData);
-
+        $domainCompany = $companyMapper->domain($companyData);
+        $domainUser = $userMapper->domain($userData);
         /**
          * Store the domain user in the registry - to be used for *_com_id
          * field updates
@@ -292,16 +304,21 @@ final class CompanyServicePostTest extends AbstractUnitTestCase
         $service = $this->container->get(CompanyPostService::class);
         /** @var CompanyMapperInterface $companyMapper */
         $companyMapper = $this->container->get(CompanyMapper::class);
+        /** @var UserMapper $userMapper */
+        $userMapper = $this->container->get(UserMapper::class);
         /** @var Registry $registry */
         $registry = $this->container->get(Registry::class);
 
-        $companyData = $this->getNewCompanyData();
+        $userData              = $this->getNewUserData();
+        $userData['usr_id']    = 1;
+        $companyData           = $this->getNewCompanyData();
+        $companyData['com_id'] = 1;
 
         /**
          * $companyData is a db record. We need a domain object here
          */
-        $domainUser = $companyMapper->domain($companyData);
-
+        $domainCompany = $companyMapper->domain($companyData);
+        $domainUser = $userMapper->domain($userData);
         /**
          * Store the domain user in the registry - to be used for *_com_id
          * field updates
@@ -378,14 +395,14 @@ final class CompanyServicePostTest extends AbstractUnitTestCase
         $actual = $data['createdDate'];
         $this->assertStringContainsString($today, $actual);
 
-        $expected = 0;
+        $expected = 1;
         $actual   = $data['createdUserId'];
         $this->assertSame($expected, $actual);
 
         $actual = $data['updatedDate'];
         $this->assertStringContainsString($today, $actual);
 
-        $expected = 0;
+        $expected = 1;
         $actual   = $data['updatedUserId'];
         $this->assertSame($expected, $actual);
     }

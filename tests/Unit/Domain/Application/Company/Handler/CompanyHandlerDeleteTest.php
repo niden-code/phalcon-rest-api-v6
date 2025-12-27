@@ -29,9 +29,9 @@ final class CompanyHandlerDeleteTest extends AbstractUnitTestCase
         $factory = $this->container->get(CompanyCommandFactory::class);
 
         /**
-         * We need to ask for a user to be deleted with an ID that does not
-         * exist in the database. To ensure that, we will create a user,
-         * delete it and then try to delete the same user with that ID
+         * We need to ask for a company to be deleted with an ID that does not
+         * exist in the database. To ensure that, we will create a company,
+         * delete it and then try to delete the same company with that ID
          */
         $migration = new CompaniesMigration($this->getConnection());
         $dbCompany = $this->getNewCompany($migration);
