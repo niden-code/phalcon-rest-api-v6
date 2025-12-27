@@ -24,6 +24,7 @@ use Phalcon\Api\Domain\Application\Auth\Service\AuthRefreshPostService;
 use Phalcon\Api\Domain\Infrastructure\CommandBus\CommandBus;
 use Phalcon\Api\Domain\Infrastructure\Container;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Sanitizer\AuthSanitizer;
+use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Transformer\AuthTransformer;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Validator\AuthLoginValidator;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Auth\Validator\AuthTokenValidator;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repository\UserRepository;
@@ -114,6 +115,10 @@ final class AuthDefinitionsEnumTest extends AbstractUnitTestCase
                 ],
                 [
                     'type' => 'service',
+                    'name' => AuthTransformer::class,
+                ],
+                [
+                    'type' => 'service',
                     'name' => Security::class,
                 ],
                 [
@@ -134,6 +139,10 @@ final class AuthDefinitionsEnumTest extends AbstractUnitTestCase
                 ],
                 [
                     'type' => 'service',
+                    'name' => AuthTransformer::class,
+                ],
+                [
+                    'type' => 'service',
                     'name' => AuthTokenValidator::class,
                 ],
             ],
@@ -147,6 +156,10 @@ final class AuthDefinitionsEnumTest extends AbstractUnitTestCase
                 [
                     'type' => 'service',
                     'name' => TokenManager::class,
+                ],
+                [
+                    'type' => 'service',
+                    'name' => AuthTransformer::class,
                 ],
                 [
                     'type' => 'service',
@@ -200,6 +213,12 @@ final class AuthDefinitionsEnumTest extends AbstractUnitTestCase
         ];
         $actual   = AuthDefinitionsEnum::AuthTokenValidator->definition();
         $this->assertSame($expected, $actual);
+
+        $expected = [
+            'className' => AuthTransformer::class,
+        ];
+        $actual   = AuthDefinitionsEnum::AuthTransformer->definition();
+        $this->assertSame($expected, $actual);
     }
 
     public function testIsShared(): void
@@ -235,6 +254,9 @@ final class AuthDefinitionsEnumTest extends AbstractUnitTestCase
         $this->assertFalse($actual);
 
         $actual = AuthDefinitionsEnum::AuthTokenValidator->isShared();
+        $this->assertFalse($actual);
+
+        $actual = AuthDefinitionsEnum::AuthTransformer->isShared();
         $this->assertFalse($actual);
     }
 
@@ -282,6 +304,10 @@ final class AuthDefinitionsEnumTest extends AbstractUnitTestCase
 
         $expected = AuthTokenValidator::class;
         $actual   = AuthDefinitionsEnum::AuthTokenValidator->value;
+        $this->assertSame($expected, $actual);
+
+        $expected = AuthTransformer::class;
+        $actual   = AuthDefinitionsEnum::AuthTransformer->value;
         $this->assertSame($expected, $actual);
     }
 }
