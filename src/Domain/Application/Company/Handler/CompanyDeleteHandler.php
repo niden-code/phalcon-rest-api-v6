@@ -15,6 +15,7 @@ namespace Phalcon\Api\Domain\Application\Company\Handler;
 
 use Phalcon\Api\Domain\ADR\Payload;
 use Phalcon\Api\Domain\Application\Company\Command\CompanyDeleteCommand;
+use Phalcon\Api\Domain\Application\Traits\DeleteHandlerTrait;
 use Phalcon\Api\Domain\Infrastructure\CommandBus\CommandInterface;
 use Phalcon\Api\Domain\Infrastructure\CommandBus\HandlerInterface;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Company\DTO\Company;
@@ -23,6 +24,8 @@ use Phalcon\Api\Domain\Infrastructure\DataSource\Transformer\Transformer;
 
 final readonly class CompanyDeleteHandler implements HandlerInterface
 {
+    use DeleteHandlerTrait;
+
     /**
      * @param CompanyRepositoryInterface $repository
      * @param Transformer<Company>       $transformer
@@ -31,34 +34,5 @@ final readonly class CompanyDeleteHandler implements HandlerInterface
         private CompanyRepositoryInterface $repository,
         private Transformer $transformer
     ) {
-    }
-
-    /**
-     * Delete a company.
-     *
-     * @param CommandInterface $command
-     *
-     * @return Payload
-     */
-    public function __invoke(CommandInterface $command): Payload
-    {
-        /** @var CompanyDeleteCommand $command */
-        $companyId = $command->id;
-
-        /**
-         * Success
-         */
-        if ($companyId > 0) {
-            $rowCount = $this->repository->deleteById($companyId);
-
-            if (0 !== $rowCount) {
-                return Payload::deleted($this->transformer->delete($companyId));
-            }
-        }
-
-        /**
-         * 404
-         */
-        return Payload::notFound();
     }
 }

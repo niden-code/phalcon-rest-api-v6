@@ -15,6 +15,7 @@ namespace Phalcon\Api\Domain\Application\Company\Handler;
 
 use Phalcon\Api\Domain\ADR\Payload;
 use Phalcon\Api\Domain\Application\Company\Command\CompanyGetCommand;
+use Phalcon\Api\Domain\Application\Traits\GetHandlerTrait;
 use Phalcon\Api\Domain\Infrastructure\CommandBus\CommandInterface;
 use Phalcon\Api\Domain\Infrastructure\CommandBus\HandlerInterface;
 use Phalcon\Api\Domain\Infrastructure\DataSource\Company\DTO\Company;
@@ -23,6 +24,8 @@ use Phalcon\Api\Domain\Infrastructure\DataSource\Transformer\Transformer;
 
 final readonly class CompanyGetHandler implements HandlerInterface
 {
+    use GetHandlerTrait;
+
     /**
      * @param CompanyRepositoryInterface $repository
      * @param Transformer<Company>       $transformer
@@ -31,34 +34,5 @@ final readonly class CompanyGetHandler implements HandlerInterface
         private CompanyRepositoryInterface $repository,
         private Transformer $transformer
     ) {
-    }
-
-    /**
-     * Get a company.
-     *
-     * @param CommandInterface $command
-     *
-     * @return Payload
-     */
-    public function __invoke(CommandInterface $command): Payload
-    {
-        /** @var CompanyGetCommand $command */
-        $companyId = $command->id;
-
-        /**
-         * Success
-         */
-        if ($companyId > 0) {
-            $company = $this->repository->findById($companyId);
-
-            if (null !== $company) {
-                return Payload::success($this->transformer->get($company));
-            }
-        }
-
-        /**
-         * 404
-         */
-        return Payload::notFound();
     }
 }
