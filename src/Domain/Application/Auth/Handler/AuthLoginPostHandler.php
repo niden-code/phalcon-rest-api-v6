@@ -79,7 +79,6 @@ final readonly class AuthLoginPostHandler implements HandlerInterface
          */
         /** @var string $suppliedPassword */
         $suppliedPassword = $command->password;
-        /** @var string $dbPassword */
         $dbPassword = $domainUser->password;
         if (true !== $this->security->verify($suppliedPassword, $dbPassword)) {
             return Payload::unauthorized([HttpCodesEnum::AppIncorrectCredentials->error()]);

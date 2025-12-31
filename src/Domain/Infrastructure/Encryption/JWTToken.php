@@ -24,6 +24,7 @@ use Phalcon\Api\Domain\Infrastructure\Enums\Common\JWTEnum;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
 use Phalcon\Api\Domain\Infrastructure\Exceptions\TokenValidationException;
 use Phalcon\Encryption\Security\JWT\Builder;
+use Phalcon\Encryption\Security\JWT\Exceptions\ValidatorException;
 use Phalcon\Encryption\Security\JWT\Signer\Hmac;
 use Phalcon\Encryption\Security\JWT\Token\Parser;
 use Phalcon\Encryption\Security\JWT\Token\Token;
@@ -143,7 +144,6 @@ class JWTToken
         $issuer = $user->issuer;
         /** @var string $tokenPassword */
         $tokenPassword = $user->tokenPassword;
-        /** @var int $userId */
         $userId = $user->id;
 
         $validator
@@ -170,6 +170,7 @@ class JWTToken
      * @param bool $isRefresh
      *
      * @return string
+     * @throws ValidatorException
      */
     private function generateTokenForUser(
         User $user,
@@ -196,7 +197,6 @@ class JWTToken
         $tokenPassword = $user->tokenPassword;
         /** @var string $tokenId */
         $tokenId = $user->tokenId;
-        /** @var int $userId */
         $userId = $user->id;
 
         $tokenObject = $tokenBuilder

@@ -18,6 +18,7 @@ use Phalcon\Api\Domain\Infrastructure\DataSource\User\DTO\User;
 use Phalcon\Api\Domain\Infrastructure\DataSource\User\Repository\UserRepositoryInterface;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
 use Phalcon\Encryption\Security\JWT\Token\Token;
+use Psr\SimpleCache\InvalidArgumentException;
 use Throwable;
 
 /**
@@ -94,6 +95,7 @@ final class TokenManager implements TokenManagerInterface
      * @param User $domainUser
      *
      * @return TTokenIssue
+     * @throws InvalidArgumentException
      */
     public function issue(User $domainUser): array
     {
@@ -129,6 +131,7 @@ final class TokenManager implements TokenManagerInterface
      * @param User $domainUser
      *
      * @return void
+     * @throws InvalidArgumentException
      */
     public function revoke(User $domainUser): void
     {

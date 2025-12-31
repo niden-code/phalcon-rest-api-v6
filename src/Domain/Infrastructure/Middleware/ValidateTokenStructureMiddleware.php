@@ -30,8 +30,6 @@ final class ValidateTokenStructureMiddleware extends AbstractMiddleware
      * @param Micro $application
      *
      * @return bool
-     * @throws EventsException
-     * @throws Exception
      */
     public function call(Micro $application): bool
     {

@@ -26,8 +26,6 @@ final class NotFoundMiddleware extends AbstractMiddleware
      * @param Micro $application
      *
      * @return bool
-     * @throws EventsException
-     * @throws Exception
      */
     public function beforeNotFound(Event $event, Micro $application): bool
     {

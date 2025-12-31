@@ -26,6 +26,7 @@ use Phalcon\Http\RequestInterface;
 use Phalcon\Http\ResponseInterface;
 use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\Collection;
+use Phalcon\Mvc\Micro\Exception;
 
 /**
  * @phpstan-import-type TMiddleware from RoutesEnum
@@ -75,6 +76,7 @@ class RouterProvider implements ServiceProviderInterface
      * @param Micro $application
      *
      * @return void
+     * @throws Exception
      */
     private function attachRoutes(Micro $application): void
     {

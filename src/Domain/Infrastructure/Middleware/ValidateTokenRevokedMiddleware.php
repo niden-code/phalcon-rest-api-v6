@@ -23,6 +23,7 @@ use Phalcon\Http\RequestInterface;
 use Phalcon\Mvc\Micro;
 use Phalcon\Support\Registry;
 use Psr\SimpleCache\CacheInterface;
+use Psr\SimpleCache\InvalidArgumentException;
 
 final class ValidateTokenRevokedMiddleware extends AbstractMiddleware
 {
@@ -30,6 +31,7 @@ final class ValidateTokenRevokedMiddleware extends AbstractMiddleware
      * @param Micro $application
      *
      * @return bool
+     * @throws InvalidArgumentException
      */
     public function call(Micro $application): bool
     {

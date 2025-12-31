@@ -66,6 +66,7 @@ abstract class AbstractRepository
      * @param int $recordId
      *
      * @return int
+     * @throws DataMapperException
      */
     public function deleteById(int $recordId): int
     {
@@ -77,7 +78,6 @@ abstract class AbstractRepository
     }
 
     /**
-     *
      * @param TDbRecordOptional $columns
      *
      * @return int

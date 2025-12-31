@@ -82,6 +82,7 @@ final class JsonResponder implements ResponderInterface
      * @param TResponsePayload $content
      *
      * @return array{0: TResponsePayload, 1: string}
+     * @throws BaseException
      */
     private function calculateMeta(array $content): array
     {

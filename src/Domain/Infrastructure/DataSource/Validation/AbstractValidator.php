@@ -56,7 +56,6 @@ abstract class AbstractValidator implements ValidatorInterface
         /** @var ValidatorEnumInterface[] $elements */
         $elements = $enum::cases();
 
-        /** @var ValidatorEnumInterface $element */
         foreach ($elements as $element) {
             $validators = $element->validators();
             foreach ($validators as $validator) {

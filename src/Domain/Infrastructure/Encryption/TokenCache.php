@@ -21,6 +21,7 @@ use Phalcon\Api\Domain\Infrastructure\DataSource\User\DTO\User;
 use Phalcon\Api\Domain\Infrastructure\Env\EnvManager;
 use Phalcon\Cache\Adapter\Redis;
 use Phalcon\Cache\Cache;
+use Phalcon\Storage\Exception as StorageException;
 use Psr\SimpleCache\InvalidArgumentException;
 
 /**
@@ -43,6 +44,7 @@ final readonly class TokenCache implements TokenCacheInterface
      *
      * @return bool
      * @throws InvalidArgumentException
+     * @throws StorageException
      */
     public function invalidateForUser(
         EnvManager $env,

@@ -20,13 +20,13 @@ use Phalcon\Api\Domain\Infrastructure\DataSource\Interface\SanitizerInterface;
 /**
  * @phpstan-import-type TCompanyInput from InputTypes
  */
-final class CompanyCommandFactory implements CompanyCommandFactoryInterface
+final readonly class CompanyCommandFactory implements CompanyCommandFactoryInterface
 {
     /**
      * @param SanitizerInterface $sanitizer
      */
     public function __construct(
-        private readonly SanitizerInterface $sanitizer
+        private SanitizerInterface $sanitizer
     ) {
     }
 

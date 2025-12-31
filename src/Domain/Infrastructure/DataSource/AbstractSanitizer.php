@@ -53,7 +53,6 @@ abstract class AbstractSanitizer implements SanitizerInterface
          *
          * If there is no sanitizer defined, the value will be left intact.
          */
-        /** @var SanitizerEnumInterface $field */
         foreach ($fields as $field) {
             $value = $input[$field->name] ?? $field->default();
 
